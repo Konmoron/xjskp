@@ -218,7 +218,8 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                 
                 # 关闭远征
                 if i!=0 and i%5==0:
-                    find_and_click('images/huan_qiu/yuan_zheng_fang_an.png', offset_name='close_yuan_zheng_fang_an')
+                    if find_and_click('images/huan_qiu/yuan_zheng_fang_an.png', offset_name='close_yuan_zheng_fang_an'):
+                        logging.info(f"第【{game_num}】局 - 当前执行 - 抢环球 - 关闭远征")
 
                 if i!=0 and i%5==0 and close_guan_qia_select():
                     open_chat()
