@@ -167,6 +167,14 @@ def close_network():
         return True
     return False
 
+# 选择技能
+# 主要选择能量系技能，这样和枪配合，任何boss都不怕
+def select_ji_neng():
+    if find_and_click('images/huan_qiu/ji_guang_ji_neng.png'):
+        logging.info(f"发现并选择【激光技能】 images/huan_qiu/ji_guang_ji_neng.png")
+    elif find_and_click('images/huan_qiu/she_xian_ji_neng.png'):
+        logging.info(f"发现并选择【射线技能】 images/huan_qiu/she_xian_ji_neng.png")
+
 def close_ji_neng_jiao_yi():
     if find_and_click('images/huan_qiu/ji_neng_jiao_yi.png', offset_name='close_ji_neng_jiao_yi'):
         logging.info(f"发现 images/huan_qiu/ji_neng_jiao_yi.png 关闭技能交易")
@@ -275,6 +283,9 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                 logging.info(f"第【{game_num}】局 - 等待结束 - 第【{i}】次")
                 if find_and_click('images/huan_qiu/game_back.png'):
                     break
+                
+                # 选择技能
+                select_ji_neng()
 
                 time.sleep(10)
 
