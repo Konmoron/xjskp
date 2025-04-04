@@ -216,6 +216,10 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                         else:
                             logging.info(f"第【{game_num}】局 - 当前执行 - 抢寰球 - 打开招募失败")
                             break
+                
+                # 关闭远征
+                if i!=0 and i%5==0:
+                    find_and_click('images/huan_qiu/yuan_zheng_fang_an.png', offset_name='close_yuan_zheng_fang_an')
 
                 if i!=0 and i%5==0 and close_guan_qia_select():
                     open_chat()
@@ -438,18 +442,18 @@ def start():
     start_huan_qiu_jiu_yuan(max_num=args.number)
 
 def test_get_click_offset():
-    image_path = "images/huan_qiu/ji_neng_jiao_yi.png"
-    offset_name = "close_ji_neng_jiao_yi"
+    image_path = "images/huan_qiu/yuan_zheng_fang_an.png"
+    offset_name = "close_yuan_zheng_fang_an"
     if test_find_location(image_path):
         logging.info(f"找到图片{image_path}")
         test_click_with_offset(image_path, offset_name)
 
 def main():
     # 调整`click`函数中的`x`和`y`坐标
-    test_get_click_offset()
+    # test_get_click_offset()
     
     # 开始
-    # start()
+    start()
 
 
 if __name__ == "__main__":
