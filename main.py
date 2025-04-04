@@ -1,4 +1,3 @@
-from math import log
 import pyautogui
 import time
 import random  # 添加随机模块导入
