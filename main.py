@@ -170,10 +170,20 @@ def close_network():
 # 选择技能
 # 主要选择能量系技能，这样和枪配合，任何boss都不怕
 def select_ji_neng():
-    if find_and_click('images/huan_qiu/ji_guang_ji_neng.png'):
-        logging.info(f"发现并选择【激光技能】 images/huan_qiu/ji_guang_ji_neng.png")
-    elif find_and_click('images/huan_qiu/she_xian_ji_neng.png'):
-        logging.info(f"发现并选择【射线技能】 images/huan_qiu/she_xian_ji_neng.png")
+    if find_and_click('images/ji_neng/ji_guang.png'):
+        logging.info(f"发现并选择【激光技能】images/ji_neng/ji_guang.png")
+    elif find_and_click('images/ji_neng/she_xian.png'):
+        logging.info(f"发现并选择【射线技能】images/ji_neng/she_xian_ji_neng.png")
+    elif find_and_click('images/ji_neng/qiang_lian_fa.png'):
+        logging.info(f"发现并选择【枪-连发-技能】images/ji_neng/qiang_lian_fa.png")
+    elif find_and_click('images/ji_neng/qiang_fen_lie.png'):
+        logging.info(f"发现并选择【枪-分裂-技能】images/ji_neng/qiang_fen_lie.png")
+    elif find_and_click('images/ji_neng/qiang_zeng_shang.png'):
+        logging.info(f"发现并选择【枪-增伤-技能】images/huan_qiu/qiang_zeng_shang.png")
+    elif find_and_click('images/ji_neng/qiang_bao_zha.png'):
+        logging.info(f"发现并选择【枪-爆炸-技能】images/ji_neng/qiang_bao_zha.png")
+    elif find_and_click('images/ji_neng/wen_ya_dan_lian_fa.png'):
+        logging.info(f"发现并选择【温压弹连发技能】images/ji_neng/wen_ya_dan_lian_fa.png")
 
 def close_ji_neng_jiao_yi():
     if find_and_click('images/huan_qiu/ji_neng_jiao_yi.png', offset_name='close_ji_neng_jiao_yi'):
@@ -246,7 +256,7 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                 # 抢 20 次，判断一次
                 for _ in range(20):
                     find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_1.png')
-                    time.sleep(random.uniform(0.01, 0.02))
+                    # time.sleep(random.uniform(0.01, 0.02))
                     find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_2.png')
 
             # huan_qiu_start = False
