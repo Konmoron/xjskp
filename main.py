@@ -47,6 +47,8 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
     start_time = time.time()
     if offset_name and offset_name in CLICK_OFFSETS:
         x_offset, y_offset = CLICK_OFFSETS[offset_name]
+    else:
+        x_offset, y_offset = 0, 0
     while time.time() - start_time < timeout:
         try:
             location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8)
