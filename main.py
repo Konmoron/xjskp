@@ -25,10 +25,10 @@ def find(image_path, timeout=3):
         try:
             location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8)
             if location:
-                logging.info(f"找到图片：{image_path}")
+                # logging.info(f"找到图片：{image_path}")
                 return True
         except pyautogui.ImageNotFoundException as e:
-            logging.info(f"没有找到图片：{image_path}")
+            # logging.info(f"没有找到图片：{image_path}")
             return False
             break
     logging.info(f"没有找到图片：{image_path}")
@@ -63,14 +63,14 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
 
 def is_chat_open():
     if find('images/huan_qiu/is_open_chat.png'):
-        logging.info(f"聊天已经打开")
+        logging.info(f"聊天已经打开 images/huan_qiu/is_open_chat.png")
         return True
     else:
         return False
 
 def is_chat_zhao_mu_open():
     if find('images/huan_qiu/is_open_chat_zhao_mu.png'):
-        logging.info(f"招募已经打开")
+        logging.info(f"招募已经打开 images/huan_qiu/is_open_chat_zhao_mu.png")
         return True
     else:
         return False
@@ -92,24 +92,26 @@ def close_chat():
 
 def open_zhao_mu():
     if find('images/huan_qiu/chat_zhao_mu.png'):
+        logging.info(f"找到招募图片，招募已经打开 images/huan_qiu/chat_zhao_mu.png")
         # 点击招募
         find_and_click('images/huan_qiu/chat_zhao_mu.png', offset_name='open_zhao_mu')
-        logging.info(f"打开招募")
+        logging.info(f"第一次打开招募")
         time.sleep(1)
         # 再次点击招募，防止招募没点到
         find_and_click('images/huan_qiu/chat_zhao_mu.png', offset_name='open_zhao_mu')
-        logging.info(f"打开招募")
-        time.sleep(1)
+        logging.info(f"第二次打开招募")
+        time.sleep(0.5)
         return True
     else:
-        logging.info(f" 打开招募失败, 没找到招募按钮")
+        logging.info(f"没有找到招募图片 images/huan_qiu/chat_zhao_mu.png")
         close_chat()
         return False
 
 def close_guan_qia_select():
     if find('images/huan_qiu/guan_qia_select.png'):
-        logging.info(f"关闭-关卡-选择")
+        logging.info(f"发现-关卡-选择 images/huan_qiu/guan_qia_select.png")
         find_and_click('images/huan_qiu/guan_qia_select_back.png', offset_name='close_guan_qia_select')
+        logging.info(f"关闭-关卡-选择 images/huan_qiu/guan_qia_select_back.png")
         time.sleep(1)
         return True
     else:
@@ -117,17 +119,26 @@ def close_guan_qia_select():
 
 def close_first_charge():
     if find('images/huan_qiu/first_charge.png'):
-        logging.info(f"关闭-首充")
+        logging.info(f"发现-首充 images/huan_qiu/first_charge.png")
         find_and_click('images/huan_qiu/first_charge.png', offset_name='close_first_charge')
+        logging.info(f"关闭-首充 images/huan_qiu/first_charge.png")
         time.sleep(1)
 
 def check_huan_qiu_start():
-    if find("images/huan_qiu/huan_qiu_start_0.png")  or find("images/huan_qiu/huan_qiu_start_1.png")  or find("images/huan_qiu/huan_qiu_start_2.png") or find("images/huan_qiu/huan_qiu_start_3.png") or find("images/huan_qiu/huan_qiu_start_4.png"):
-        logging.info(f"找到寰球图片")
-        return True
-    else:
-        logging.info(f"未找到寰球图片")
-        return False
+    huan_qiu_play_images = [
+        "images/huan_qiu/huan_qiu_start_0.png",
+        "images/huan_qiu/huan_qiu_start_1.png",
+        "images/huan_qiu/huan_qiu_start_2.png",
+        "images/huan_qiu/huan_qiu_start_3.png",
+        "images/huan_qiu/huan_qiu_start_4.png"
+    ]
+    
+    for img in huan_qiu_play_images:
+        if find(img):
+            logging.info(f"找到寰球开始图片: {img}")
+            return True
+    logging.info(f"未找到寰球开始图片")
+    return False
 
 # 选择技能的时候，有可能点不到，所以要多试几次
 def close_playing_game():
@@ -152,20 +163,12 @@ def close_playing_game():
 def close_offline():
     # 暂停
     if find('images/huan_qiu/offline.png'):
+        logging.info(f"发现【离线】images/huan_qiu/offline.png")
         find_and_click('images/huan_qiu/offline.png', offset_name='close_offline_offline')
         time.sleep(1)
         find_and_click('images/huan_qiu/offline_end.png', offset_name='close_offline_offline_end')
         time.sleep(1)
-        return True
-    return False
-
-def close_network():
-    # 暂停
-    if find('images/huan_qiu/offline.png'):
-        find_and_click('images/huan_qiu/network_timeout.png', offset_name='network_timeout')
-        time.sleep(1)
-        find_and_click('images/huan_qiu/offline_end.png', offset_name='offline_end')
-        time.sleep(1)
+        logging.info(f"关闭【离线】images/huan_qiu/offline_end.png")
         return True
     return False
 
@@ -237,33 +240,35 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                 logging.info(f"第【{game_num}】局 - 第【{i}】次抢寰球救援")
                 # 判断是否抢到，如果抢到，则退出当前循环
                 if i!=0 and ( check_huan_qiu_start() or find('images/huan_qiu/play_select_skills.png') ):
-                    logging.info(f"第【{game_num}】局 - 当前执行 - 抢寰球 - 抢到了")
+                    logging.info(f"第【{game_num}】局 - 抢寰球 - 已经开始游戏")
                     break
 
                 # 如果有 聊天框，点击聊天框
                 # 1. 判断有没有招募，如果有招募，点击招募，继续抢
                 # 2. 如果没有招募，说明可能已经抢到了，调到判断是否结束
                 if i!=0 and i%2==0 and not is_chat_open() and not is_chat_zhao_mu_open():
-                    logging.info(f"第【{game_num}】局 - 当前执行 - 点击聊天")
+                    logging.info(f"第【{game_num}】局 - 抢寰球 - 点击聊天")
                     open_chat()
                     if not open_zhao_mu():
                         if close_guan_qia_select():
                             open_chat()
                             open_zhao_mu()
                         else:
-                            logging.info(f"第【{game_num}】局 - 当前执行 - 抢寰球 - 打开招募失败")
+                            logging.info(f"第【{game_num}】局 - 抢寰球 - 打开招募失败")
                             break
                 
                 if i!=0 and i%2==0 and close_yuan_zheng():
+                    logging.info(f"第【{game_num}】局 - 抢寰球 - 关闭远征并重新打开聊天")
                     open_chat()
                     open_zhao_mu()
                 
-                # 关闭远征
+                # 关闭远征-方案选择
                 if i!=0 and i%5==0:
                     if find_and_click('images/huan_qiu/yuan_zheng_fang_an.png', offset_name='close_yuan_zheng_fang_an'):
-                        logging.info(f"第【{game_num}】局 - 当前执行 - 抢环球 - 关闭远征")
+                        logging.info(f"第【{game_num}】局 - 当前执行 - 抢环球 - 关闭远征-方案选择")
 
                 if i!=0 and i%5==0 and close_guan_qia_select():
+                    logging.info(f"第【{game_num}】局 - 当前执行 - 抢环球 - 关闭关卡选择")
                     open_chat()
                     open_zhao_mu()
 
@@ -300,21 +305,21 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                 #     huan_qiu_start = True
 
                 # 如果有 聊天框，关闭聊天框
-                if i !=0 and i%5 == 0 and find('images/huan_qiu/is_open_chat.png'):
-                    close_chat()
-                    logging.info(f"第【{game_num}】局 - 当前执行 - 关闭聊天")
-                    time.sleep(1)
+                # if i !=0 and i%5 == 0 and find('images/huan_qiu/is_open_chat.png'):
+                #     close_chat()
+                #     logging.info(f"第【{game_num}】局 - 当前执行 - 关闭聊天")
+                #     time.sleep(1)
 
                 if i!=0 and i%10 == 0:
                     close_offline()
 
-                if i !=0 and i%20 == 0:
-                    current_hour = datetime.now().hour
-                    # 只在早上执行
-                    if 0 <= current_hour < 10:
-                        close_first_charge()
+                # if i !=0 and i%20 == 0:
+                #     current_hour = datetime.now().hour
+                #     # 只在早上执行
+                #     if 0 <= current_hour < 10:
+                #         close_first_charge()
 
-                logging.info(f"第【{game_num}】局 - 等待结束 - 第【{i}】次")
+                logging.info(f"第【{game_num}】局 - 第【{i}】次等待游戏结束")
                 if find_and_click('images/huan_qiu/game_back.png'):
                     break
                 
