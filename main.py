@@ -125,7 +125,7 @@ def close_first_charge():
         time.sleep(1)
 
 def check_huan_qiu_start():
-    huan_qiu_play_images = [
+    huan_qiu_kai_shi_images = [
         "images/huan_qiu/huan_qiu_start_0.png",
         "images/huan_qiu/huan_qiu_start_1.png",
         "images/huan_qiu/huan_qiu_start_2.png",
@@ -133,7 +133,7 @@ def check_huan_qiu_start():
         "images/huan_qiu/huan_qiu_start_4.png"
     ]
     
-    for img in huan_qiu_play_images:
+    for img in huan_qiu_kai_shi_images:
         if find(img):
             logging.info(f"找到寰球开始图片: {img}")
             return True
