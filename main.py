@@ -184,8 +184,8 @@ def select_ji_neng():
         logging.info(f"发现并选择【枪-2分裂-技能】images/ji_neng/qiang_fen_lie.png")
     elif find_and_click('images/ji_neng/qiang_zeng_shang.png'):
         logging.info(f"发现并选择【枪-增伤-技能】images/huan_qiu/qiang_zeng_shang.png")
-    # elif find_and_click('images/ji_neng/qiang_bao_zha.png'):
-    #     logging.info(f"发现并选择【枪-爆炸-技能】images/ji_neng/qiang_bao_zha.png")
+    elif find_and_click('images/ji_neng/qiang_bao_zha.png'):
+        logging.info(f"发现并选择【枪-爆炸-技能】images/ji_neng/qiang_bao_zha.png")
     # elif find_and_click('images/ji_neng/wen_ya_dan_lian_fa.png'):
     #     logging.info(f"发现并选择【温压弹连发技能】images/ji_neng/wen_ya_dan_lian_fa.png")
 
@@ -284,7 +284,7 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                 # 抢 20 次，判断一次
                 for _ in range(20):
                     find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_1.png')
-                    # time.sleep(random.uniform(0.01, 0.02))
+                    time.sleep(random.uniform(0.01, 0.02))
                     find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_2.png')
 
             # huan_qiu_start = False
