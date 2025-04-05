@@ -201,6 +201,8 @@ def start_huan_qiu_jiu_yuan(max_num=40):
 
         close_first_charge()
 
+        close_ji_neng_jiao_yi()
+
         if open_chat():
             if is_chat_open():
                 logging.info(f"第【{game_num}】局 - 进入聊天页面")
