@@ -3,7 +3,7 @@ import time
 import random  # 添加随机模块导入
 import logging
 from datetime import datetime
-from config import CLICK_OFFSETS  # 新增导入
+from config import CLICK_OFFSETS, GLOBAL_REGION  # 新增导入
 import argparse
 
 logging.basicConfig(
@@ -23,7 +23,7 @@ def find(image_path, timeout=3):
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
-            location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8)
+            location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8, region=GLOBAL_REGION)
             if location:
                 return True
         except pyautogui.ImageNotFoundException as e:
@@ -43,7 +43,7 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
-            location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8)
+            location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8, region=GLOBAL_REGION)
             if location:
                 if offset_name and offset_name in CLICK_OFFSETS:
                     x_offset, y_offset = CLICK_OFFSETS[offset_name]
@@ -379,6 +379,9 @@ def test_get_click_offset():
         test_click_with_offset(image_path, offset_name)
 
 def main():
+    # 打印 全局 region
+    logging.info(f"全局 region: {GLOBAL_REGION}")
+
     # 调整`click`函数中的`x`和`y`坐标
     # test_get_click_offset()
     
