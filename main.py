@@ -263,7 +263,7 @@ def start_huan_qiu_jiu_yuan(max_num=40):
             # 抢到寰球等待7分钟再抢
             # time.sleep(360)
             # 判断是否结束
-            for i in range(120):
+            for i in range(90):
                 # if i > 15 and not huan_qiu_start:
                 #     logging.info(f"第【{game_num}】局 - 当前执行 - 判断是否寰球超过了最大次数 15 次 - 结束")
                 #     # 如果超过了最大次数，说明没有抢到寰球，退出
