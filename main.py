@@ -189,6 +189,22 @@ def close_ji_neng_jiao_yi():
     if find_and_click('images/huan_qiu/ji_neng_jiao_yi.png', offset_name='close_ji_neng_jiao_yi'):
         logging.info(f"发现 images/huan_qiu/ji_neng_jiao_yi.png 关闭技能交易")
 
+def close_yuan_zheng():
+    # 只有 周五、周六、周日 才会出现 退出远征
+    if datetime.now().weekday() > 4:
+        return False
+
+    if find_and_click('images/huan_qiu/yuan_zheng.png', offset_name='close_yuan_zheng'):
+        logging.info(f"发现 images/huan_qiu/yuan_zheng.png 关闭远征")
+        time.sleep(1)
+
+        if find_and_click('images/huan_qiu/close_yuan_zheng_que_ren.png', offset_name='close_yuan_zheng_que_ren'):
+            logging.info(f"发现 images/huan_qiu/close_yuan_zheng_que_ren.png 退出远征")
+            time.sleep(1)
+        
+        return True
+    return False
+
 def start_huan_qiu_jiu_yuan(max_num=40):
     game_num = 1
     while True:
@@ -225,7 +241,7 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                 # 如果有 聊天框，点击聊天框
                 # 1. 判断有没有招募，如果有招募，点击招募，继续抢
                 # 2. 如果没有招募，说明可能已经抢到了，调到判断是否结束
-                if i!=0 and i%5==0 and not is_chat_open() and not is_chat_zhao_mu_open():
+                if i!=0 and i%2==0 and not is_chat_open() and not is_chat_zhao_mu_open():
                     logging.info(f"第【{game_num}】局 - 当前执行 - 点击聊天")
                     open_chat()
                     if not open_zhao_mu():
@@ -235,6 +251,10 @@ def start_huan_qiu_jiu_yuan(max_num=40):
                         else:
                             logging.info(f"第【{game_num}】局 - 当前执行 - 抢寰球 - 打开招募失败")
                             break
+                
+                if i!=0 and i%2==0 and close_yuan_zheng():
+                    open_chat()
+                    open_zhao_mu()
                 
                 # 关闭远征
                 if i!=0 and i%5==0:
@@ -306,128 +326,6 @@ def start_huan_qiu_jiu_yuan(max_num=40):
             logging.info("寰球救援页面未找到")
             time.sleep(1)
 
-def test_close_first_charge():
-    # 测试
-    logging.info(f"开始测试")
-    try:
-        location = pyautogui.locateCenterOnScreen("images/huan_qiu/first_charge.png", confidence=0.8)
-        logging.info(f"找到图片 location: x={location.x} y={location.y}")
-        if location:
-            x_offset, y_offset = CLICK_OFFSETS["close_first_charge"]
-            logging.info(f" 点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
-            pyautogui.click(location.x + x_offset, location.y + y_offset)
-            return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-
-def test_close_guan_qia_select():
-    # 测试
-    logging.info(f"开始测试")
-    
-    try:
-        location = pyautogui.locateCenterOnScreen("images/huan_qiu/guan_qia_select_back.png", confidence=0.8)
-        logging.info(f"找到图片 location: x={location.x} y={location.y}")
-        if location:
-            x_offset, y_offset = CLICK_OFFSETS["close_guan_qia_select"]
-            logging.info(f" 点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
-            pyautogui.click(location.x + x_offset, location.y + y_offset)
-            return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-    
-def test_close_chat():
-    # 测试
-    logging.info(f" 开始测试")
-    
-    try:
-        location = pyautogui.locateCenterOnScreen("images/huan_qiu/is_open_chat.png", confidence=0.8)
-        logging.info(f"找到图片 location: x={location.x} y={location.y}")
-        if location:
-            x_offset, y_offset = CLICK_OFFSETS["close_chat"]
-            logging.info(f" 点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
-            pyautogui.click(location.x + x_offset, location.y + y_offset)
-            return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-
-
-def test_open_zhao_mu():
-    # 测试
-    logging.info(f" 开始测试")
-
-    try:
-        location = pyautogui.locateCenterOnScreen("images/huan_qiu/chat_zhao_mu.png", confidence=0.8)
-        logging.info(f"找到图片 location: x={location.x} y={location.y}")
-        if location:
-            x_offset, y_offset = CLICK_OFFSETS["open_zhao_mu"]
-            logging.info(f" 点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
-            pyautogui.click(location.x + x_offset, location.y + y_offset)
-            return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-
-def test_find_is_huan_qiu_start():
-    # 测试
-    logging.info(f"开始测试")
-    if find("images/huan_qiu/huan_qiu_start_3.png") or find("images/huan_qiu/huan_qiu_start_2.png"):
-        logging.info(f"找到图片")
-        return True
-    else:
-        logging.info(f"未找到图片")
-        return False
-
-def test_open_chat():
-    # 测试
-    logging.info(f"开始测试")
-
-    try:
-        location = pyautogui.locateCenterOnScreen("images/huan_qiu/header.png", confidence=0.8)
-        logging.info(f"找到图片 location: x={location.x} y={location.y}")
-        if location:
-            x_offset, y_offset = CLICK_OFFSETS["open_chat"]
-            logging.info(f" 点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
-            pyautogui.click(location.x + x_offset, location.y + y_offset)
-            return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-
-def test_close_offline():
-    # 测试
-    logging.info(f"开始测试")
-
-    try:
-        location = pyautogui.locateCenterOnScreen("images/huan_qiu/offline.png", confidence=0.8)
-        logging.info(f"找到图片 location: x={location.x} y={location.y}")
-        if location:
-            x_offset, y_offset = CLICK_OFFSETS["close_offline_offline"]
-            logging.info(f" 点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
-            pyautogui.click(location.x + x_offset, location.y + y_offset)
-            return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-
-def test_close_offline_end():
-    # 测试
-    logging.info(f" 开始测试")
-
-    try:
-        location = pyautogui.locateCenterOnScreen("images/huan_qiu/offline_end.png", confidence=0.8)
-        logging.info(f"找到图片 location: x={location.x} y={location.y}")
-        if location:
-            x_offset, y_offset = CLICK_OFFSETS["close_offline_offline_end"]
-            logging.info(f" 点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
-            pyautogui.click(location.x + x_offset, location.y + y_offset)
-            return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-
 def test_find_location(image_path):
      # 测试
     logging.info(f"开始测试")
@@ -439,14 +337,17 @@ def test_find_location(image_path):
         logging.info(f"未找到图片, 报错: {e}")
         return False
 
-def test_click_with_offset(image_path, offset_name):
+def test_click_with_offset(image_path, offset_name=''):
     # 测试
     logging.info(f"开始测试")
     try:
         location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8)
         logging.info(f"找到图片 {image_path} 的 location: x={location.x} y={location.y}")
         if location:
-            x_offset, y_offset = CLICK_OFFSETS[offset_name]
+            if offset_name != '':
+                x_offset, y_offset = CLICK_OFFSETS[offset_name]
+            else:
+                x_offset, y_offset = 0, 0
             logging.info(f"offset_name: {offset_name} x_offset={x_offset} y_offset={y_offset}")
             logging.info(f"点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
             pyautogui.click(location.x + x_offset, location.y + y_offset)
@@ -465,8 +366,8 @@ def start():
     start_huan_qiu_jiu_yuan(max_num=args.number)
 
 def test_get_click_offset():
-    image_path = "images/huan_qiu/yuan_zheng_fang_an.png"
-    offset_name = "close_yuan_zheng_fang_an"
+    image_path = "images/huan_qiu/close_yuan_zheng_que_ren.png"
+    offset_name = "close_yuan_zheng_que_ren"
     if test_find_location(image_path):
         logging.info(f"找到图片{image_path}")
         test_click_with_offset(image_path, offset_name)
