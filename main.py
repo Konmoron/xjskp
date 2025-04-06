@@ -195,10 +195,7 @@ def close_ji_neng_jiao_yi():
 
 def close_yuan_zheng():
     # 只有 周五、周六、周日 才会出现 退出远征
-    if datetime.now().weekday() > 4:
-        return False
-
-    if find_and_click('images/huan_qiu/yuan_zheng.png', offset_name='close_yuan_zheng'):
+    if datetime.now().weekday() > 4 and find_and_click('images/huan_qiu/yuan_zheng.png', offset_name='close_yuan_zheng'):
         logging.info(f"发现 images/huan_qiu/yuan_zheng.png 关闭远征")
         time.sleep(1)
 
