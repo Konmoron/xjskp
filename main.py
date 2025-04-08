@@ -329,36 +329,6 @@ def start_huan_qiu_jiu_yuan(max_num=40):
             logging.info("寰球救援页面未找到")
             time.sleep(1)
 
-def test_find_location(image_path):
-     # 测试
-    logging.info(f"开始测试")
-    try:
-        location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8)
-        logging.info(f"找到图片 {image_path} 的 location: x={location.x} y={location.y}")
-        return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-
-def test_click_with_offset(image_path, offset_name=''):
-    # 测试
-    logging.info(f"开始测试")
-    try:
-        location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8)
-        logging.info(f"找到图片 {image_path} 的 location: x={location.x} y={location.y}")
-        if location:
-            if offset_name != '':
-                x_offset, y_offset = CLICK_OFFSETS[offset_name]
-            else:
-                x_offset, y_offset = 0, 0
-            logging.info(f"offset_name: {offset_name} x_offset={x_offset} y_offset={y_offset}")
-            logging.info(f"点击图片 location: x={location.x + x_offset} y={location.y + y_offset}")
-            pyautogui.click(location.x + x_offset, location.y + y_offset)
-            return True
-    except pyautogui.ImageNotFoundException as e:
-        logging.info(f"未找到图片, 报错: {e}")
-        return False
-
 def start():
     # 创建参数解析器
     parser = argparse.ArgumentParser(description='寰球救援自动化脚本')
@@ -368,19 +338,9 @@ def start():
     logging.info(f"最大执行次数：{args.number}")
     start_huan_qiu_jiu_yuan(max_num=args.number)
 
-def test_get_click_offset():
-    image_path = "images/huan_qiu/close_yuan_zheng_que_ren.png"
-    offset_name = "close_yuan_zheng_que_ren"
-    if test_find_location(image_path):
-        logging.info(f"找到图片{image_path}")
-        test_click_with_offset(image_path, offset_name)
-
 def main():
     # 打印 全局 region
     logging.info(f"全局 region: {GLOBAL_REGION}")
-
-    # 调整`click`函数中的`x`和`y`坐标
-    # test_get_click_offset()
     
     # 开始
     start()
