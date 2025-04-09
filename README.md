@@ -23,47 +23,21 @@ pip install -r requirements.txt
 
 ## 如何调整`click`函数中的`x`和`y`坐标
 
-1. 先截图
-2. 修改 `main.py` 里面的 `main` 方法：
-```python
-def main():
-    # 调整`click`函数中的`x`和`y`坐标
-    test_get_click_offset()
-    
-    # 开始
-    # start()
+以 关闭技能交易 为示例。
+
+1. 先截图，图片保存到 `images/huan_qiu/ji_neng_jiao_yi.png`
+2. 在命令行运行 `python tools/get_offset.py` 获取偏移量
+
 ```
-3. 修改 `test_get_click_offset` 里面的图片位置
-4. 运行`python main.py` 获取图片坐标
+python tools/get_offset.py images/huan_qiu/ji_neng_jiao_yi.png
 ```
-python .\main.py
-2025-04-03 20:59:19 [409] 开始测试
-2025-04-03 20:59:19 [412] 找到图片 images/huan_qiu/ji_neng_jiao_yi.png 的 location: x=2538 y=721
-2025-04-03 20:59:19 [450] 找到图片images/huan_qiu/ji_neng_jiao_yi.png
-```
-5. 运行`python tools/get_position.py` 获取鼠标位置
-```
-python.exe .\tools\get_position.py
-X: 2848, Y:  693
-程序已终止
-```
-6. 计算偏移量
-```
-x = 2848 - 2538 = 310
-y = 693 - 721 = -29
-```
-7. 修改 `config.py` 配置中的中的 `x` 和 `y` 坐标
-8. 运行`python main.py`，验证结果
-9. 修改 `main.py` 里面的 `main` 方法：
-```python
-def main():
-    # 调整`click`函数中的`x`和`y`坐标
-    # test_get_click_offset()
-    
-    # 开始
-    start()
-```
-10. 运行`python main.py`
+
+之后鼠标移动到【关闭技能交易的位置】，不用点击
+等待程序结束，并给出 offset 的坐标，之后粘贴到`config.py`中即可
+
+3. 测试 offset 是否正确
+
+执行 `python click_with_offset.py 图片路径 [偏移量名称]`，如果点击生效，说明 offset 正确
 
 ## 备注
 

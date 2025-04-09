@@ -47,7 +47,7 @@ def get_click_offset(image_path, offset_name=''):
 if __name__ == "__main__":
     import sys
     if len(sys.argv) < 2:
-        print("使用方法: python tools/click_with_offset.py 图片路径 [偏移量名称]")
+        print("使用方法: python click_with_offset.py 图片路径 [偏移量名称]")
         sys.exit(1)
         
     image_path = sys.argv[1]
