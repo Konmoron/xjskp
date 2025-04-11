@@ -317,6 +317,7 @@ def start_huan_qiu_jiu_yuan(max_num=40):
 
                 logging.info(f"第【{game_num}】局 - 第【{i}】次等待游戏结束")
                 if find_and_click('images/huan_qiu/game_back.png'):
+                    time.sleep(1)
                     break
                 
                 # 选择技能
