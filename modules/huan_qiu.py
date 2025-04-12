@@ -58,7 +58,7 @@ class HuanQiu:
                 close_first_charge()
 
                 # 点击抢寰球
-                for i in range(500):
+                for i in range(100):
                     logger.info(f"第【{game_num}】局 - 第【{i}】次抢寰球救援")
                     # 判断是否抢到，如果抢到，则退出当前循环
                     if i!=0 and ( check_huan_qiu_start() or find('images/huan_qiu/play_select_skills.png') ):
