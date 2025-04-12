@@ -23,17 +23,22 @@ from .operators.common_operations import (
 logger = get_logger()
 
 class HuanQiu:
-    def __init__(self):
+    def __init__(self, disable_skill=False):
         self.max_num = 40
+        self.disable_skill = disable_skill
     
     def start(self):
         """启动入口"""
         parser = argparse.ArgumentParser(description='寰球救援自动化脚本')
         parser.add_argument('-n', '--number', type=int, default=40, 
                           help='最大执行次数，默认100')
+        parser.add_argument('--disable-skill', action='store_true', 
+                          help='禁用技能选择功能')
         args = parser.parse_args()
         logger.info(f"最大执行次数：{args.number}")
         self.max_num = args.number
+        self.disable_skill = args.disable_skill
+        logger.info(f"技能选择功能状态：{'禁用' if self.disable_skill else '启用'}")
         self._start_huan_qiu_jiu_yuan()
 
     def _start_huan_qiu_jiu_yuan(self):
@@ -151,7 +156,8 @@ class HuanQiu:
                         break
                     
                     # 选择技能
-                    select_ji_neng()
+                    if not self.disable_skill:
+                        select_ji_neng()
 
                     time.sleep(10)
 
