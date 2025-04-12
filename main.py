@@ -2,58 +2,13 @@ import pyautogui
 import time
 import random  # 添加随机模块导入
 from datetime import datetime
-from config import CLICK_OFFSETS, GLOBAL_REGION  # 新增导入
+from config import GLOBAL_REGION  # 新增导入
 import argparse
 from utils.logger import get_logger
+from utils.image_utils import find, find_and_click, drag
 
 # 初始化日志
 logger = get_logger()
-
-
-def find(image_path, timeout=3):
-    """
-    寻找并点击指定图片
-    :param image_path: 图片路径
-    :param timeout: 超时时间（秒）
-    :return: 是否找到并点击成功
-    """
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        try:
-            location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8, region=GLOBAL_REGION)
-            if location:
-                return True
-        except pyautogui.ImageNotFoundException as e:
-            break
-    return False
-
-def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset=0):
-    """
-    寻找并点击指定图片
-    :param image_path: 图片路径
-    :param timeout: 超时时间（秒）
-    :param offset_name: 预设偏移量名称
-    :param x_offset: x轴偏移量（正数向右，负数向左）
-    :param y_offset: y轴偏移量（正数向下，负数向上）
-    :return: 是否找到并点击成功
-    """
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        try:
-            location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8, region=GLOBAL_REGION)
-            if location:
-                if offset_name and offset_name in CLICK_OFFSETS:
-                    x_offset, y_offset = CLICK_OFFSETS[offset_name]
-                else:
-                    x_offset, y_offset = 0, 0
-                
-                pyautogui.click(location.x + x_offset, location.y + y_offset)
-                return True
-        except pyautogui.ImageNotFoundException as e:
-            break
-    return False
-
-
 
 def is_chat_open():
     if find('images/huan_qiu/is_open_chat.png'):
