@@ -5,12 +5,10 @@ import logging
 from datetime import datetime
 from config import CLICK_OFFSETS, GLOBAL_REGION  # 新增导入
 import argparse
+from utils.logger import get_logger
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(lineno)d] %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
+# 初始化日志
+logger = get_logger()
 
 
 def find(image_path, timeout=3):
