@@ -51,27 +51,29 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
 
 def drag(
     image_path: str,
-    offset: tuple[int, int],
-    dx: int,
-    dy: int,
+    x_offset: int,
+    y_offset: int,
+    drag_x: int,
+    drag_y: int,
     times: int = 1,
-    timeout: float = 1.0,
-    interval: float = 0.5
+    duration: float = 1,
+    confidence: float = 0.8
 ):
     """
     根据图像定位执行多次拖拽操作
     :param image_path: 基准图片路径
-    :param offset: 偏移量 (x, y)
-    :param dx: 水平拖拽距离（正数向右）
-    :param dy: 垂直拖拽距离（正数向下）
+    :param x_offset: 基准图片相对于屏幕左上角的x偏移量
+    :param y_offset: 基准图片相对于屏幕左上角的y偏移量
+    :param drag_x: 水平拖拽距离（正数向右）
+    :param drag_y: 垂直拖拽距离（正数向下）
     :param times: 拖拽次数，默认为1
-    :param timeout: 查找图片超时时间
-    :param interval: 拖拽间隔时间
+    :param duration: 查找图片超时时间
+    :param confidence: 匹配精度
     """
     try:
         location = pyautogui.locateCenterOnScreen(
             image_path,
-            confidence=0.8,
+            confidence=confidence,
             region=GLOBAL_REGION
         )
         
@@ -80,15 +82,17 @@ def drag(
             return False
 
         # 计算起始坐标（应用偏移量）
-        start_x = location.x + offset[0]
-        start_y = location.y + offset[1]
+        start_x = location.x + x_offset
+        start_y = location.y + y_offset
         
         # 执行多次拖拽
-        for _ in range(times):
+        for i in range(times):
+            logger.info(f"开始第{i+1}次拖拽 [{drag_x},{drag_y}]")
             pyautogui.moveTo(start_x, start_y)
-            pyautogui.dragRel(dx, dy, duration=timeout, button='left')
-            logger.info(f"拖拽完成 [{dx},{dy}] 剩余次数: {times-_-1}")
-            time.sleep(interval)
+            time.sleep(1)
+            pyautogui.dragRel(drag_x, drag_y, duration=duration, button='left')
+            logger.info(f"第{i+1}拖拽完成 [{drag_x},{drag_y}]")
+            time.sleep(1)
             
         return True
         
