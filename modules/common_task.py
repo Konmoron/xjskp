@@ -78,13 +78,14 @@ class CommonTask:
 
         # 执行5次
         for i in range(5):
+            if find('images/common_task/guan_ying_bao_zang/end.png', confidence=0.95):
+                logger.info(f"【观影宝藏】已经执行完毕 images/common_task/guan_ying_bao_zang/end.png")
+                time.sleep(1)
+                break
+
             logger.info(f"第{i+1}次执行【观影宝藏】")
 
-            if find('images/common_task/guan_ying_bao_zang/end.png'):
-                logger.info(f"【观影宝藏】已经执行完毕 images/common_task/guan_ying_bao_zang/end.png")
-                return True
-
-            if find_and_click('images/common_task/guan_ying_bao_zang/start.png'):
+            if find_and_click('images/common_task/guan_ying_bao_zang/start.png', confidence=0.9):
                 logger.info(f"第{i+1}次 打开【观看广告】...")
                 time.sleep(35)
                 logger.info(f"第{i+1}次 关闭【观看广告】")
@@ -94,6 +95,9 @@ class CommonTask:
                 find_and_click('images/header.png', offset_name='close_chou_jiang_1')
                 time.sleep(1)
                 logger.info(f"第{i+1}次【观影宝藏】执行完成")
+
+        # 返回
+        find_and_click('images/common_task/guan_ying_bao_zang/back.png')
 
 def main():
     parser = argparse.ArgumentParser(description='通用任务执行器')
