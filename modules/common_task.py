@@ -1,12 +1,19 @@
 import argparse
 from typing import Dict, Callable
-from modules.operators.common_operations import open_chat
-from utils.image_utils import find, find_and_click
+from utils.image_utils import find, find_and_click, drag
 from utils.logger import get_logger
 import time
 from .operators.bottom_nav_view import (
     open_zhan_dou,
+    open_jun_tuan,
+    open_shop,
 )
+from .operators.common_operations import (
+   close_guang_gao, 
+   close_chou_jiang_1,
+   close_x,
+)
+from config import DRAG_CONFIGS
     
 
 logger = get_logger()
@@ -17,9 +24,11 @@ class CommonTask:
             'ads': self.watch_ads,
             'patrol': self.patrol_car,
             'coins': self.collect_coins,
-            'chicken': self.collect_chicken,
-            'legion': self.legion_mission,
-            'gybz': self.gybz
+            'ti_li': self.ti_li,
+            'legion': self.jun_tuan,
+            'gybz': self.gybz,
+            'shop': self.shop,
+            'huo_dong': self.huo_dong,
         }
 
     def run(self, tasks: str = 'all'):
@@ -54,16 +63,90 @@ class CommonTask:
         logger.info("执行领金币任务...")
         # 具体实现代码...
 
-    def collect_chicken(self):
-        """领鸡腿任务"""
-        logger.info("执行领鸡腿任务...")
-        # 具体实现代码...
+    def huo_dong():
+        """执行【战斗-活动】任务"""
+        logger.info("执行【战斗-活动】任务...")
 
-    def legion_mission(self):
+
+    def ti_li(self):
+        """领体力任务"""
+        logger.info("执行领体力任务...")
+        time.sleep(1)
+        
+        # 打开【体力】
+        if find_and_click('images/header.png', offset_name='open_ti_li'):
+            time.sleep(1)
+            logger.info(f"打开【体力】")
+        else:
+            logger.info(f"打开【体力】失败")
+            return False
+
+        # 领取3次
+        for i in range(3):
+            if find('images/ti_li/end.png', confidence=0.95):
+                logger.info(f"领取【体力】已经执行完毕 images/ti_li/end.png")
+                time.sleep(1)
+                break
+
+            if find_and_click('images/ti_li/start.png', confidence=0.8):
+                logger.info(f"第{i+1}次领取体力 - 打开【观看广告】...")
+                time.sleep(35)
+                close_guang_gao()
+                time.sleep(1)
+                close_chou_jiang_1()
+                logger.info(f"第{i+1}次领取体力成功")
+                # 等待5分钟
+                if i < 2:
+                    logger.info(f"等待5分钟")
+                    time.sleep(310)
+        
+        # 关闭
+        close_x()
+
+    def jun_tuan(self):
         """军团任务"""
         logger.info("执行军团任务...")
         # 具体实现代码...
     
+    def shop(self):
+        """商店"""
+        logger.info("执行【商店】任务...")
+
+        # 打开商店
+        time.sleep(1)
+        if not open_shop():
+            logger.info(f"打开【商店】失败")
+            return
+
+        # 领取2次宝箱
+        for i in range(2):
+            if find_and_click('images/shop/bao_xiang.png'):
+                logger.info(f"第{i+1}次领取宝箱")
+
+                time.sleep(35)
+
+                close_guang_gao()
+                
+                close_chou_jiang_1()
+        
+        # 拖拽到最底部
+        drag('images/header.png', 'shop')
+
+        time.sleep(1)
+        find_and_click('images/shop/gold_2.png')
+        time.sleep(1)
+        close_chou_jiang_1()
+
+        time.sleep(1)
+        if find_and_click('images/shop/gold_1.png'):
+            logger.info(f"领取【金币】-观看广告")
+            time.sleep(35)
+            close_guang_gao()
+            close_chou_jiang_1()
+            time.sleep(1)
+
+        open_zhan_dou()
+
     def gybz(self):
         """观影宝藏"""
         logger.info("执行【观影宝藏】任务...")
@@ -88,11 +171,13 @@ class CommonTask:
             if find_and_click('images/common_task/guan_ying_bao_zang/start.png', confidence=0.9):
                 logger.info(f"第{i+1}次 打开【观看广告】...")
                 time.sleep(35)
-                logger.info(f"第{i+1}次 关闭【观看广告】")
-                find_and_click('images/header.png', offset_name='close_guang_gao_1')
+
+                close_guang_gao()
+
                 logger.info(f"第{i+1}次 等待抽奖")
                 time.sleep(5)
                 find_and_click('images/header.png', offset_name='close_chou_jiang_1')
+
                 time.sleep(1)
                 logger.info(f"第{i+1}次【观影宝藏】执行完成")
 
