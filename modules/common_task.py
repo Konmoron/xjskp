@@ -12,6 +12,7 @@ from .operators.common_operations import (
    close_guang_gao, 
    close_chou_jiang_1,
    close_x,
+   back,
 )
 from config import DRAG_CONFIGS
     
@@ -63,10 +64,91 @@ class CommonTask:
         logger.info("执行领金币任务...")
         # 具体实现代码...
 
-    def huo_dong():
+    def huo_dong(self):
         """执行【战斗-活动】任务"""
         logger.info("执行【战斗-活动】任务...")
 
+        open_zhan_dou()
+
+        # 找到活动
+        found = False
+        find_num = 0
+        while not found and find_num < 6:
+            if find('images/huo_dong/button.png', confidence=0.9):
+                logger.info(f"找到【活动】")
+                found = True
+                break
+            
+            # 执行拖拽
+            # 向上拖拽3次，
+            # 向下拖拽3次，
+            if find_num < 3:
+                logger.info(f"找活动 - 向上拖拽 {find_num} 次")
+                drag('images/header.png', 'zhan_dou_left_up')
+            
+            if find_num >= 3:
+                logger.info(f"找活动 - 向下拖拽 {find_num} 次")
+                drag('images/header.png', 'zhan_dou_left_down')
+            
+            time.sleep(1)
+            find_num += 1
+        
+        if not found:
+            logger.info(f"未找到【活动】")
+            return False
+
+        if find_and_click('images/huo_dong/button.png'):
+            logger.info(f"打开【活动】")
+            time.sleep(1)
+
+        if find_and_click('images/huo_dong/zuo_zhan_ji_hua.png'):
+            logger.info(f"打开【活动】-【作战计划】")
+            time.sleep(1)
+            if not find('images/huo_dong/qian_dao.png'):
+                drag('images/huo_dong/share.png', 'zuo_zhan_ji_hua_down', confidence=0.9)
+
+            time.sleep(1)
+
+            if find_and_click('images/huo_dong/qian_dao.png'):
+                time.sleep(1)
+                logger.info(f"执行【活动】-【作战计划】-【签到】")
+                close_chou_jiang_1()
+            else:
+                logger.info(f"未找到【活动】-【作战计划】-【签到】")
+
+        if find_and_click('images/huo_dong/share.png'):
+            logger.info(f"执行【活动】-【分享】")
+            time.sleep(1)
+            while find('images/huo_dong/share_1.png'):
+                time.sleep(1)
+                find_and_click('images/huo_dong/share_1.png')
+                time.sleep(4)
+                logger.info(f"【活动】-【分享】-【分享成功】")
+
+            # 领取奖励
+            while find('images/huo_dong/share_ling_qu.png'):
+                time.sleep(1)
+                find_and_click('images/huo_dong/share_ling_qu.png')
+                time.sleep(1)
+                logger.info(f"【活动】-【分享】-【领取奖励】")
+                close_chou_jiang_1()
+        
+        if find_and_click('images/huo_dong/li_bao.png', confidence=0.9):
+            logger.info(f"执行【活动】-【特惠礼包】")
+            time.sleep(1)
+            
+            if find_and_click('images/huo_dong/li_bao_gold.png'):
+                time.sleep(1)
+                logger.info(f"【活动】-【特惠礼包】-【领取金币】")
+                close_chou_jiang_1()
+            
+            if find_and_click('images/huo_dong/li_bao_ti_li.png'):
+                time.sleep(35)
+                logger.info(f"【活动】-【特惠礼包】-【领取体力】")
+                close_guang_gao()
+                close_chou_jiang_1()
+
+        back()
 
     def ti_li(self):
         """领体力任务"""
@@ -159,7 +241,7 @@ class CommonTask:
         logger.info("执行【观影宝藏】任务...")
         open_zhan_dou()
 
-        if find_and_click('images/common_task/guan_ying_bao_zang/open.png'):
+        if find_and_click('images/guan_ying_bao_zang/open.png'):
             time.sleep(1)
             logger.info(f"打开【观影宝藏】")
         else:
@@ -168,14 +250,14 @@ class CommonTask:
 
         # 执行5次
         for i in range(5):
-            if find('images/common_task/guan_ying_bao_zang/end.png', confidence=0.95):
-                logger.info(f"【观影宝藏】已经执行完毕 images/common_task/guan_ying_bao_zang/end.png")
+            if find('images/guan_ying_bao_zang/end.png', confidence=0.95):
+                logger.info(f"【观影宝藏】已经执行完毕 images/guan_ying_bao_zang/end.png")
                 time.sleep(1)
                 break
 
             logger.info(f"第{i+1}次执行【观影宝藏】")
 
-            if find_and_click('images/common_task/guan_ying_bao_zang/start.png', confidence=0.9):
+            if find_and_click('images/guan_ying_bao_zang/start.png', confidence=0.9):
                 logger.info(f"第{i+1}次 打开【观看广告】...")
                 time.sleep(35)
 
@@ -189,7 +271,7 @@ class CommonTask:
 
         # 返回
         time.sleep(1)
-        find_and_click('images/common_task/guan_ying_bao_zang/back.png')
+        find_and_click('images/guan_ying_bao_zang/back.png')
 
 def main():
     parser = argparse.ArgumentParser(description='通用任务执行器')
