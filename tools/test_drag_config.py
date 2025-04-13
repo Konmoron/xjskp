@@ -8,7 +8,7 @@ import argparse
 
 logger = get_logger()
 
-def test_drag_config(img_path: str, config_name: str):
+def test_drag_config(img_path: str, config_name: str, confidence=0.8):
     """测试单个拖拽配置"""
     logger.info(f"🔍 开始测试配置项：{config_name} | 图片路径: {img_path}")
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -28,12 +28,8 @@ def test_drag_config(img_path: str, config_name: str):
         logger.info("🔄 正在执行拖拽操作...")
         result = drag(
             image_path=img_path, 
-            x_offset=x_offset,
-            y_offset=y_offset,
-            drag_x=drag_x,
-            drag_y=drag_y,
-            times=times,
-            duration=duration
+            drag_config_name=config_name,
+            confidence=confidence
         )
         
         if result:
@@ -55,15 +51,19 @@ if __name__ == "__main__":
     # 新增图片路径参数
     parser.add_argument('-i', '--image', required=True, 
                       help='基准图片路径')
-    parser.add_argument('-c', '--config-name', required=True,
+    parser.add_argument('-d', '--drag', required=True,
                       help='配置名称（支持all测试全部）')
+    # 新增confidence参数
+    parser.add_argument('-c', '--confidence', type=float, default=0.8,
+                      help='图像匹配精度 (0-1)，默认0.8')
     
     args = parser.parse_args()
     
     # 新增参数日志输出
     logger.info("📌 命令行参数:")
     logger.info(f"→ 基准图片: {args.image}")
-    logger.info(f"→ 配置名称: {args.config_name}")
+    logger.info(f"→ 配置名称: {args.drag}")
+    logger.info(f"→ 匹配精度: {args.confidence}")  # 新增日志项
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
-    test_drag_config(args.image, args.config_name)
+    test_drag_config(args.image, args.drag, args.confidence)  # 传递confidence参数
