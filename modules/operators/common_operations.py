@@ -162,3 +162,14 @@ def close_guang_gao():
     logger.info(f"关闭【广告】")
     find_and_click('images/header.png', offset_name='close_guang_gao_1')
     time.sleep(1)
+
+def close_chou_jiang_1():
+    logger.info(f"关闭【抽奖】")
+    find_and_click('images/header.png', offset_name='close_chou_jiang_1')
+    time.sleep(1)
+
+def close_x():
+    logger.info(f"关闭【X】")
+    time.sleep(1)
+    find_and_click('images/close_x.png', confidence=0.95)
+    time.sleep(1)
