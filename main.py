@@ -18,6 +18,9 @@ def main():
     parser.add_argument('--disable-skill', action='store_true',
                       help='寰球救援-禁用技能选择功能')
 
+    # 通用任务参数组
+    group.add_argument('--tasks', type=str, nargs='?', const='all')
+
     args = parser.parse_args()
 
     # 新增无参数时的默认逻辑
