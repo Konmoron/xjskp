@@ -5,24 +5,25 @@ from .logger import get_logger
 
 logger = get_logger()
 
-def find(image_path, timeout=3):
+def find(image_path, confidence=0.8, timeout=3):
     """
     寻找并点击指定图片
     :param image_path: 图片路径
+    :param confidence: 匹配精度（0.0到1.0）
     :param timeout: 超时时间（秒）
     :return: 是否找到并点击成功
     """
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
-            location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8, region=GLOBAL_REGION)
+            location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence, region=GLOBAL_REGION)
             if location:
                 return True
         except pyautogui.ImageNotFoundException as e:
             break
     return False
 
-def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset=0):
+def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset=0, confidence=0.8):
     """
     寻找并点击指定图片
     :param image_path: 图片路径
@@ -35,7 +36,7 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
-            location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8, region=GLOBAL_REGION)
+            location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence, region=GLOBAL_REGION)
             if location:
                 if offset_name and offset_name in CLICK_OFFSETS:
                     x_offset, y_offset = CLICK_OFFSETS[offset_name]

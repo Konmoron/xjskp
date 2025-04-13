@@ -2,18 +2,21 @@ import pyautogui
 import sys
 from pathlib import Path
 import time
+import argparse
 sys.path.append(str(Path(__file__).parent.parent))
 from config import (CLICK_OFFSETS, GLOBAL_REGION)
 from utils.logger import get_logger
 
 logger = get_logger()
 
-def find_image(image_path: str) -> tuple:
-    """查找图片位置"""
-    logger.info(f"🔍 开始查找图片 [{image_path}]")
+def find_image(image_path: str, confidence: float = 0.8) -> tuple:  # 添加confidence参数
+    """查找图片位置
+    :param confidence: 匹配精度 (0-1)，默认0.8
+    """
+    logger.info(f"🔍 开始查找图片 [{image_path}], confidence={confidence}")
     try:
         start_time = time.time()
-        location = pyautogui.locateCenterOnScreen(image_path, region=GLOBAL_REGION, confidence=0.8)
+        location = pyautogui.locateCenterOnScreen(image_path, region=GLOBAL_REGION, confidence=confidence)
         elapsed = round(time.time() - start_time, 2)
         
         logger.info(f"✅ 成功匹配 [{image_path}]")
@@ -29,8 +32,11 @@ def find_image(image_path: str) -> tuple:
         logger.error(f"‼️ 发生意外错误: {str(e)}")
         return None
 
-def click_with_offset(image_path: str, offset_name: str = '') -> bool:
-    """带偏移量的点击操作"""
+def click_with_offset(image_path: str, offset_name: str = '', confidence: float = 0.95) -> bool:  # 新增confidence参数
+    """带偏移量的点击操作
+    :param confidence: 匹配精度 (0-1)，默认0.95
+    """
+    pos = find_image(image_path, confidence)  # 传递confidence参数
     logger.info(f"🛠️ 准备执行点击操作 [图片: {image_path}] [偏移: {offset_name or '无'}]")
     
     pos = find_image(image_path)
@@ -66,20 +72,16 @@ def click_with_offset(image_path: str, offset_name: str = '') -> bool:
         return False
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("""图像操作工具 v2.0
-使用方法:
-  查找图片: python image_operations.py <图片路径>
-  点击操作: python image_operations.py <图片路径> [偏移量名称]
-示例:
-  python image_operations.py images/button.png
-  python image_operations.py images/button.png submit_offset""")
-        sys.exit(1)
-
-    image_path = sys.argv[1]
-    offset_name = sys.argv[2] if len(sys.argv) > 2 else ''
-
-    if offset_name:
-        click_with_offset(image_path, offset_name)
+    # 修改参数解析部分
+    parser = argparse.ArgumentParser(description='图像操作工具 v2.1')
+    parser.add_argument('-i', '--image', required=True, help='图片路径（必须参数）')
+    parser.add_argument('-o', '--offset', default='', help='偏移量名称')  # Changed to optional flag
+    parser.add_argument('-c', '--confidence', type=float, default=0.8,
+                      help='匹配精度 (0-1)，默认0.95')
+    
+    args = parser.parse_args()
+    
+    if args.offset:
+        click_with_offset(args.image, args.offset, args.confidence)
     else:
-        find_image(image_path)
+        find_image(args.image, args.confidence)
