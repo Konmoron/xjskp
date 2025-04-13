@@ -13,3 +13,19 @@ def open_zhan_dou():
         return True
     
     return False
+
+def open_jun_tuan():
+    if find_and_click('images/jun_tuan.png'):
+        time.sleep(1)
+        logger.info(f"打开【军团】")
+        return True
+
+    return False
+
+def open_shop():
+    if find_and_click('images/shop.png'):
+        time.sleep(1)
+        logger.info(f"打开【商店】")
+        return True
+
+    return False
