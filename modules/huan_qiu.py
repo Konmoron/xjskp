@@ -46,6 +46,8 @@ class HuanQiu:
 
             close_ji_neng_jiao_yi()
 
+            close_yuan_zheng()
+
             if open_chat():
                 if is_chat_open():
                     logger.info(f"第【{game_num}】局 - 进入聊天页面")
@@ -97,11 +99,6 @@ class HuanQiu:
                 logger.info(f"第【{game_num}】局 - 抢寰球 - 关闭远征并重新打开聊天")
                 open_chat()
                 open_zhao_mu()
-            
-            # 关闭远征-方案选择
-            if i!=0 and i%5==0:
-                if find_and_click('images/huan_qiu/yuan_zheng_fang_an.png', offset_name='close_yuan_zheng_fang_an'):
-                    logger.info(f"第【{game_num}】局 - 当前执行 - 抢环球 - 关闭远征-方案选择")
 
             if i!=0 and i%5==0 and close_guan_qia_select():
                 logger.info(f"第【{game_num}】局 - 当前执行 - 抢环球 - 关闭关卡选择")

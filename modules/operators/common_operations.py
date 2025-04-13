@@ -139,17 +139,21 @@ def select_ji_neng():
 
 def close_ji_neng_jiao_yi():
     if find_and_click('images/huan_qiu/ji_neng_jiao_yi.png', offset_name='close_ji_neng_jiao_yi'):
-        logger.info(f"发现 images/huan_qiu/ji_neng_jiao_yi.png 关闭技能交易")
+        logger.info(f"发现 images/huan_qiu/ji_neng_jiao_yi.png, 执行 - 关闭技能交易")
 
 def close_yuan_zheng():
     # 只有 周五、周六、周日 才会出现 退出远征
-    if datetime.now().weekday() > 4 and find_and_click('images/huan_qiu/yuan_zheng.png', offset_name='close_yuan_zheng'):
-        logger.info(f"发现 images/huan_qiu/yuan_zheng.png 关闭远征")
-        time.sleep(1)
+    if datetime.now().weekday() > 4:
+        if find_and_click('images/huan_qiu/yuan_zheng_fang_an.png', offset_name='close_yuan_zheng_fang_an'):
+            logger.info(f"发现 images/huan_qiu/yuan_zheng_fang_an.png, 执行- 关闭远征-方案选择")
 
-        if find_and_click('images/huan_qiu/close_yuan_zheng_que_ren.png', offset_name='close_yuan_zheng_que_ren'):
-            logger.info(f"发现 images/huan_qiu/close_yuan_zheng_que_ren.png 退出远征")
+        if find_and_click('images/huan_qiu/yuan_zheng.png', offset_name='close_yuan_zheng'):
+            logger.info(f"发现 images/huan_qiu/yuan_zheng.png, 执行 - 关闭远征")
             time.sleep(1)
-        
-        return True
+
+            if find_and_click('images/huan_qiu/close_yuan_zheng_que_ren.png', offset_name='close_yuan_zheng_que_ren'):
+                logger.info(f"发现 images/huan_qiu/close_yuan_zheng_que_ren.png, 执行- 退出远征")
+                time.sleep(1)
+            
+            return True
     return False
