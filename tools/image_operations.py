@@ -32,9 +32,9 @@ def find_image(image_path: str, confidence: float = 0.8) -> tuple:  # 添加conf
         logger.error(f"‼️ 发生意外错误: {str(e)}")
         return None
 
-def click_with_offset(image_path: str, offset_name: str = '', confidence: float = 0.95) -> bool:  # 新增confidence参数
+def click_with_offset(image_path: str, offset_name: str = '', confidence: float = 0.8) -> bool:  # 新增confidence参数
     """带偏移量的点击操作
-    :param confidence: 匹配精度 (0-1)，默认0.95
+    :param confidence: 匹配精度 (0-1)，默认0.8
     """
     pos = find_image(image_path, confidence)  # 传递confidence参数
     logger.info(f"🛠️ 准备执行点击操作 [图片: {image_path}] [偏移: {offset_name or '无'}]")
