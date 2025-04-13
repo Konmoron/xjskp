@@ -19,7 +19,8 @@ def get_logger(name: Optional[str] = None):
         handler = logging.StreamHandler()
         handler.setFormatter(formatter)
         
+        logger.propagate = False
         logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)
     
     return logger
