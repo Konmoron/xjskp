@@ -160,11 +160,13 @@ def close_yuan_zheng():
 
 def close_guang_gao():
     logger.info(f"关闭【广告】")
+    time.sleep(1)
     find_and_click('images/header.png', offset_name='close_guang_gao_1')
     time.sleep(1)
 
 def close_chou_jiang_1():
     logger.info(f"关闭【抽奖】")
+    time.sleep(1)
     find_and_click('images/header.png', offset_name='close_chou_jiang_1')
     time.sleep(1)
 

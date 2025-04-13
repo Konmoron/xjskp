@@ -7,6 +7,7 @@ from utils.logger import get_logger
 logger = get_logger()
 
 def open_zhan_dou():
+    time.sleep(1)
     if find_and_click('images/zhan_dou.png'):
         time.sleep(1)
         logger.info(f"打开战斗")
@@ -15,6 +16,7 @@ def open_zhan_dou():
     return False
 
 def open_jun_tuan():
+    time.sleep(1)
     if find_and_click('images/jun_tuan.png'):
         time.sleep(1)
         logger.info(f"打开【军团】")
@@ -23,6 +25,7 @@ def open_jun_tuan():
     return False
 
 def open_shop():
+    time.sleep(1)
     if find_and_click('images/shop.png'):
         time.sleep(1)
         logger.info(f"打开【商店】")
