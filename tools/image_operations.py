@@ -75,13 +75,15 @@ if __name__ == "__main__":
     # 修改参数解析部分
     parser = argparse.ArgumentParser(description='图像操作工具 v2.1')
     parser.add_argument('-i', '--image', required=True, help='图片路径（必须参数）')
-    parser.add_argument('-o', '--offset', default='', help='偏移量名称')  # Changed to optional flag
+    parser.add_argument('-o', '--offset', default='', help='偏移量名称')
     parser.add_argument('-c', '--confidence', type=float, default=0.8,
-                      help='匹配精度 (0-1)，默认0.95')
+                      help='匹配精度 (0-1)，默认0.8')
+    parser.add_argument('--click', action='store_true', 
+                      help='强制点击，忽略offset参数')  # 新增参数
     
     args = parser.parse_args()
     
-    if args.offset:
-        click_with_offset(args.image, args.offset, args.confidence)
+    if args.click or args.offset:  # 修改判断条件
+        click_with_offset(args.image, args.offset if not args.click else '', args.confidence)
     else:
         find_image(args.image, args.confidence)
