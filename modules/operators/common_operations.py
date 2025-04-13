@@ -173,5 +173,11 @@ def close_chou_jiang_1():
 def close_x():
     logger.info(f"关闭【X】")
     time.sleep(1)
-    find_and_click('images/close_x.png', confidence=0.95)
+    find_and_click('images/close_x.png', confidence=0.9)
+    time.sleep(1)
+
+def back():
+    logger.info(f"返回")
+    time.sleep(1)
+    find_and_click('images/back.png', confidence=0.9)
     time.sleep(1)
