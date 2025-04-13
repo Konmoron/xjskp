@@ -1,6 +1,13 @@
 import argparse
 from typing import Dict, Callable
+from modules.operators.common_operations import open_chat
+from utils.image_utils import find, find_and_click
 from utils.logger import get_logger
+import time
+from .operators.bottom_nav_view import (
+    open_zhan_dou,
+)
+    
 
 logger = get_logger()
 
@@ -11,7 +18,8 @@ class CommonTask:
             'patrol': self.patrol_car,
             'coins': self.collect_coins,
             'chicken': self.collect_chicken,
-            'legion': self.legion_mission
+            'legion': self.legion_mission,
+            'gybz': self.gybz
         }
 
     def run(self, tasks: str = 'all'):
@@ -55,6 +63,37 @@ class CommonTask:
         """军团任务"""
         logger.info("执行军团任务...")
         # 具体实现代码...
+    
+    def gybz(self):
+        """观影宝藏"""
+        logger.info("执行【观影宝藏】任务...")
+        open_zhan_dou()
+
+        if find_and_click('images/common_task/guan_ying_bao_zang/open.png'):
+            time.sleep(1)
+            logger.info(f"打开【观影宝藏】")
+        else:
+            logger.info(f"打开【观影宝藏】失败")
+            return False
+
+        # 执行5次
+        for i in range(5):
+            logger.info(f"第{i+1}次执行【观影宝藏】")
+
+            if find('images/common_task/guan_ying_bao_zang/end.png'):
+                logger.info(f"【观影宝藏】已经执行完毕 images/common_task/guan_ying_bao_zang/end.png")
+                return True
+
+            if find_and_click('images/common_task/guan_ying_bao_zang/start.png'):
+                logger.info(f"第{i+1}次 打开【观看广告】...")
+                time.sleep(35)
+                logger.info(f"第{i+1}次 关闭【观看广告】")
+                find_and_click('images/header.png', offset_name='close_guang_gao_1')
+                logger.info(f"第{i+1}次 等待抽奖")
+                time.sleep(5)
+                find_and_click('images/header.png', offset_name='close_chou_jiang_1')
+                time.sleep(1)
+                logger.info(f"第{i+1}次【观影宝藏】执行完成")
 
 def main():
     parser = argparse.ArgumentParser(description='通用任务执行器')
