@@ -25,7 +25,7 @@ class CommonTask:
             'patrol': self.patrol_car,
             'coins': self.collect_coins,
             'ti_li': self.ti_li,
-            'legion': self.jun_tuan,
+            'jun_tuan': self.jun_tuan,
             'gybz': self.gybz,
             'shop': self.shop,
             'huo_dong': self.huo_dong,
@@ -105,8 +105,20 @@ class CommonTask:
     def jun_tuan(self):
         """军团任务"""
         logger.info("执行军团任务...")
-        # 具体实现代码...
-    
+        open_jun_tuan()
+
+        # 执行军团贡献
+        if find_and_click('images/jun_tuan/gong_xian.png', confidence=0.95):
+            logger.info(f"打开【军团贡献】")
+            time.sleep(1)
+            if find_and_click('images/jun_tuan/gong_xian_start.png', confidence=0.95):
+                logger.info(f"开始执行【军团贡献】")
+                time.sleep(35)
+                close_guang_gao()
+                close_chou_jiang_1()
+            logger.info(f"执行【军团贡献】完成")
+            close_x()
+
     def shop(self):
         """商店"""
         logger.info("执行【商店】任务...")
