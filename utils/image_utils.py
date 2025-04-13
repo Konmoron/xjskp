@@ -61,13 +61,22 @@ def drag(
     :param confidence: 匹配精度
     """
     try:
+        logger.info(f"🔄 初始化拖拽操作 | 配置: {drag_config_name} | 置信度: {confidence}")
         drag_cfg = DRAG_CONFIGS.get(drag_config_name)
         if not drag_cfg:
             logger.error(f"❌ 配置 '{drag_config_name}' 不存在于DRAG_CONFIGS中")
+            logger.debug(f"可用配置列表: {list(DRAG_CONFIGS.keys())}")
             return False
 
+        # 解包并记录配置参数
         x_offset, y_offset, drag_x, drag_y, duration, times = drag_cfg
+        logger.info("📋 加载拖拽配置参数:")
+        logger.info(f"→ 基准偏移: X={x_offset} Y={y_offset}")
+        logger.info(f"→ 拖拽向量: ΔX={drag_x} ΔY={drag_y}")
+        logger.info(f"→ 持续时间: {duration}s | 重复次数: {times}次")
 
+        # 定位基准图片
+        logger.debug(f"🔍 正在定位基准图片: {image_path}")
         location = pyautogui.locateCenterOnScreen(
             image_path,
             confidence=confidence,
@@ -75,23 +84,45 @@ def drag(
         )
         
         if not location:
-            logger.warning(f"未找到基准图片: {image_path}")
+            logger.error(f"❌ 基准图片定位失败: {image_path}")
+            logger.warning("可能原因: 图片未显示/路径错误/分辨率不匹配")
             return False
 
-        # 计算起始坐标（应用偏移量）
+        logger.info(f"✅ 基准图片定位成功 | 原始坐标: X={location.x} Y={location.y}")
+        
+        # 计算起始坐标
         start_x = location.x + x_offset
         start_y = location.y + y_offset
-        
-        # 执行多次拖拽
+        logger.debug(f"📐 计算起始坐标 | X:{location.x}+{x_offset}={start_x} Y:{location.y}+{y_offset}={start_y}")
+
+        # 执行拖拽操作
+        logger.info(f"🚀 开始执行拖拽操作，共{times}次循环")
         for i in range(times):
-            logger.info(f"开始第{i+1}次拖拽 [{drag_x},{drag_y}]")
-            pyautogui.moveTo(start_x, start_y)
-            time.sleep(1)
-            pyautogui.dragRel(drag_x, drag_y, duration=duration, button='left')
-            logger.info(f"第{i+1}拖拽完成 [{drag_x},{drag_y}]")
-            time.sleep(1)
+            current = i + 1
+            logger.info(f"⏳ 第{current}/{times}次拖拽 | 方向: {drag_x},{drag_y} | 持续: {duration}s")
             
+            try:
+                logger.debug(f"🖱️ 移动鼠标到起始坐标: ({start_x}, {start_y})")
+                pyautogui.moveTo(start_x, start_y)
+                
+                logger.debug(f"⏲️ 开始拖拽操作...")
+                pyautogui.dragRel(drag_x, drag_y, duration=duration, button='left')
+                
+                logger.info(f"✅ 第{current}次拖拽完成")
+                if current < times:
+                    logger.debug(f"⏳ 下一次拖拽前等待1秒...")
+                    time.sleep(1)
+                    
+            except Exception as e:
+                logger.error(f"❌ 第{current}次拖拽失败: {str(e)}")
+                return False
+
+        logger.info(f"🎉 所有拖拽操作成功完成 | 总次数: {times}次")
         return True
+
+    except pyautogui.ImageNotFoundException:
+        logger.error("‼️ 基准图片查找超时，请检查图片路径和显示状态")
+        return False
     except Exception as e:
-        logger.error(f"拖拽操作异常: {str(e)}")
+        logger.error(f"‼️ 未处理的异常: {str(e)}", exc_info=True)
         return False
