@@ -82,6 +82,13 @@ if __name__ == "__main__":
                       help='强制点击，忽略offset参数')  # 新增参数
     
     args = parser.parse_args()
+
+    # 打印参数
+    logger.info("⚙️ 启动参数:")
+    logger.info(f"图片路径: {args.image}")
+    logger.info(f"偏移量名称: {args.offset or '无'}")
+    logger.info(f"匹配精度: {args.confidence}")
+    logger.info(f"强制点击: {args.click}")
     
     if args.click or args.offset:  # 修改判断条件
         click_with_offset(args.image, args.offset if not args.click else '', args.confidence)
