@@ -92,7 +92,6 @@ class CommonTask:
                 logger.info(f"第{i+1}次领取体力 - 打开【观看广告】...")
                 time.sleep(35)
                 close_guang_gao()
-                time.sleep(1)
                 close_chou_jiang_1()
                 logger.info(f"第{i+1}次领取体力成功")
                 # 等待5分钟
@@ -122,11 +121,8 @@ class CommonTask:
         for i in range(2):
             if find_and_click('images/shop/bao_xiang.png'):
                 logger.info(f"第{i+1}次领取宝箱")
-
                 time.sleep(35)
-
                 close_guang_gao()
-                
                 close_chou_jiang_1()
         
         # 拖拽到最底部
@@ -134,7 +130,6 @@ class CommonTask:
 
         time.sleep(1)
         find_and_click('images/shop/gold_2.png')
-        time.sleep(1)
         close_chou_jiang_1()
 
         time.sleep(1)
@@ -143,8 +138,8 @@ class CommonTask:
             time.sleep(35)
             close_guang_gao()
             close_chou_jiang_1()
-            time.sleep(1)
-
+            
+        
         open_zhan_dou()
 
     def gybz(self):
@@ -173,15 +168,15 @@ class CommonTask:
                 time.sleep(35)
 
                 close_guang_gao()
-
                 logger.info(f"第{i+1}次 等待抽奖")
                 time.sleep(5)
-                find_and_click('images/header.png', offset_name='close_chou_jiang_1')
+                close_chou_jiang_1()
 
                 time.sleep(1)
                 logger.info(f"第{i+1}次【观影宝藏】执行完成")
 
         # 返回
+        time.sleep(1)
         find_and_click('images/common_task/guan_ying_bao_zang/back.png')
 
 def main():
