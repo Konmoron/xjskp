@@ -32,12 +32,18 @@ class CommonTask:
             'huo_dong': self.huo_dong,
         }
 
-    def run(self, tasks: str = 'all'):
-        """执行任务调度入口"""
+    def run(self, tasks: str = 'all', exclude: str = None):
+        """执行任务调度入口
+        :param exclude: 需要排除的任务列表（逗号分隔）
+        """
         selected_tasks = self._parse_tasks(tasks)
+        exclude_list = [t.strip() for t in (exclude.split(',') if exclude else [])]
         
-        logger.info(f"开始执行任务：{', '.join(selected_tasks)}")
-        for task_name in selected_tasks:
+        # 过滤排除任务
+        final_tasks = [t for t in selected_tasks if t not in exclude_list]
+        logger.info(f"排除任务：{exclude_list} | 最终执行任务：{', '.join(final_tasks)}")
+        
+        for task_name in final_tasks:
             if task_name in self.task_registry:
                 self.task_registry[task_name]()
             else:
@@ -47,7 +53,7 @@ class CommonTask:
         """解析任务参数"""
         if tasks.lower() == 'all':
             return list(self.task_registry.keys())
-        return [t.strip() for t in tasks.split(',')]
+        return [t.strip() for t in tasks.split(',') if t.strip()]
 
     def watch_ads(self):
         """看广告任务"""

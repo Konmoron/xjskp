@@ -20,6 +20,8 @@ def main():
 
     # 通用任务参数组
     group.add_argument('--tasks', type=str, nargs='?', const='all')
+    parser.add_argument('--exclude', type=str, default=None, 
+                      help='需要排除的任务列表，逗号分隔（如：ads,ti_li）')
 
     args = parser.parse_args()
 
@@ -31,7 +33,10 @@ def main():
     if args.huanqiu:
         HuanQiu(max_num=args.number, disable_skill=args.disable_skill).start()
     elif args.tasks is not None:
-        CommonTask().run(args.tasks if args.tasks != '' else 'all')
+        CommonTask().run(
+            args.tasks if args.tasks != '' else 'all',
+            exclude=args.exclude
+        )
 
 if __name__ == "__main__":
     main()
