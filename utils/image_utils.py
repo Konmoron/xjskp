@@ -1,6 +1,6 @@
 import pyautogui
 import time
-from config import CLICK_OFFSETS, GLOBAL_REGION
+from config import CLICK_OFFSETS, GLOBAL_REGION, DRAG_CONFIGS
 from .logger import get_logger
 
 logger = get_logger()
@@ -51,26 +51,23 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
 
 def drag(
     image_path: str,
-    x_offset: int,
-    y_offset: int,
-    drag_x: int,
-    drag_y: int,
-    times: int = 1,
-    duration: float = 1,
+    drag_config_name: str,
     confidence: float = 0.8
 ):
     """
     根据图像定位执行多次拖拽操作
     :param image_path: 基准图片路径
-    :param x_offset: 基准图片相对于屏幕左上角的x偏移量
-    :param y_offset: 基准图片相对于屏幕左上角的y偏移量
-    :param drag_x: 水平拖拽距离（正数向右）
-    :param drag_y: 垂直拖拽距离（正数向下）
-    :param times: 拖拽次数，默认为1
-    :param duration: 查找图片超时时间
+    :param drag_config_name: 拖拽配置名称
     :param confidence: 匹配精度
     """
     try:
+        drag_cfg = DRAG_CONFIGS.get(drag_config_name)
+        if not drag_cfg:
+            logger.error(f"❌ 配置 '{drag_config_name}' 不存在于DRAG_CONFIGS中")
+            return False
+
+        x_offset, y_offset, drag_x, drag_y, duration, times = drag_cfg
+
         location = pyautogui.locateCenterOnScreen(
             image_path,
             confidence=confidence,
@@ -95,7 +92,6 @@ def drag(
             time.sleep(1)
             
         return True
-        
     except Exception as e:
         logger.error(f"拖拽操作异常: {str(e)}")
         return False
