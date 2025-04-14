@@ -41,6 +41,12 @@ class CommonTask:
         
         # 过滤排除任务
         final_tasks = [t for t in selected_tasks if t not in exclude_list]
+        
+        # 确保ti_li任务最后执行（如果存在）
+        if 'ti_li' in final_tasks:
+            final_tasks.remove('ti_li')
+            final_tasks.append('ti_li')
+        
         logger.info(f"排除任务：{exclude_list} | 最终执行任务：{', '.join(final_tasks)}")
         
         for task_name in final_tasks:
