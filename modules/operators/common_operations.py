@@ -176,6 +176,12 @@ def close_x():
     find_and_click('images/close_x.png', confidence=0.9)
     time.sleep(1)
 
+def close_x_2():
+    logger.info(f"关闭【X】")
+    time.sleep(1)
+    find_and_click('images/close_x_2.png', confidence=0.9)
+    time.sleep(1)
+
 def back():
     logger.info(f"返回")
     time.sleep(1)
