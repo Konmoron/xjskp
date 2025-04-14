@@ -22,9 +22,6 @@ logger = get_logger()
 class CommonTask:
     def __init__(self):
         self.task_registry: Dict[str, Callable] = {
-            'ads': self.watch_ads,
-            'patrol': self.patrol_car,
-            'coins': self.collect_coins,
             'ti_li': self.ti_li,
             'jun_tuan': self.jun_tuan,
             'gybz': self.gybz,
@@ -60,21 +57,6 @@ class CommonTask:
         if tasks.lower() == 'all':
             return list(self.task_registry.keys())
         return [t.strip() for t in tasks.split(',') if t.strip()]
-
-    def watch_ads(self):
-        """看广告任务"""
-        logger.info("执行看广告任务...")
-        # 具体实现代码...
-
-    def patrol_car(self):
-        """巡逻车任务"""
-        logger.info("执行巡逻车任务...")
-        # 具体实现代码...
-
-    def collect_coins(self):
-        """领金币任务"""
-        logger.info("执行领金币任务...")
-        # 具体实现代码...
 
     def huo_dong(self):
         """执行【战斗-活动】任务"""
