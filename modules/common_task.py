@@ -1,4 +1,5 @@
 import argparse
+from nt import close
 from typing import Dict, Callable
 from utils.image_utils import find, find_and_click, drag
 from utils.logger import get_logger
@@ -12,6 +13,7 @@ from .operators.common_operations import (
    close_guang_gao, 
    close_chou_jiang_1,
    close_x,
+   close_x_2,
    back,
 )
 from config import DRAG_CONFIGS
@@ -184,16 +186,97 @@ class CommonTask:
         open_jun_tuan()
 
         # 执行军团贡献
-        if find_and_click('images/jun_tuan/gong_xian.png', confidence=0.95):
+        if find_and_click('images/jun_tuan/gong_xian.png', confidence=0.9):
             logger.info(f"打开【军团贡献】")
             time.sleep(1)
-            if find_and_click('images/jun_tuan/gong_xian_start.png', confidence=0.95):
+            if find_and_click('images/jun_tuan/gong_xian_start.png', confidence=0.9):
                 logger.info(f"开始执行【军团贡献】")
                 time.sleep(35)
                 close_guang_gao()
                 close_chou_jiang_1()
             logger.info(f"执行【军团贡献】完成")
             close_x()
+        
+        # 执行砍一刀
+        if find_and_click('images/jun_tuan/kan_yi_dao_start.png', confidence=0.9):
+            logger.info(f"打开【砍一刀】")
+            time.sleep(1)
+            if find_and_click('images/jun_tuan/kan_yi_dao.png'):
+                logger.info(f"开始执行【砍一刀】")
+                time.sleep(1)
+                close_guang_gao()
+            
+            close_x_2()
+
+        # 打开任务大厅
+        if find_and_click('images/jun_tuan/task.png', confidence=0.9):
+            logger.info(f"打开【任务大厅】")
+            time.sleep(1)
+
+            # 找到100钻石任务
+            find_100_zuan_shi = False
+            find_num = 0
+            while not find_100_zuan_shi:
+                if find('images/jun_tuan/task_100_zuan_shi.png', confidence=0.9):
+                    logger.info(f"找到100钻石任务")
+                    find_100_zuan_shi = True
+                    break
+
+                if find_num > 4:
+                    logger.info(f"未找到100钻石任务")
+                    break
+                
+                # 向下拖拽2次
+                if find_num < 2:
+                    logger.info(f"找100钻石任务 - 向下拖拽 {find_num} 次")
+                    drag('images/header.png', 'jun_tuan_task_left_down')
+                else:
+                    logger.info(f"找100钻石任务 - 向上拖拽 {find_num} 次")
+                    drag('images/header.png', 'jun_tuan_task_left_up')
+
+                find_num += 1
+                
+            if find_100_zuan_shi:
+                find_and_click('images/jun_tuan/task_100_zuan_shi.png', offset_name='jun_tuan_task_100_zuan_shi', confidence=0.9)
+                logger.info(f"执行浪费100钻石任务")
+                time.sleep(35)
+                close_guang_gao()
+                close_chou_jiang_1()
+            else:
+                logger.info(f"未找到浪费100钻石任务, 执行开两次宝箱任务")
+                find_2_bao_xiang = False
+                find_num = 0
+                while not find_2_bao_xiang:
+                    if find('images/jun_tuan/task_2_bao_xiang.png', confidence=0.9):
+                        logger.info(f"找到2个宝箱任务")
+                        find_2_bao_xiang = True
+                        break
+
+                    if find_num > 4:
+                        logger.info(f"未找到2个宝箱任务")
+                        break
+
+                    # 向下拖拽2次
+                    if find_num < 2:
+                        logger.info(f"找2个宝箱任务 - 向下拖拽 {find_num} 次")
+                        drag('images/header.png', 'jun_tuan_task_left_down')
+                    else:
+                        logger.info(f"找2个宝箱任务 - 向上拖拽 {find_num} 次")
+                        drag('images/header.png', 'jun_tuan_task_left_up')
+
+                    find_num += 1
+
+                if find_2_bao_xiang:
+                    find_and_click('images/jun_tuan/task_2_bao_xiang.png', offset_name='jun_tuan_task_2_bao_xiang', confidence=0.9)
+                    logger.info(f"执行2个宝箱任务")
+                    time.sleep(35)
+                    close_guang_gao()
+                    close_chou_jiang_1()
+
+            close_x()
+
+        open_zhan_dou()
+
 
     def shop(self):
         """商店"""
