@@ -48,11 +48,23 @@ class CommonTask:
         
         logger.info(f"排除任务：{exclude_list} | 最终执行任务：{', '.join(final_tasks)}")
         
+        task_durations = {}  # 存储任务耗时
+        start_total = time.time()  # 总开始时间
+        
         for task_name in final_tasks:
             if task_name in self.task_registry:
+                start_time = time.time()
                 self.task_registry[task_name]()
+                task_durations[task_name] = time.time() - start_time
             else:
                 logger.warning(f"未知任务：{task_name}")
+        
+        # 输出汇总信息
+        total_duration = time.time() - start_total
+        logger.info("📊 任务执行时间汇总：")
+        for task, duration in task_durations.items():
+            logger.info(f"→ {task}: {duration:.2f}s")
+        logger.info(f"⏱️ 总耗时: {total_duration:.2f}s")
 
     def _parse_tasks(self, tasks: str) -> list:
         """解析任务参数"""
