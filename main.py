@@ -25,18 +25,24 @@ def main():
 
     args = parser.parse_args()
 
+    # 1. 都指定了，都执行
+    # 2. 都没指定，默认执行寰球救援
+    # 3. 只指定了一个，执行对应的任务
+
     # 新增无参数时的默认逻辑
     if not args.huanqiu and args.tasks is None:
         logger.info("检测到未指定任务，默认执行寰球救援")
         args.huanqiu = True
 
-    if args.huanqiu:
-        HuanQiu(max_num=args.number, disable_skill=args.disable_skill).start()
-    elif args.tasks is not None:
+    if args.tasks is not None:
+        logger.info(f"执行任务：{args.tasks}")
         CommonTask().run(
             args.tasks if args.tasks != '' else 'all',
             exclude=args.exclude
         )
+
+    if args.huanqiu:
+        HuanQiu(max_num=args.number, disable_skill=args.disable_skill).start()
 
 if __name__ == "__main__":
     main()
