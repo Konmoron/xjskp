@@ -197,6 +197,11 @@ class CommonTask:
                 logger.info(f"第{i+1}次领取体力成功")
                 # 等待5分钟
                 if i < 2:
+                    if find('images/ti_li/end.png', confidence=0.9):
+                        logger.info(f"领取【体力】已经执行完毕 images/ti_li/end.png")
+                        time.sleep(1)
+                        break
+                    
                     logger.info(f"等待5分钟")
                     time.sleep(310)
         
@@ -242,9 +247,22 @@ class CommonTask:
             while not find_100_zuan_shi:
                 if find('images/jun_tuan/task_100_zuan_shi.png', confidence=0.9):
                     logger.info(f"找到100钻石任务")
-                    find_100_zuan_shi = True
-                    break
-
+                    # 补偿，向上拖拽，防止广告按钮被遮住
+                    logger.info(f"向上拖拽, 防止广告按钮被遮住")
+                    drag('images/header.png', 'jun_tuan_task_up_bu_chang')
+                    time.sleep(1)
+                    if find('images/jun_tuan/task_100_zuan_shi.png', confidence=0.9):
+                        find_100_zuan_shi = True
+                        break
+                    else:
+                        # 补偿，向下拖拽，防止广告按钮被遮住
+                        logger.info(f"向下拖拽, 防止广告按钮被遮住")
+                        drag('images/header.png', 'jun_tuan_task_down_bu_chang')
+                        time.sleep(1)
+                        if find('images/jun_tuan/task_100_zuan_shi.png', confidence=0.9):
+                            find_100_zuan_shi = True
+                            break
+            
                 if find_num > 4:
                     logger.info(f"未找到100钻石任务")
                     break
@@ -272,8 +290,21 @@ class CommonTask:
                 while not find_2_bao_xiang:
                     if find('images/jun_tuan/task_2_bao_xiang.png', confidence=0.9):
                         logger.info(f"找到2个宝箱任务")
-                        find_2_bao_xiang = True
-                        break
+                        # 补偿，向上拖拽，防止广告按钮被遮住
+                        logger.info(f"向上拖拽, 防止广告按钮被遮住")
+                        drag('images/header.png', 'jun_tuan_task_up_bu_chang')
+                        time.sleep(1)
+                        if find('images/jun_tuan/task_2_bao_xiang.png', confidence=0.9):
+                            find_2_bao_xiang = True
+                            break
+                        else:
+                            # 补偿，向下拖拽，防止广告按钮被遮住
+                            logger.info(f"向下拖拽, 防止广告按钮被遮住")
+                            drag('images/header.png', 'jun_tuan_task_down_bu_chang')
+                            time.sleep(1)
+                            if find('images/jun_tuan/task_2_bao_xiang.png', confidence=0.9):
+                                find_2_bao_xiang = True
+                                break
 
                     if find_num > 4:
                         logger.info(f"未找到2个宝箱任务")
