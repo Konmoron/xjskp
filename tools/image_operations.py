@@ -38,11 +38,6 @@ def click_with_offset(image_path: str, offset_name: str = '', confidence: float 
     """
     pos = find_image(image_path, confidence)  # 传递confidence参数
     logger.info(f"🛠️ 准备执行点击操作 [图片: {image_path}] [偏移: {offset_name or '无'}]")
-    
-    pos = find_image(image_path)
-    if not pos:
-        logger.error("⚠️ 点击操作中止：未找到目标图片")
-        return False
 
     x, y = pos
     logger.debug(f"原始坐标获取: X={x} Y={y}")
@@ -71,26 +66,57 @@ def click_with_offset(image_path: str, offset_name: str = '', confidence: float 
         logger.error(f"‼️ 点击执行失败: {str(e)}")
         return False
 
-if __name__ == "__main__":
-    # 修改参数解析部分
-    parser = argparse.ArgumentParser(description='图像操作工具 v2.1')
-    parser.add_argument('-i', '--image', required=True, help='图片路径（必须参数）')
-    parser.add_argument('-o', '--offset', default='', help='偏移量名称')
-    parser.add_argument('-c', '--confidence', type=float, default=0.8,
-                      help='匹配精度 (0-1)，默认0.8')
-    parser.add_argument('--click', action='store_true', 
-                      help='强制点击，忽略offset参数')  # 新增参数
+def calculate_offset(image_path: str, confidence: float = 0.8) -> tuple:
+    """计算图片位置与点击位置的偏移量"""
+    logger.info(f"🛠️ 开始计算偏移量 [图片: {image_path}]")
     
+    # 查找基准图片
+    base_pos = find_image(image_path, confidence)
+    if not base_pos:
+        logger.error("无法计算偏移：未找到基准图片")
+        return None
+        
+    logger.info("🖱️ 请在10秒内将鼠标移动到目标位置...")
+    time.sleep(10)
+    
+    # 获取目标位置
+    target_x, target_y = pyautogui.position()
+    logger.info(f"📌 记录目标位置: X={target_x} Y={target_y}")
+    
+    # 计算偏移量
+    offset = (target_x - base_pos[0], target_y - base_pos[1])
+    logger.info(f"⚖️ 计算偏移量完成: X={offset[0]} Y={offset[1]}")
+    logger.info(f"✅ 偏移量配置: ({offset[0]}, {offset[1]})")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='图像操作工具 v2.2', formatter_class=argparse.RawTextHelpFormatter)
+    subparsers = parser.add_subparsers(dest='command', required=True, help='操作模式')
+    
+    # 查找模式
+    find_parser = subparsers.add_parser('find', help='查找图片位置')
+    find_parser.add_argument('-i', '--image', required=True, help='图片路径')
+    find_parser.add_argument('-c', '--confidence', type=float, default=0.8,
+                           help='匹配精度 (0-1，默认0.8)')
+
+    # 点击模式
+    click_parser = subparsers.add_parser('click', help='执行点击操作')
+    click_parser.add_argument('-i', '--image', required=True, help='图片路径')
+    click_parser.add_argument('-o', '--offset', default='', help='偏移量名称')
+    click_parser.add_argument('-c', '--confidence', type=float, default=0.8,
+                           help='匹配精度 (0-1，默认0.8)')
+
+    # 新增偏移计算模式
+    offset_parser = subparsers.add_parser('get-offset', help='计算偏移量')
+    offset_parser.add_argument('-i', '--image', required=True, 
+                             help='基准图片路径')
+    offset_parser.add_argument('-c', '--confidence', type=float, default=0.8,
+                             help='匹配精度 (0-1，默认0.8)')
+
     args = parser.parse_args()
 
-    # 打印参数
-    logger.info("⚙️ 启动参数:")
-    logger.info(f"图片路径: {args.image}")
-    logger.info(f"偏移量名称: {args.offset or '无'}")
-    logger.info(f"匹配精度: {args.confidence}")
-    logger.info(f"强制点击: {args.click}")
-    
-    if args.click or args.offset:  # 修改判断条件
-        click_with_offset(args.image, args.offset if not args.click else '', args.confidence)
-    else:
+    if args.command == 'find':
         find_image(args.image, args.confidence)
+    elif args.command == 'click':
+        click_with_offset(args.image, args.offset, args.confidence)
+    elif args.command == 'get-offset':
+        calculate_offset(args.image, args.confidence)
