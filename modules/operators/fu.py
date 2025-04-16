@@ -5,11 +5,11 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 
 import argparse
 import time
-from bottom import (
+from .bottom import (
     open_jun_tuan,
     open_zhan_dou
 )
-from common_operations import (
+from .common_operations import (
    close_x,
    close_x_2,
 )
@@ -30,7 +30,7 @@ def xuan_fu(image_path, confidence=0.8):
     :return: 是否切换成功
     """
     start_time = time.time()
-    
+
     logger.info(f"🏁 启动服务器切换流程 | 目标: {image_path} | 置信度: {confidence}")
 
     # 打开战斗
