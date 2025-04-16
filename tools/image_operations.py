@@ -38,7 +38,10 @@ def click_with_offset(image_path: str, offset_name: str = '', confidence: float 
     """
     pos = find_image(image_path, confidence)  # 传递confidence参数
     logger.info(f"🛠️ 准备执行点击操作 [图片: {image_path}] [偏移: {offset_name or '无'}]")
-
+    if not pos:
+        logger.error(f"❌ 无法执行点击操作: 未找到图片 [{image_path}]")
+        return False
+    
     x, y = pos
     logger.debug(f"原始坐标获取: X={x} Y={y}")
     
