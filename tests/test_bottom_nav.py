@@ -1,4 +1,4 @@
-from modules.operators.bottom_nav_view import open_zhan_dou
+from modules.operators.bottom import open_zhan_dou
 from utils.logger import get_logger
 
 logger = get_logger()

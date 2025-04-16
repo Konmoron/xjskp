@@ -4,7 +4,7 @@ from typing import Dict, Callable
 from utils.image_utils import find, find_and_click, drag
 from utils.logger import get_logger
 import time
-from .operators.bottom_nav_view import (
+from .operators.bottom import (
     open_zhan_dou,
     open_jun_tuan,
     open_shop,
@@ -63,8 +63,19 @@ class CommonTask:
         total_duration = time.time() - start_total
         logger.info("📊 任务执行时间汇总：")
         for task, duration in task_durations.items():
-            logger.info(f"→ {task}: {duration:.2f}s")
-        logger.info(f"⏱️ 总耗时: {total_duration:.2f}s")
+            # 超过60秒的转换为分钟显示
+            if duration >= 60:
+                mins, secs = divmod(duration, 60)
+                logger.info(f"→ {task}: {int(mins)}分{secs:.2f}秒")
+            else:
+                logger.info(f"→ {task}: {duration:.2f}秒")
+        
+        # 总耗时超过60秒时显示分钟格式
+        if total_duration >= 60:
+            total_mins, total_secs = divmod(total_duration, 60)
+            logger.info(f"⏱️ 总耗时: {int(total_mins)}分{total_secs:.2f}秒")
+        else:
+            logger.info(f"⏱️ 总耗时: {total_duration:.2f}秒")
 
     def _parse_tasks(self, tasks: str) -> list:
         """解析任务参数"""
