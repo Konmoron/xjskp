@@ -93,7 +93,7 @@ class CommonTask:
         found = False
         find_num = 0
         while not found and find_num < 6:
-            if find('images/huo_dong/button.png', confidence=0.9):
+            if find('images/huo_dong/button.png'):
                 logger.info(f"找到【活动】")
                 found = True
                 break
@@ -214,10 +214,10 @@ class CommonTask:
         open_jun_tuan()
 
         # 执行军团贡献
-        if find_and_click('images/jun_tuan/gong_xian.png', confidence=0.9):
+        if find_and_click('images/jun_tuan/gong_xian.png'):
             logger.info(f"打开【军团贡献】")
             time.sleep(1)
-            if find_and_click('images/jun_tuan/gong_xian_start.png', confidence=0.9):
+            if find_and_click('images/jun_tuan/gong_xian_start.png'):
                 logger.info(f"开始执行【军团贡献】")
                 time.sleep(35)
                 close_guang_gao()
@@ -226,7 +226,7 @@ class CommonTask:
             close_x()
         
         # 执行砍一刀
-        if find_and_click('images/jun_tuan/kan_yi_dao_start.png', confidence=0.9):
+        if find_and_click('images/jun_tuan/kan_yi_dao_start.png'):
             logger.info(f"打开【砍一刀】")
             time.sleep(1)
             if find_and_click('images/jun_tuan/kan_yi_dao.png'):
@@ -237,17 +237,25 @@ class CommonTask:
             close_x_2()
 
         # 打开任务大厅
-        if find_and_click('images/jun_tuan/task.png', confidence=0.9):
+        if find_and_click('images/jun_tuan/task.png'):
             logger.info(f"打开【任务大厅】")
             time.sleep(1)
 
             # 拖拽搜索辅助方法
-            def drag_search(drag_config, direction, max_attempts=3):
+            def drag_search(find_image, drag_config, direction, max_attempts=3):
                 """统一拖拽搜索逻辑"""
                 for i in range(max_attempts):
                     logger.info(f"🔄 第{i+1}次{direction}拖拽搜索")
+                    time.sleep(1)
                     drag('images/header.png', drag_config)
                     time.sleep(1)
+                    if find(find_image, confidence=0.9):
+                        logger.info(f"🎯 找到{find_image}")
+                        return True
+                    time.sleep(1)
+                
+                logger.info(f"❌ 超过最大拖拽次数，未找到{find_image}")
+                return False
 
             # 任务处理核心逻辑
             def handle_task(task_image, task_name, offset_name=None):
@@ -270,14 +278,11 @@ class CommonTask:
                 ]
 
                 for config, direction, attempts in search_pattern:
-                    drag_search(config, direction, attempts)
-                    if find(task_image, confidence=0.9):
-
+                    if drag_search(task_image, config, direction, attempts):
                         logger.info(f"🎯 定位到{task_name}任务")
                         # 补偿
                         for bu_chang_config, bu_chang_direction, bu_chang_attempts in bu_chang:
-                            drag_search(bu_chang_config, bu_chang_direction, bu_chang_attempts)
-                            if find(task_image, confidence=0.9):
+                            if drag_search(task_image, bu_chang_config, bu_chang_direction, bu_chang_attempts):
                                 logger.info(f"🎯 补偿之后，定位到{task_name}任务")
                                 break
                         
