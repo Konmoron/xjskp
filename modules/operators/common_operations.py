@@ -21,7 +21,7 @@ def is_chat_zhao_mu_open():
         return False
 
 def open_chat():
-    if find_and_click('images/huan_qiu/header.png', offset_name='open_chat'):
+    if find_and_click('images/header.png', offset_name='open_chat'):
         time.sleep(1)
         logger.info(f"打开聊天")
         return is_chat_open()
@@ -89,7 +89,7 @@ def check_huan_qiu_start():
 def close_playing_game():
     # 暂停
     logger.info(f"暂停-游戏")
-    find_and_click('images/huan_qiu/header.png', x_offset=-168, y_offset=49)
+    find_and_click('images/header.png', x_offset=-168, y_offset=49)
     time.sleep(1)
 
     # 退出
