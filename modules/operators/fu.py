@@ -1,15 +1,15 @@
-import sys
-from pathlib import Path
-from tracemalloc import start
-sys.path.append(str(Path(__file__).parent.parent.parent))
+# import sys
+# from pathlib import Path
+# from tracemalloc import start
+# sys.path.append(str(Path(__file__).parent.parent.parent))
 
 import argparse
 import time
-from .bottom import (
+from modules.operators.bottom import (
     open_jun_tuan,
     open_zhan_dou
 )
-from .common_operations import (
+from modules.operators.common_operations import (
    close_x,
    close_x_2,
 )
@@ -86,7 +86,7 @@ def xuan_fu(image_path, confidence=0.8):
 
     retry_count = 0
     max_retries = 6
-    while not find('images/fu/start_game.png'):
+    while not ( find('images/fu/start_game.png') or find('images/fu/start_game_1.png') ):
         if retry_count >= max_retries:
             logger.error(f"🛑 超过最大重试次数（{max_retries}次），启动失败")
             return False
