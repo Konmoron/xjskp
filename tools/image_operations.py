@@ -21,6 +21,7 @@ def find_image(image_path: str, confidence: float = 0.8) -> tuple:  # 添加conf
         
         logger.info(f"✅ 成功匹配 [{image_path}]")
         logger.debug(f"匹配耗时: {elapsed}s | 屏幕坐标: X={location.x} Y={location.y}")
+        pyautogui.moveTo(location.x, location.y, duration=0.8)
         return (location.x, location.y)
     except pyautogui.ImageNotFoundException:
         logger.warning(f"❌ 图片匹配失败，可能原因：")
