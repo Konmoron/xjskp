@@ -241,94 +241,63 @@ class CommonTask:
             logger.info(f"打开【任务大厅】")
             time.sleep(1)
 
-            # 找到100钻石任务
-            find_100_zuan_shi = False
-            find_num = 0
-            while not find_100_zuan_shi:
-                if find('images/jun_tuan/task_100_zuan_shi.png', confidence=0.9):
-                    logger.info(f"找到100钻石任务")
-                    # 补偿，向上拖拽，防止广告按钮被遮住
-                    logger.info(f"向上拖拽, 防止广告按钮被遮住")
-                    drag('images/header.png', 'jun_tuan_task_up_bu_chang')
+            # 拖拽搜索辅助方法
+            def drag_search(drag_config, direction, max_attempts=3):
+                """统一拖拽搜索逻辑"""
+                for i in range(max_attempts):
+                    logger.info(f"🔄 第{i+1}次{direction}拖拽搜索")
+                    drag('images/header.png', drag_config)
                     time.sleep(1)
-                    if find('images/jun_tuan/task_100_zuan_shi.png', confidence=0.9):
-                        find_100_zuan_shi = True
-                        break
-                    else:
-                        # 补偿，向下拖拽，防止广告按钮被遮住
-                        logger.info(f"向下拖拽, 防止广告按钮被遮住")
-                        drag('images/header.png', 'jun_tuan_task_down_bu_chang')
-                        time.sleep(1)
-                        if find('images/jun_tuan/task_100_zuan_shi.png', confidence=0.9):
-                            find_100_zuan_shi = True
-                            break
-            
-                if find_num > 4:
-                    logger.info(f"未找到100钻石任务")
-                    break
-                
-                # 向下拖拽2次
-                if find_num < 2:
-                    logger.info(f"找100钻石任务 - 向下拖拽 {find_num} 次")
-                    drag('images/header.png', 'jun_tuan_task_left_down')
-                else:
-                    logger.info(f"找100钻石任务 - 向上拖拽 {find_num} 次")
-                    drag('images/header.png', 'jun_tuan_task_left_up')
 
-                find_num += 1
+            # 任务处理核心逻辑
+            def handle_task(task_image, task_name, offset_name=None):
+                """统一处理各类任务"""
+                logger.info(f"🔍 开始查找{task_name}任务")
                 
-            if find_100_zuan_shi:
-                find_and_click('images/jun_tuan/task_100_zuan_shi.png', offset_name='jun_tuan_task_100_zuan_shi', confidence=0.9)
-                logger.info(f"执行浪费100钻石任务")
-                time.sleep(35)
-                close_guang_gao()
-                close_chou_jiang_1()
-            else:
-                logger.info(f"未找到浪费100钻石任务, 执行开两次宝箱任务")
-                find_2_bao_xiang = False
-                find_num = 0
-                while not find_2_bao_xiang:
-                    if find('images/jun_tuan/task_2_bao_xiang.png', confidence=0.9):
-                        logger.info(f"找到2个宝箱任务")
-                        # 补偿，向上拖拽，防止广告按钮被遮住
-                        logger.info(f"向上拖拽, 防止广告按钮被遮住")
-                        drag('images/header.png', 'jun_tuan_task_up_bu_chang')
-                        time.sleep(1)
-                        if find('images/jun_tuan/task_2_bao_xiang.png', confidence=0.9):
-                            find_2_bao_xiang = True
-                            break
-                        else:
-                            # 补偿，向下拖拽，防止广告按钮被遮住
-                            logger.info(f"向下拖拽, 防止广告按钮被遮住")
-                            drag('images/header.png', 'jun_tuan_task_down_bu_chang')
-                            time.sleep(1)
-                            if find('images/jun_tuan/task_2_bao_xiang.png', confidence=0.9):
-                                find_2_bao_xiang = True
+                # 组合拖拽策略
+                search_pattern = [
+                    ('jun_tuan_task_left_down', '向下', 2),
+                    ('jun_tuan_task_left_up', '向上', 2)
+                ]
+
+                # 补偿策略
+                # 找到图片之后，广告按钮可能会被遮挡，
+                # 这里添加补偿策略，
+                # 先向上，如果还有发现图片，则停止补偿，如果没有，则向下拖拽，
+                bu_chang = [
+                    ('jun_tuan_task_up_bu_chang', '补偿向上', 1),
+                    ('jun_tuan_task_down_bu_chang', '补偿向下', 1)
+                ]
+
+                for config, direction, attempts in search_pattern:
+                    drag_search(config, direction, attempts)
+                    if find(task_image, confidence=0.9):
+
+                        logger.info(f"🎯 定位到{task_name}任务")
+                        # 补偿
+                        for bu_chang_config, bu_chang_direction, bu_chang_attempts in bu_chang:
+                            drag_search(bu_chang_config, bu_chang_direction, bu_chang_attempts)
+                            if find(task_image, confidence=0.9):
+                                logger.info(f"🎯 补偿之后，定位到{task_name}任务")
                                 break
-
-                    if find_num > 4:
-                        logger.info(f"未找到2个宝箱任务")
-                        break
-
-                    # 向下拖拽2次
-                    if find_num < 2:
-                        logger.info(f"找2个宝箱任务 - 向下拖拽 {find_num} 次")
-                        drag('images/header.png', 'jun_tuan_task_left_down')
-                    else:
-                        logger.info(f"找2个宝箱任务 - 向上拖拽 {find_num} 次")
-                        drag('images/header.png', 'jun_tuan_task_left_up')
-
-                    find_num += 1
-
-                if find_2_bao_xiang:
-                    find_and_click('images/jun_tuan/task_2_bao_xiang.png', offset_name='jun_tuan_task_2_bao_xiang', confidence=0.9)
-                    logger.info(f"执行2个宝箱任务")
-                    time.sleep(35)
-                    close_guang_gao()
-                    close_chou_jiang_1()
+                        
+                        find_and_click(task_image, offset_name=offset_name, confidence=0.9)
+                        time.sleep(35)
+                        close_guang_gao()
+                        close_chou_jiang_1()
+                        return True
+                return False
+            
+            # 优先处理100钻石任务
+            if not handle_task('images/jun_tuan/task_100_zuan_shi.png', 
+                             '100钻石', 'jun_tuan_task_100_zuan_shi'):
+                logger.warning("💎 未找到钻石任务，尝试查找宝箱任务")
+                handle_task('images/jun_tuan/task_2_bao_xiang.png', 
+                          '双宝箱', 'jun_tuan_task_2_bao_xiang')
 
             close_x()
 
+        logger.info("🏁 军团任务执行完毕")
         open_zhan_dou()
 
 
