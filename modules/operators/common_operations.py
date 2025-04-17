@@ -75,7 +75,8 @@ def check_huan_qiu_start():
         "images/huan_qiu/huan_qiu_start_1.png",
         "images/huan_qiu/huan_qiu_start_2.png",
         "images/huan_qiu/huan_qiu_start_3.png",
-        "images/huan_qiu/huan_qiu_start_4.png"
+        "images/huan_qiu/huan_qiu_start_4.png",
+        "images/huan_qiu/huan_qiu_start_5.png",
     ]
     
     for img in huan_qiu_kai_shi_images:
