@@ -188,3 +188,10 @@ def back():
     time.sleep(1)
     find_and_click('images/back.png', confidence=0.9)
     time.sleep(1)
+
+def kan_guang_gao(guang_gao_time=35, wait_fu_li=2):
+    logger.info(f"看【广告】")
+    time.sleep(guang_gao_time)
+    close_guang_gao()
+    time.sleep(wait_fu_li)
+    close_chou_jiang_1()

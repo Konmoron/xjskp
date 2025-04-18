@@ -32,3 +32,12 @@ def open_shop():
         return True
 
     return False
+
+def open_sai_ji():
+    time.sleep(1)
+    if find_and_click('images/sai_ji.png'):
+        time.sleep(1)
+        logger.info(f"打开【赛季】")
+        return True
+
+    return False

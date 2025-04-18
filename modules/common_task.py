@@ -8,6 +8,7 @@ from .operators.bottom import (
     open_zhan_dou,
     open_jun_tuan,
     open_shop,
+    open_sai_ji,
 )
 from .operators.common_operations import (
    close_guang_gao, 
@@ -15,6 +16,7 @@ from .operators.common_operations import (
    close_x,
    close_x_2,
    back,
+   kan_guang_gao,
 )
 from config import DRAG_CONFIGS
     
@@ -29,6 +31,7 @@ class CommonTask:
             'gybz': self.gybz,
             'shop': self.shop,
             'huo_dong': self.huo_dong,
+            'sai_ji': self.sai_ji,
         }
 
     def run(self, tasks: str = 'all', exclude: str = None):
@@ -377,6 +380,29 @@ class CommonTask:
         # 返回
         time.sleep(1)
         find_and_click('images/guan_ying_bao_zang/back.png')
+
+    def sai_ji(self):
+        """执行【赛季】任务"""
+        logger.info("执行【赛季】任务...")
+
+        open_sai_ji()
+
+        time.sleep(4)
+
+        if find_and_click('images/sai_ji/zheng_zhan.png'):
+            logger.info(f"打开【赛季-征战】")
+            time.sleep(2)
+            if find_and_click('images/sai_ji/add_xing_dong_num.png'):
+                time.sleep(2)
+                if find_and_click('images/sai_ji/kan_guang_gao.png'):
+                    logger.info(f"看广告，增加行动次数")
+                    kan_guang_gao()
+                time.sleep(1)
+                close_x()
+            back()
+        
+        open_zhan_dou()
+            
 
 def main():
     parser = argparse.ArgumentParser(description='通用任务执行器')
