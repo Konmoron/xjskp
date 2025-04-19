@@ -36,6 +36,7 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
+            time.sleep(1)
             location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence, region=GLOBAL_REGION)
             if location:
                 if offset_name and offset_name in CLICK_OFFSETS:
@@ -44,6 +45,7 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
                     x_offset, y_offset = 0, 0
                 
                 pyautogui.click(location.x + x_offset, location.y + y_offset)
+                time.sleep(1)
                 return True
         except pyautogui.ImageNotFoundException as e:
             break
@@ -126,3 +128,39 @@ def drag(
     except Exception as e:
         logger.error(f"‼️ 未处理的异常: {str(e)}", exc_info=True)
         return False
+
+def drag_search(base_image_path, serach_image_path, drag_config_name, 
+                max_attempts=1,
+                base_image_confidence=0.8,
+                search_image_confidence=0.8):
+    """
+    拖拽搜索指定图片
+    :param base_image_path: 基准图片路径
+    :param serach_image_path: 搜索图片路径
+    :param drag_config_name: 拖拽配置名称
+    :param base_image_confidence: 基准图片匹配精度
+    :param search_image_confidence: 搜索图片匹配精度
+    :return: 是否找到并点击成功
+    """
+
+    # 打印参数
+    logger.info(f"🔍 开始拖拽搜索操作:")
+    logger.info(f"→ 基准图片: {base_image_path}, 精度: {base_image_confidence}")
+    logger.info(f"→ 搜索图片: {serach_image_path}, 精度: {search_image_confidence}")
+    logger.info(f"→ 拖拽配置: {drag_config_name}")
+    logger.info(f"🔄 开始执行拖拽搜索，最大尝试次数: {max_attempts}")
+
+    for i in range(max_attempts):
+        # 执行拖拽操作
+        logger.info(f"🔄 第{i+1}/{max_attempts}次拖拽搜索")
+        drag(base_image_path, drag_config_name, base_image_confidence)
+        time.sleep(2)  # 等待拖拽完成
+
+        # 查找搜索图片
+        logger.info(f"🔍 开始查找搜索图片: {serach_image_path}")
+        if find(serach_image_path, confidence=search_image_confidence):
+            logger.info(f"✅ 搜索图片找到: {serach_image_path}")
+            return True
+
+    time.sleep(1)
+    return False
