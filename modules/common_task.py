@@ -500,9 +500,7 @@ class CommonTask:
             time.sleep(1)
             if find_and_click('images/jun_tuan/gong_xian_start.png'):
                 logger.info(f"开始执行【军团贡献】")
-                time.sleep(35)
-                close_guang_gao()
-                close_chou_jiang_1()
+                kan_guang_gao()
             logger.info(f"执行【军团贡献】完成")
             close_x()
         
@@ -643,7 +641,7 @@ class CommonTask:
 
             logger.info(f"第{i+1}次执行【观影宝藏】")
 
-            if find_and_click('images/guan_ying_bao_zang/start.png', confidence=0.9):
+            if find_and_click('images/guan_ying_bao_zang/start.png'):
                 logger.info(f"第{i+1}次 打开【观看广告】...")
                 time.sleep(35)
 
