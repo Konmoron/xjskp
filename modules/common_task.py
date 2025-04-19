@@ -1,5 +1,5 @@
 import argparse
-from nt import close
+from datetime import datetime
 from typing import Dict, Callable
 from utils.image_utils import drag_search, find, find_and_click, drag
 from utils.logger import get_logger
@@ -664,6 +664,12 @@ class CommonTask:
     def sai_ji(self):
         """执行【赛季】任务"""
         logger.info("执行【赛季】任务...")
+
+        # 或者使用具名常量
+        SAI_JI_DAYS = {4, 5, 6}
+        if datetime.now().weekday() not in SAI_JI_DAYS:
+            logger.info(f"⏸️ 当前为 {datetime.now().strftime('%A')}，非赛季任务日期")
+            return
 
         open_sai_ji()
 
