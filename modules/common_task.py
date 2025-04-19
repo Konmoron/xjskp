@@ -1,7 +1,7 @@
 import argparse
 from nt import close
 from typing import Dict, Callable
-from utils.image_utils import find, find_and_click, drag
+from utils.image_utils import drag_search, find, find_and_click, drag
 from utils.logger import get_logger
 import time
 from .operators.bottom import (
@@ -32,6 +32,8 @@ class CommonTask:
             'shop': self.shop,
             'huo_dong': self.huo_dong,
             'sai_ji': self.sai_ji,
+            'te_hui': self.te_hui,
+            'hao_you': self.hao_you,
         }
 
     # def run(self, tasks: str = 'all', exclude: str = None):
@@ -238,11 +240,11 @@ class CommonTask:
             # 向下拖拽3次，
             if find_num < 3:
                 logger.info(f"找活动 - 向上拖拽 {find_num} 次")
-                drag('images/header.png', 'zhan_dou_left_up')
+                drag('images/header.png', 'zhan_dou_left_down')
             
             if find_num >= 3:
                 logger.info(f"找活动 - 向下拖拽 {find_num} 次")
-                drag('images/header.png', 'zhan_dou_left_down')
+                drag('images/header.png', 'zhan_dou_left_up')
             
             time.sleep(1)
             find_num += 1
@@ -387,6 +389,75 @@ class CommonTask:
         
     #     # 关闭
     #     close_x()
+
+    def te_hui(self):
+        """执行【特惠】任务"""
+        logger.info("执行【特惠】任务...")
+        open_zhan_dou()
+
+        # 找到特惠
+        if drag_search('images/header.png', 'images/te_hui/te_hui.png', 'zhan_dou_left_down', 3):
+            logger.info(f"向下拖拽找到【特惠】")
+        elif drag_search('images/header.png', 'images/te_hui/te_hui.png', 'zhan_dou_left_up', 3):
+            logger.info(f"向上拖拽找到【特惠】")
+        else:
+            logger.info(f"向上、向下拖拽未找到【特惠】")
+            return False
+
+        if find_and_click('images/te_hui/te_hui.png'):
+            logger.info(f"打开【特惠】")
+            time.sleep(1)
+        else:
+            logger.info(f"打开【特惠】失败")
+            return False
+
+        if find_and_click('images/te_hui/mei_ri_te_hui.png'):
+            logger.info(f"打开【每日特惠】")
+            time.sleep(1)
+        else:
+            logger.info(f"打开【每日特惠】失败")
+            return False
+
+        if find_and_click('images/te_hui/start.png'):
+            logger.info(f"执行【每日特惠】-【领取奖励】")
+            kan_guang_gao()
+
+        # 关闭
+        back()
+
+    def hao_you(self):
+        """执行【好友】任务"""
+        logger.info("\n👥 好友任务开始".ljust(50, "─"))
+        open_zhan_dou()
+
+        try:
+            # ================= 打开好友界面 =================
+            logger.info("🔍 正在定位好友入口...")
+            if find_and_click('images/hao_you/button.png'):
+                logger.info("✅ 成功进入好友界面")
+            else:
+                logger.warning("❌ 好友入口定位失败")
+                return False
+            # ================= 领取体力流程 =================
+            logger.info("\n🎁 开始领取好友体力".ljust(45, "─"))
+            
+            # 领取体力
+            if find_and_click('images/hao_you/ling_qu.png'):
+                logger.info("🔘 点击领取按钮成功")
+            else:
+                logger.info(f"❌ 执行【好友】-【点击领取按钮】失败")
+                return False
+
+            if find_and_click('images/hao_you/yi_jian_ling_qu.png'):
+                logger.info("🎉 一键领取成功")
+                close_x()
+            else:
+                logger.info(f"❌ 执行【好友】-【一键领取】失败")
+                return False
+        finally:
+            close_x()
+
+
 
     def jun_tuan(self):
         """军团任务"""
