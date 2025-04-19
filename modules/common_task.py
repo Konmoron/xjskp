@@ -34,6 +34,7 @@ class CommonTask:
             'sai_ji': self.sai_ji,
             'te_hui': self.te_hui,
             'hao_you': self.hao_you,
+            'mail': self.mail,
         }
 
     # def run(self, tasks: str = 'all', exclude: str = None):
@@ -88,6 +89,16 @@ class CommonTask:
         final_tasks = self._parse_tasks(tasks)
         exclude_list = [t.strip() for t in (exclude.split(',') if exclude else [])]
         final_tasks = [t for t in final_tasks if t not in exclude_list]
+
+        # hao_you，mail 最后执行
+        if 'hao_you' in final_tasks:
+            final_tasks.remove('hao_you')
+            final_tasks.append('hao_you')
+            logger.info(f"✉️ 调整好友任务到队列末尾")
+        if 'mail' in final_tasks:
+            final_tasks.remove('mail')
+            final_tasks.append('mail')
+            logger.info(f"📨 调整邮件任务到队列末尾")
 
         # 确保ti_li任务最先执行（如果存在）
         if 'ti_li' in final_tasks:
@@ -219,6 +230,25 @@ class CommonTask:
         if tasks.lower() == 'all':
             return list(self.task_registry.keys())
         return [t.strip() for t in tasks.split(',') if t.strip()]
+
+    def mail(self):
+        """执行【邮件】任务"""
+        logger.info("执行【邮件】任务...")
+        open_zhan_dou()
+
+        if find_and_click('images/mail/button.png'):
+            logger.info(f"打开【邮件】")
+        else:
+            logger.info(f"未找到【邮件】")
+            return False
+        try:
+            if find_and_click('images/mail/ling_qu.png'):
+                logger.info(f"打开【邮件】-【领取奖励】")
+                close_chou_jiang_1()
+        finally:
+            close_x()
+
+            
 
     def huo_dong(self):
         """执行【战斗-活动】任务"""
