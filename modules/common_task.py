@@ -500,7 +500,7 @@ class CommonTask:
             time.sleep(1)
             if find_and_click('images/jun_tuan/gong_xian_start.png'):
                 logger.info(f"开始执行【军团贡献】")
-                kan_guang_gao()
+                kan_guang_gao
             logger.info(f"执行【军团贡献】完成")
             close_x()
         
@@ -572,12 +572,16 @@ class CommonTask:
                         return True
                 return False
             
-            # 优先处理100钻石任务
-            if not handle_task('images/jun_tuan/task_100_zuan_shi.png', 
-                             '100钻石', 'jun_tuan_task_100_zuan_shi'):
-                logger.warning("💎 未找到钻石任务，尝试查找宝箱任务")
-                handle_task('images/jun_tuan/task_2_bao_xiang.png', 
-                          '双宝箱', 'jun_tuan_task_2_bao_xiang')
+            if find('images/jun_tuan/ren_wu_da_ting_start.png'):
+                logger.info(f"找到【任务大厅】-【广告按钮】")
+                # 优先处理100钻石任务
+                if not handle_task('images/jun_tuan/task_100_zuan_shi.png', 
+                                '100钻石', 'jun_tuan_task_100_zuan_shi'):
+                    logger.warning("💎 未找到钻石任务，尝试查找宝箱任务")
+                    handle_task('images/jun_tuan/task_2_bao_xiang.png', 
+                            '双宝箱', 'jun_tuan_task_2_bao_xiang')
+            else:
+                logger.warning("❌ 未找到【任务大厅】-【广告按钮】-不执行任务")
 
             close_x()
 
