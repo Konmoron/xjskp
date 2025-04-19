@@ -171,7 +171,7 @@ def close_chou_jiang_1():
     find_and_click('images/header.png', offset_name='close_chou_jiang_1')
     time.sleep(1)
 
-def close_x():
+def _close_x():
     logger.info(f"关闭【X】")
     time.sleep(1)
     find_and_click('images/close_x.png', confidence=0.9)
@@ -182,6 +182,11 @@ def close_x_2():
     time.sleep(1)
     find_and_click('images/close_x_2.png', confidence=0.9)
     time.sleep(1)
+
+def close_x():
+    logger.info(f"关闭【X】")
+    find_and_click('images/close_x.png', confidence=0.9)
+    find_and_click('images/close_x_2.png', confidence=0.9)
 
 def back():
     logger.info(f"返回")
