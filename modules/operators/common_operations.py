@@ -86,25 +86,25 @@ def check_huan_qiu_start():
     logger.info(f"未找到寰球开始图片")
     return False
 
-# 选择技能的时候，有可能点不到，所以要多试几次
-def close_playing_game():
-    # 暂停
-    logger.info(f"暂停-游戏")
-    find_and_click('images/header.png', x_offset=-168, y_offset=49)
-    time.sleep(1)
+# # 选择技能的时候，有可能点不到，所以要多试几次
+# def close_playing_game():
+#     # 暂停
+#     logger.info(f"暂停-游戏")
+#     find_and_click('images/header.png', x_offset=-168, y_offset=49)
+#     time.sleep(1)
 
-    # 退出
-    logger.info(f"关闭-游戏")
-    find_and_click('images/huan_qiu/exit_playing_game.png')
-    time.sleep(1)
+#     # 退出
+#     logger.info(f"关闭-游戏")
+#     find_and_click('images/huan_qiu/exit_playing_game.png')
+#     time.sleep(1)
 
-    # 返回
-    logger.info(f"返回")
-    if find_and_click('images/huan_qiu/game_back.png'):
-        time.sleep(1)
-        return True
+#     # 返回
+#     logger.info(f"返回")
+#     if find_and_click('images/huan_qiu/game_back.png'):
+#         time.sleep(1)
+#         return True
 
-    return False
+#     return False
 
 def close_offline():
     # 暂停
