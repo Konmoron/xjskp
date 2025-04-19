@@ -23,7 +23,7 @@ def find(image_path, confidence=0.8, timeout=3):
             break
     return False
 
-def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset=0, confidence=0.8):
+def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, timeout=1, confidence=0.8):
     """
     寻找并点击指定图片
     :param image_path: 图片路径
@@ -36,7 +36,7 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
-            time.sleep(1)
+            time.sleep(before_sleep)
             location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence, region=GLOBAL_REGION)
             if location:
                 if offset_name and offset_name in CLICK_OFFSETS:
@@ -45,7 +45,7 @@ def find_and_click(image_path, offset_name=None, timeout=1, x_offset=0, y_offset
                     x_offset, y_offset = 0, 0
                 
                 pyautogui.click(location.x + x_offset, location.y + y_offset)
-                time.sleep(1)
+                time.sleep(after_sleep)
                 return True
         except pyautogui.ImageNotFoundException as e:
             break
