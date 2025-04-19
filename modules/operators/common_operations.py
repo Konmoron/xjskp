@@ -71,6 +71,7 @@ def close_first_charge():
 
 def check_huan_qiu_start():
     huan_qiu_kai_shi_images = [
+        "images/ji_neng/qiang.png",
         "images/huan_qiu/huan_qiu_start_0.png",
         "images/huan_qiu/huan_qiu_start_1.png",
         "images/huan_qiu/huan_qiu_start_2.png",
