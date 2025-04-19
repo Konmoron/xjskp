@@ -75,7 +75,7 @@ class HuanQiu:
         logger.info("抢寰球")
         # 抢寰球
         for i in range(100):
-            logger.info(f"第【{game_num}】局 - 第【{i}】次抢寰球救援")
+            logger.info(f"第【{game_num}】局 - 第【{i+1}】次抢寰球救援")
             # 判断是否抢到，如果抢到，则退出当前循环
             if i!=0 and ( check_huan_qiu_start() or find('images/huan_qiu/play_select_skills.png') ):
                 logger.info(f"第【{game_num}】局 - 抢寰球 - 已经开始游戏")
@@ -138,7 +138,7 @@ class HuanQiu:
             if i!=0 and i%10 == 0:
                 close_offline()
 
-            logger.info(f"第【{game_num}】局 - 第【{i}】次等待游戏结束")
+            logger.info(f"第【{game_num}】局 - 第【{i+1}】次等待游戏结束")
             if find_and_click('images/huan_qiu/game_back.png'):
                 time.sleep(1)
                 return True
