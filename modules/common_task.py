@@ -171,7 +171,7 @@ class CommonTask:
                 if (ti_li_wait_start_time and (time.time() - ti_li_wait_start_time) >= 310 
                     and ti_li_count < ti_li_max
                     and 'ti_li' not in final_tasks):
-                    logger.info("\n⏰ 满足冷却条件，重新插入体力任务")
+                    logger.info("⏰ 满足冷却条件，重新插入体力任务")
                     final_tasks.insert(0, 'ti_li')
                     ti_li_wait_start_time = None
 
@@ -500,7 +500,7 @@ class CommonTask:
             time.sleep(1)
             if find_and_click('images/jun_tuan/gong_xian_start.png'):
                 logger.info(f"开始执行【军团贡献】")
-                kan_guang_gao
+                kan_guang_gao()
             logger.info(f"执行【军团贡献】完成")
             close_x()
         
