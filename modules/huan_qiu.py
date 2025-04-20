@@ -122,28 +122,40 @@ class HuanQiu:
 
     def _wait_for_game_end(self, game_num: int):
         """等待游戏结束"""
-        logger.info("[寰球救援] 第【%d】局 ▶ 开始等待游戏结束...", game_num)
-        for i in range(200):
-            # 每10次循环执行离线提示关闭
-            if i != 0 and i % 10 == 0:
-                logger.debug("[游戏离线] 第【%d】局 ▶ 第【%d】次检测 ▶ 关闭离线提示...", game_num, i+1)
+        start_time = time.time()  # 记录开始时间
+        logger.info("[⏱️耗时统计] 第%02d局 | 开始计时", game_num)
+        
+        for check_count in range(1, 201):
+            elapsed_time = time.time() - start_time
+            mins, secs = divmod(int(elapsed_time), 60)
+            time_str = f"{mins:02d}分{secs:02d}秒"
+
+            # 系统维护操作（含耗时显示）
+            if check_count % 10 == 0:
+                logger.debug("[⚙️离线维护] 第%02d局 | 第%03d次检测 | 已等待%s | 关闭离线提示",
+                            game_num, check_count, time_str)
                 close_offline()
 
-            # 主等待日志
-            logger.info("[游戏状态] 第【%d】局 ▶ 等待结束（第 %d/200 次检测）...", game_num, i+1)
+            # 主状态监测（带动态等待时间）
+            logger.info("[📊等待状态] 第%02d局 | 第%03d次检测 | 已等待 %s",
+                    game_num, check_count, time_str)
             
-            # 检测返回按钮
+            # 游戏结束检测
             if find_and_click('images/huan_qiu/game_back.png'):
-                logger.success("[游戏结束] 第【%d】局 ▶ 检测到返回按钮 ▶ 成功退出游戏", game_num)
+                total_time = time.time() - start_time
+                logger.success("[✅成功退出] 第%02d局 | 总耗时 %.1f秒 | 第%03d次检测",
+                            game_num, total_time, check_count)
                 time.sleep(1)
                 return True
-            
-            # 技能选择（根据配置状态记录）
+
+            # 技能管理系统
             if not self.disable_skill:
                 select_ji_neng()
 
             time.sleep(5)
 
-        logger.warning("[超时警告] 第【%d】局 ▶ 200次循环未检测到结束信号 ▶ 强制终止", game_num)
+        total_time = time.time() - start_time
+        logger.warning("[⚠️超时警报] 第%02d局 | 总耗时 %.1f秒≈%d分%d秒 | 强制终止",
+                    game_num, total_time, total_time//60, int(total_time%60))
         return False
     
