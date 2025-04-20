@@ -123,7 +123,7 @@ class HuanQiu:
     def _wait_for_game_end(self, game_num: int):
         """等待游戏结束"""
         start_time = time.time()  # 记录开始时间
-        logger.info("[⏱️耗时统计] 第%02d局 | 开始计时", game_num)
+        logger.info("[⏱️等待游戏结束] 第%02d局 | 开始计时", game_num)
         
         for check_count in range(1, 201):
             elapsed_time = time.time() - start_time
@@ -132,8 +132,6 @@ class HuanQiu:
 
             # 系统维护操作（含耗时显示）
             if check_count % 10 == 0:
-                logger.debug("[⚙️离线维护] 第%02d局 | 第%03d次检测 | 已等待%s | 关闭离线提示",
-                            game_num, check_count, time_str)
                 close_offline()
 
             # 主状态监测（带动态等待时间）
@@ -143,7 +141,7 @@ class HuanQiu:
             # 游戏结束检测
             if find_and_click('images/huan_qiu/game_back.png'):
                 total_time = time.time() - start_time
-                logger.success("[✅成功退出] 第%02d局 | 总耗时 %.1f秒 | 第%03d次检测",
+                logger.info("[✅成功退出] 第%02d局 | 总耗时 %.1f秒 | 第%03d次检测",
                             game_num, total_time, check_count)
                 time.sleep(1)
                 return True
