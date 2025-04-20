@@ -123,37 +123,45 @@ class HuanQiu:
     def _wait_for_game_end(self, game_num: int):
         """等待游戏结束"""
         start_time = time.time()  # 记录开始时间
-        logger.info("[⏱️等待游戏结束] 第%02d局 | 开始计时", game_num)
+        logger.info("[⏱️第%d局游戏已经开始，等待游戏结束]", game_num)
         
         for check_count in range(1, 201):
-            elapsed_time = time.time() - start_time
-            mins, secs = divmod(int(elapsed_time), 60)
-            time_str = f"{mins:02d}分{secs:02d}秒"
+            current_start_time = time.time()
 
             # 系统维护操作（含耗时显示）
             if check_count % 10 == 0:
                 close_offline()
-
-            # 主状态监测（带动态等待时间）
-            logger.info("[📊等待状态] 第%02d局 | 第%03d次检测 | 已等待 %s",
-                    game_num, check_count, time_str)
             
             # 游戏结束检测
             if find_and_click('images/huan_qiu/game_back.png'):
                 total_time = time.time() - start_time
-                logger.info("[✅成功退出] 第%02d局 | 总耗时 %.1f秒 | 第%03d次检测",
+                logger.info("[✅第%d局游戏成功退出] | 总耗时 %.1f秒 | 第%d次检测",
                             game_num, total_time, check_count)
                 time.sleep(1)
                 return True
 
             # 技能管理系统
             if not self.disable_skill:
+                skill_start_time = time.time()  # 记录技能选择开始时间
                 select_ji_neng()
+                skill_elapsed_time = time.time() - skill_start_time
+                # logger.info("[第%d局游戏] | 第%d次检测 | 技能选择耗时 %d 秒",
+                #         game_num, check_count, skill_elapsed_time)
 
             time.sleep(5)
 
+            current_elapsed_time = time.time() - current_start_time
+            # 主状态监测（带动态等待时间）
+            elapsed_time = time.time() - start_time
+            mins, secs = divmod(int(elapsed_time), 60)
+            time_str = f"{mins:d}分{secs:d}秒"
+            # logger.info("[第%d局游戏] | 第%d次检测是否结束 | 本次检测耗时 %d 秒 | 已等待 %s",
+            #         game_num, check_count, current_elapsed_time, time_str)
+            logger.info("[第%d局游戏] | 第%d次检测是否结束 | 已等待 %s",
+                    game_num, check_count, time_str)
+
         total_time = time.time() - start_time
-        logger.warning("[⚠️超时警报] 第%02d局 | 总耗时 %.1f秒≈%d分%d秒 | 强制终止",
+        logger.warning("[⚠️第%d局超时警报] | 总耗时 %.1f秒≈%d分%d秒 | 强制终止",
                     game_num, total_time, total_time//60, int(total_time%60))
         return False
     
