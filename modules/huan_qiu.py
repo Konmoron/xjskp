@@ -140,7 +140,6 @@ class HuanQiu:
             
             # 技能选择（根据配置状态记录）
             if not self.disable_skill:
-                logger.debug("[技能操作] 第【%d】局 ▶ 第【%d】次技能检测...", game_num, i+1)
                 select_ji_neng()
 
             time.sleep(5)
