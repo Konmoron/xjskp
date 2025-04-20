@@ -122,32 +122,29 @@ class HuanQiu:
 
     def _wait_for_game_end(self, game_num: int):
         """等待游戏结束"""
-        logger.info("等待游戏结束...")
-        for i in range(90):
-            # if i > 15 and not huan_qiu_start:
-            #     logger.info(f"第【{game_num}】局 - 当前执行 - 判断是否寰球超过了最大次数 15 次 - 结束")
-            #     # 如果超过了最大次数，说明没有抢到寰球，退出
-            #     if close_playing_game():
-            #         logger.info(f"第【{game_num}】局 - 当前执行 - 退出游戏")
-            #         break
-
-            # if not huan_qiu_start and check_huan_qiu_start():
-            #     logger.info(f"第【{game_num}】局 - 当前执行 - 寰球 - 开始了")
-            #     huan_qiu_start = True
-
-            if i!=0 and i%10 == 0:
+        logger.info("[寰球救援] 第【%d】局 ▶ 开始等待游戏结束...", game_num)
+        for i in range(200):
+            # 每10次循环执行离线提示关闭
+            if i != 0 and i % 10 == 0:
+                logger.debug("[游戏离线] 第【%d】局 ▶ 第【%d】次检测 ▶ 关闭离线提示...", game_num, i+1)
                 close_offline()
 
-            logger.info(f"第【{game_num}】局 - 第【{i+1}】次等待游戏结束")
+            # 主等待日志
+            logger.info("[游戏状态] 第【%d】局 ▶ 等待结束（第 %d/200 次检测）...", game_num, i+1)
+            
+            # 检测返回按钮
             if find_and_click('images/huan_qiu/game_back.png'):
+                logger.success("[游戏结束] 第【%d】局 ▶ 检测到返回按钮 ▶ 成功退出游戏", game_num)
                 time.sleep(1)
                 return True
             
-            # 选择技能
+            # 技能选择（根据配置状态记录）
             if not self.disable_skill:
+                logger.debug("[技能操作] 第【%d】局 ▶ 第【%d】次技能检测...", game_num, i+1)
                 select_ji_neng()
 
-            time.sleep(10)
+            time.sleep(5)
 
+        logger.warning("[超时警告] 第【%d】局 ▶ 200次循环未检测到结束信号 ▶ 强制终止", game_num)
         return False
     
