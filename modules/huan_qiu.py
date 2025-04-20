@@ -80,6 +80,11 @@ class HuanQiu:
             if i!=0 and ( check_huan_qiu_start() or find('images/huan_qiu/play_select_skills.png') ):
                 logger.info(f"第【{game_num}】局 - 抢寰球 - 已经开始游戏")
                 break
+            
+            if i!=0 and i%2==0 and close_yuan_zheng():
+                logger.info(f"第【{game_num}】局 - 抢寰球 - 关闭远征并重新打开聊天")
+                open_chat()
+                open_zhao_mu()
 
             # 如果有 聊天框，点击聊天框
             # 1. 判断有没有招募，如果有招募，点击招募，继续抢
@@ -93,12 +98,7 @@ class HuanQiu:
                         open_zhao_mu()
                     else:
                         logger.info(f"第【{game_num}】局 - 抢寰球 - 打开招募失败")
-                        break
-            
-            if i!=0 and i%2==0 and close_yuan_zheng():
-                logger.info(f"第【{game_num}】局 - 抢寰球 - 关闭远征并重新打开聊天")
-                open_chat()
-                open_zhao_mu()
+                        continue
 
             if i!=0 and i%5==0 and close_guan_qia_select():
                 logger.info(f"第【{game_num}】局 - 当前执行 - 抢环球 - 关闭关卡选择")
