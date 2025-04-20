@@ -8,21 +8,21 @@ logger = get_logger()
 
 def is_chat_open():
     if find('images/huan_qiu/is_open_chat.png'):
-        logger.info(f"聊天已经打开 images/huan_qiu/is_open_chat.png")
+        logger.info(f"聊天已经打开")
         return True
     else:
         return False
 
 def is_chat_zhao_mu_open():
     if find('images/huan_qiu/is_open_chat_zhao_mu.png'):
-        logger.info(f"招募已经打开 images/huan_qiu/is_open_chat_zhao_mu.png")
+        logger.info(f"招募已经打开")
         return True
     else:
+        logger.info(f"没有找到招募图片 images/huan_qiu/is_open_chat_zhao_mu.png")
         return False
 
 def open_chat():
     if find_and_click('images/header.png', offset_name='open_chat'):
-        time.sleep(1)
         logger.info(f"打开聊天")
         return is_chat_open()
     else:
@@ -33,7 +33,6 @@ def close_chat():
     # 关闭聊天
     find_and_click('images/huan_qiu/is_open_chat.png', offset_name='close_chat')
     logger.info(f" 关闭聊天")
-    time.sleep(1)
 
 def open_zhao_mu():
     if find('images/huan_qiu/chat_zhao_mu.png'):
@@ -41,11 +40,9 @@ def open_zhao_mu():
         # 点击招募
         find_and_click('images/huan_qiu/chat_zhao_mu.png', offset_name='open_zhao_mu')
         logger.info(f"第一次打开招募")
-        time.sleep(1)
         # 再次点击招募，防止招募没点到
         find_and_click('images/huan_qiu/chat_zhao_mu.png', offset_name='open_zhao_mu')
         logger.info(f"第二次打开招募")
-        time.sleep(0.5)
         return True
     else:
         logger.info(f"没有找到招募图片 images/huan_qiu/chat_zhao_mu.png")
@@ -54,19 +51,18 @@ def open_zhao_mu():
 
 def close_guan_qia_select():
     if find('images/huan_qiu/guan_qia_select.png'):
-        logger.info(f"发现-关卡-选择 images/huan_qiu/guan_qia_select.png")
+        logger.info(f"发现-关卡-选择")
         find_and_click('images/huan_qiu/guan_qia_select_back.png', offset_name='close_guan_qia_select')
-        logger.info(f"关闭-关卡-选择 images/huan_qiu/guan_qia_select_back.png")
-        time.sleep(1)
+        logger.info(f"关闭-关卡-选择")
         return True
     else:
         return False
 
 def close_first_charge():
     if find('images/huan_qiu/first_charge.png'):
-        logger.info(f"发现-首充 images/huan_qiu/first_charge.png")
+        logger.info(f"发现-首充")
         find_and_click('images/huan_qiu/first_charge.png', offset_name='close_first_charge')
-        logger.info(f"关闭-首充 images/huan_qiu/first_charge.png")
+        logger.info(f"关闭-首充")
         time.sleep(1)
 
 def check_huan_qiu_start():
@@ -82,9 +78,9 @@ def check_huan_qiu_start():
     
     for img in huan_qiu_kai_shi_images:
         if find(img):
-            logger.info(f"找到寰球开始图片: {img}")
+            logger.info(f"找到游戏开始图片: {img}")
             return True
-    logger.info(f"未找到寰球开始图片")
+    logger.info(f"未找到游戏开始图片")
     return False
 
 # # 选择技能的时候，有可能点不到，所以要多试几次
@@ -110,12 +106,10 @@ def check_huan_qiu_start():
 def close_offline():
     # 暂停
     if find('images/huan_qiu/offline.png'):
-        logger.info(f"发现【离线】images/huan_qiu/offline.png")
+        logger.info(f"发现【离线】")
         find_and_click('images/huan_qiu/offline.png', offset_name='close_offline_offline')
-        time.sleep(1)
         find_and_click('images/huan_qiu/offline_end.png', offset_name='close_offline_offline_end')
-        time.sleep(1)
-        logger.info(f"关闭【离线】images/huan_qiu/offline_end.png")
+        logger.info(f"关闭【离线】")
         return True
     return False
 
@@ -123,38 +117,38 @@ def close_offline():
 # 主要选择能量系技能，这样和枪配合，任何boss都不怕
 def select_ji_neng():
     if find_and_click('images/ji_neng/ji_guang.png'):
-        logger.info(f"发现并选择【激光技能】images/ji_neng/ji_guang.png")
+        logger.info(f"发现并选择【激光技能】")
     elif find_and_click('images/ji_neng/she_xian.png'):
-        logger.info(f"发现并选择【射线技能】images/ji_neng/she_xian_ji_neng.png")
+        logger.info(f"发现并选择【射线技能】")
     elif find_and_click('images/ji_neng/qiang_lian_fa.png'):
-        logger.info(f"发现并选择【枪-连发-技能】images/ji_neng/qiang_lian_fa.png")
+        logger.info(f"发现并选择【枪-连发-技能】")
     elif find_and_click('images/ji_neng/qiang_fen_lie_4.png'):
-        logger.info(f"发现并选择【枪-4分裂-技能】images/ji_neng/qiang_fen_lie_4.png")
+        logger.info(f"发现并选择【枪-4分裂-技能】")
     elif find_and_click('images/ji_neng/qiang_fen_lie.png'):
-        logger.info(f"发现并选择【枪-2分裂-技能】images/ji_neng/qiang_fen_lie.png")
+        logger.info(f"发现并选择【枪-2分裂-技能】")
     elif find_and_click('images/ji_neng/qiang_zeng_shang.png'):
-        logger.info(f"发现并选择【枪-增伤-技能】images/huan_qiu/qiang_zeng_shang.png")
+        logger.info(f"发现并选择【枪-增伤-技能】")
     elif find_and_click('images/ji_neng/qiang_bao_zha.png'):
-        logger.info(f"发现并选择【枪-爆炸-技能】images/ji_neng/qiang_bao_zha.png")
+        logger.info(f"发现并选择【枪-爆炸-技能】")
     # elif find_and_click('images/ji_neng/wen_ya_dan_lian_fa.png'):
     #     logger.info(f"发现并选择【温压弹连发技能】images/ji_neng/wen_ya_dan_lian_fa.png")
 
 def close_ji_neng_jiao_yi():
     if find_and_click('images/huan_qiu/ji_neng_jiao_yi.png', offset_name='close_ji_neng_jiao_yi'):
-        logger.info(f"发现 images/huan_qiu/ji_neng_jiao_yi.png, 执行 - 关闭技能交易")
+        logger.info(f"发现【技能交易】图片, 执行 - 关闭技能交易")
 
 def close_yuan_zheng():
     # 只有 周五、周六、周日 才会出现 退出远征
     if datetime.now().weekday() > 4:
         if find_and_click('images/huan_qiu/yuan_zheng_fang_an.png', offset_name='close_yuan_zheng_fang_an'):
-            logger.info(f"发现 images/huan_qiu/yuan_zheng_fang_an.png, 执行- 关闭远征-方案选择")
+            logger.info(f"发现【远征方案】, 执行- 关闭远征-方案选择")
 
         if find_and_click('images/huan_qiu/yuan_zheng.png', offset_name='close_yuan_zheng'):
-            logger.info(f"发现 images/huan_qiu/yuan_zheng.png, 执行 - 关闭远征")
+            logger.info(f"发现进入【远征】页面, 执行 - 关闭远征")
             time.sleep(1)
 
             if find_and_click('images/huan_qiu/close_yuan_zheng_que_ren.png', offset_name='close_yuan_zheng_que_ren'):
-                logger.info(f"发现 images/huan_qiu/close_yuan_zheng_que_ren.png, 执行- 退出远征")
+                logger.info(f"发现【确认-退出远征】按钮, 执行- 退出远征")
                 time.sleep(1)
             
             return True
@@ -162,40 +156,28 @@ def close_yuan_zheng():
 
 def close_guang_gao():
     logger.info(f"关闭【广告】")
-    time.sleep(1)
     find_and_click('images/header.png', offset_name='close_guang_gao_1')
-    time.sleep(1)
 
 def close_chou_jiang_1():
     logger.info(f"关闭【抽奖】")
-    time.sleep(1)
     find_and_click('images/header.png', offset_name='close_chou_jiang_1')
-    time.sleep(1)
 
 def _close_x():
     logger.info(f"关闭【X】")
-    time.sleep(1)
     find_and_click('images/close_x.png', confidence=0.9)
-    time.sleep(1)
 
 def close_x_2():
     logger.info(f"关闭【X】")
-    time.sleep(1)
     find_and_click('images/close_x_2.png', confidence=0.9)
-    time.sleep(1)
 
 def close_x():
     logger.info(f"关闭【X】")
-    time.sleep(1)
     find_and_click('images/close_x.png', confidence=0.9)
     find_and_click('images/close_x_2.png', confidence=0.9)
-    time.sleep(1)
 
 def back():
     logger.info(f"返回")
-    time.sleep(1)
     find_and_click('images/back.png', confidence=0.9)
-    time.sleep(1)
 
 def kan_guang_gao(guang_gao_time=35, wait_fu_li=2):
     logger.info(f"看【广告】")
