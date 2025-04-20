@@ -37,7 +37,7 @@ def close_chat():
 
 def open_zhao_mu():
     if find('images/huan_qiu/chat_zhao_mu.png'):
-        logger.info(f"找到招募图片，招募已经打开 images/huan_qiu/chat_zhao_mu.png")
+        logger.info(f"找到招募图片 images/huan_qiu/chat_zhao_mu.png")
         # 点击招募
         find_and_click('images/huan_qiu/chat_zhao_mu.png', offset_name='open_zhao_mu')
         logger.info(f"第一次打开招募")
