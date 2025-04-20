@@ -662,8 +662,8 @@ class CommonTask:
         find_and_click('images/guan_ying_bao_zang/back.png')
 
     def sai_ji(self):
-        """执行【赛季】任务"""
-        logger.info("执行【赛季】任务...")
+        """执行【赛季】任务，领取战斗次数"""
+        logger.info("执行【赛季】任务，领取行动次数...")
 
         # 或者使用具名常量
         SAI_JI_DAYS = {4, 5, 6}
