@@ -18,7 +18,6 @@ from .operators.common_operations import (
    back,
    kan_guang_gao,
 )
-from config import DRAG_CONFIGS
     
 
 logger = get_logger()
