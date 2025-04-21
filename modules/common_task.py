@@ -35,6 +35,7 @@ class CommonTask:
             'te_hui': self.te_hui,
             'hao_you': self.hao_you,
             'mail': self.mail,
+            'jin_li': self.jin_li,
         }
 
     # def run(self, tasks: str = 'all', exclude: str = None):
@@ -248,7 +249,51 @@ class CommonTask:
         finally:
             close_x()
 
+    def jin_li(self):
+        """执行【锦鲤】任务"""
+        logger.info("执行【锦鲤】任务...")
+        open_zhan_dou()
+        
+        found = False
+        find_num = 0
+        while not found and find_num < 6:
+            if find('images/jin_li/button.png'):
+                logger.info(f"找到【锦鲤】")
+                found = True
+                break
+
+            # 执行拖拽
+            # 向上拖拽3次，
+            # 向下拖拽3次，
+            if find_num < 3:
+                logger.info(f"找锦鲤 - 向上拖拽 {find_num} 次")
+                drag('images/header.png', 'zhan_dou_left_down')
             
+            if find_num >= 3:
+                logger.info(f"找锦鲤 - 向下拖拽 {find_num} 次")
+                drag('images/header.png', 'zhan_dou_left_up')
+            
+            time.sleep(1)
+            find_num += 1
+
+        if not found:
+            logger.info(f"未找到【锦鲤】")
+            return False
+        
+        if find_and_click('images/jin_li/button.png'):
+            logger.info(f"打开【锦鲤】")
+
+        if find_and_click('images/jin_li/fu_li.png'):
+            logger.info(f"打开【锦鲤】-【免费福利】")
+        else:
+            logger.info(f"未找到【锦鲤】-【免费福利】")
+
+        if find_and_click('images/jin_li/ling_qu.png', after_sleep=2):
+            logger.info(f"打开【锦鲤】-【免费福利】-【领取奖励】")
+            close_chou_jiang_1()
+
+        close_x()
+
 
     def huo_dong(self):
         """执行【战斗-活动】任务"""
