@@ -37,51 +37,6 @@ class CommonTask:
             'jin_li': self.jin_li,
         }
 
-    # def run(self, tasks: str = 'all', exclude: str = None):
-    #     """执行任务调度入口
-    #     :param exclude: 需要排除的任务列表（逗号分隔）
-    #     """
-    #     selected_tasks = self._parse_tasks(tasks)
-    #     exclude_list = [t.strip() for t in (exclude.split(',') if exclude else [])]
-        
-    #     # 过滤排除任务
-    #     final_tasks = [t for t in selected_tasks if t not in exclude_list]
-        
-    #     # 确保ti_li任务最后执行（如果存在）
-    #     if 'ti_li' in final_tasks:
-    #         final_tasks.remove('ti_li')
-    #         final_tasks.append('ti_li')
-        
-    #     logger.info(f"排除任务：{exclude_list} | 最终执行任务：{', '.join(final_tasks)}")
-        
-    #     task_durations = {}  # 存储任务耗时
-    #     start_total = time.time()  # 总开始时间
-        
-    #     for task_name in final_tasks:
-    #         if task_name in self.task_registry:
-    #             start_time = time.time()
-    #             self.task_registry[task_name]()
-    #             task_durations[task_name] = time.time() - start_time
-    #         else:
-    #             logger.warning(f"未知任务：{task_name}")
-        
-    #     # 输出汇总信息
-    #     total_duration = time.time() - start_total
-    #     logger.info("📊 任务执行时间汇总：")
-    #     for task, duration in task_durations.items():
-    #         # 超过60秒的转换为分钟显示
-    #         if duration >= 60:
-    #             mins, secs = divmod(duration, 60)
-    #             logger.info(f"→ {task}: {int(mins)}分{secs:.2f}秒")
-    #         else:
-    #             logger.info(f"→ {task}: {duration:.2f}秒")
-        
-    #     # 总耗时超过60秒时显示分钟格式
-    #     if total_duration >= 60:
-    #         total_mins, total_secs = divmod(total_duration, 60)
-    #         logger.info(f"⏱️ 总耗时: {int(total_mins)}分{total_secs:.2f}秒")
-    #     else:
-    #         logger.info(f"⏱️ 总耗时: {total_duration:.2f}秒")
 
     def run(self, tasks: str = 'all', exclude: str = None):
         """执行任务调度入口"""
