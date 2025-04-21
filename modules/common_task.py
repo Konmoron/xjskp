@@ -36,145 +36,337 @@ class CommonTask:
             'mail': self.mail,
             'jin_li': self.jin_li,
         }
-
+        
+        # 新增实例变量
+        self.task_queue = []          # 任务队列
+        self.excluded_tasks = []       # 被排除任务
+        self.task_durations = {}       # 任务耗时记录
+        self.total_start = 0           # 总开始时间戳
+        
+        # 体力任务相关状态
+        self.ti_li_count = 0           # 已执行次数
+        self.ti_li_max = 3             # 最大次数
+        self.ti_li_wait_start = None   # 等待开始时间
+        self.ti_li_all_done = False    # 是否全部完成
+        self.ti_li_single_done = False # 单次完成状态
 
     def run(self, tasks: str = 'all', exclude: str = None):
         """执行任务调度入口"""
-        logger.info("🎮 初始化任务队列".ljust(50, "─"))
-        final_tasks = self._parse_tasks(tasks)
-        exclude_list = [t.strip() for t in (exclude.split(',') if exclude else [])]
-        final_tasks = [t for t in final_tasks if t not in exclude_list]
-
-        # hao_you，mail 最后执行
-        if 'hao_you' in final_tasks:
-            final_tasks.remove('hao_you')
-            final_tasks.append('hao_you')
-            logger.info(f"✉️ 调整好友任务到队列末尾")
-        if 'mail' in final_tasks:
-            final_tasks.remove('mail')
-            final_tasks.append('mail')
-            logger.info(f"📨 调整邮件任务到队列末尾")
-
-        # 确保ti_li任务最先执行（如果存在）
-        if 'ti_li' in final_tasks:
-            final_tasks.remove('ti_li')
-            final_tasks.insert(0, 'ti_li')
-            logger.info(f"⚡ 调整体力任务到队列首位")
-
-        logger.info(f"📋 最终任务队列: {', '.join(final_tasks)}")
-        logger.info(f"🗑️ 排除任务列表: {', '.join(exclude_list) if exclude_list else '无'}")
-
-        # 记录每个任务的开始时间
-        task_durations = {}  # 存储任务耗时 {'任务名': [耗时1, 耗时2]}
-        total_start_time = time.time()  # 总开始时间
-
-        # 特殊处理 ti_li 任务
-        ti_li_count = 0  # 已执行体力任务次数
-        ti_li_max = 3    # 最大执行次数
-        ti_li_wait_start_time = None  # 等待开始时间
-        ti_li_all_done, ti_li_single_done = False, False  # 体力任务执行结果
+        self._init_runtime_state(tasks, exclude)
         
         try:
             logger.info("\n🚀 开始执行任务队列".ljust(50, "─"))
-            while final_tasks and len(final_tasks) > 0:
-                current_task = final_tasks[0]  # 
-                task_start_time = time.time()  # 单个任务开始时间
-            
-                # 处理体力任务
-                if current_task == 'ti_li':
-                    if ti_li_count >= ti_li_max or ti_li_all_done:
-                        final_tasks.pop(0)  # 移除已完成的体力任务
-                        ti_li_wait_start_time = None
-                        logger.info(f"⏹️ 体力任务已达上限({ti_li_max}次)")
-                        continue
-                    
-                    # 执行单次体力任务
-                    ti_li_all_done, ti_li_single_done = self._single_ti_li()
-                    status_icon = "✅" if ti_li_single_done else "❌"
-                    if ti_li_single_done and not ti_li_all_done:
-                        ti_li_count += 1
-                        ti_li_wait_start_time = time.time()
-                        logger.info(f"{status_icon} 体力领取进度: {ti_li_count}/{ti_li_max}")
-                    elif ti_li_all_done:
-                        logger.info("🏁 体力任务已全部完成")
-                        ti_li_wait_start_time = None
-                    else:
-                        logger.warning(f"{status_icon} 体力任务执行失败")
-                        ti_li_wait_start_time = time.time()
-                    
-                    final_tasks.pop(0)  # 执行失败也移除
-                # 处理其他任务
-                else:
-                    logger.info(f"\n▶️ 当前执行: {current_task.upper()} ".ljust(40, "─"))
-                    try:
-                        self.task_registry[current_task]()
-                        open_zhan_dou()
-                        
-                        # 记录耗时
-                        duration = time.time() - task_start_time
-                        if current_task not in task_durations:
-                            task_durations[current_task] = []
-                        task_durations[current_task].append(duration)
-                        
-                        logger.info(f"✅ 完成 {current_task} | 耗时 {self._format_duration(duration)}")
-                    except Exception as e:
-                        logger.error(f"‼️ 任务异常: {str(e)}")
-                    finally:
-                        final_tasks.pop(0)
-
-                # 检查是否需要重新插入体力任务
-                if (ti_li_wait_start_time and (time.time() - ti_li_wait_start_time) >= 310 
-                    and ti_li_count < ti_li_max
-                    and 'ti_li' not in final_tasks):
-                    logger.info("⏰ 满足冷却条件，重新插入体力任务")
-                    final_tasks.insert(0, 'ti_li')
-                    ti_li_wait_start_time = None
-
-            # 处理体力未执行完的情况
-            logger.info("\n🔍 检查后续体力任务".ljust(50, "─"))
-            while ti_li_wait_start_time and ti_li_count < ti_li_max:
-                if (time.time() - ti_li_wait_start_time) >= 310:
-                    ti_li_all_done, ti_li_single_done = self._single_ti_li()
-                    if ti_li_single_done and not ti_li_all_done:
-                        ti_li_count += 1
-                        ti_li_wait_start_time = time.time()
-                    else:
-                        logger.warning(f"执行体力任务失败，跳过")
-                        ti_li_wait_start_time = None
-                        break
-                else:
-                    elapsed = time.time() - ti_li_wait_start_time
-                    logger.info(f"等待第{ti_li_count+1}次领取体力 | 已等待 {self._format_duration(elapsed)}")
-                    time.sleep(10)
+            self._process_main_queue()
+            self._handle_remaining_tili()
         finally:
-            # 统计报告
-            logger.info("\n📊 执行摘要".ljust(50, "─"))
-            total_duration = time.time() - total_start_time
-            
-            # 任务耗时统计
-            if task_durations:
-                logger.info("📦 常规任务统计:")
-                for task, durations in task_durations.items():
-                    total = sum(durations)
-                    avg = total / len(durations)
-                    logger.info(
-                        f"  ▪ {task.ljust(8)}: "
-                        f"执行{len(durations):>2}次 | "
-                        f"总耗时{self._format_duration(total):>8} | "
-                        f"平均{self._format_duration(avg):>8}"
-                    )
-            
-            # 体力任务统计
-            if ti_li_count > 0:
-                logger.info("\n⚡ 体力任务统计:")
-                logger.info(f"  ▪ 成功执行: {ti_li_count+1}次")
-                logger.info(f"  ▪ 冷却等待: {self._format_duration(310*(ti_li_count-1)) if ti_li_count>1 else '无'}")
+            self._generate_summary_report()
 
-            # 最终汇总
-            logger.info("\n🏁 最终汇总".ljust(50, "─"))
-            logger.info(f"⏱️ 总运行时间: {self._format_duration(total_duration)}")
-            logger.info(f"📌 完成任务数: {sum(len(v) for v in task_durations.values()) + ti_li_count}")
-            logger.info("🎉 所有任务处理完成".ljust(50, "─"))
+    def _init_runtime_state(self, tasks, exclude):
+        """初始化运行时状态"""
+        # 重置所有状态
+        self.task_queue = self._parse_tasks(tasks)
+        self.excluded_tasks = [t.strip() for t in (exclude.split(',') if exclude else [])]
+        self.task_durations = {}
+        self.total_start = time.time()
+        
+        # 体力任务状态重置
+        self.ti_li_count = 0
+        self.ti_li_wait_start = None
+        self.ti_li_all_done = False
+        self.ti_li_single_done = False
+
+        # 调整任务顺序
+        self._adjust_task_order('hao_you', "✉️ 调整好友任务到队列末尾")
+        self._adjust_task_order('mail', "📨 调整邮件任务到队列末尾")
+        self._adjust_task_order('ti_li', "⚡ 调整体力任务到队列首位", front=True)
+
+        logger.info(f"📋 最终任务队列: {', '.join(self.task_queue)}")
+        logger.info(f"🗑️ 排除任务列表: {', '.join(self.excluded_tasks) if self.excluded_tasks else '无'}")
+
+    def _adjust_task_order(self, task_name, log_msg, front=False):
+        """通用任务顺序调整方法"""
+        if task_name in self.task_queue:
+            self.task_queue.remove(task_name)
+            if front:
+                self.task_queue.insert(0, task_name)
+            else:
+                self.task_queue.append(task_name)
+            logger.info(log_msg)
+
+    def _process_main_queue(self):
+        """处理主任务队列"""
+        while self.task_queue:
+            current_task = self.task_queue[0]
+            
+            if current_task == 'ti_li':
+                self._process_tili_task()
+            else:
+                self._process_regular_task(current_task)
+                
+            self._check_tili_retry()
+
+    def _process_tili_task(self):
+        """处理体力任务逻辑"""
+        if self.ti_li_count >= self.ti_li_max or self.ti_li_all_done:
+            self.task_queue.pop(0)
+            return
+
+        # 执行体力任务
+        self.ti_li_all_done, self.ti_li_single_done = self._single_ti_li()
+        self._update_tili_status()
+        self.task_queue.pop(0)
+
+    def _update_tili_status(self):
+        """更新体力任务状态"""
+        status_icon = "✅" if self.ti_li_single_done else "❌"
+        
+        if self.ti_li_single_done and not self.ti_li_all_done:
+            self.ti_li_count += 1
+            self.ti_li_wait_start = time.time()
+            logger.info(f"{status_icon} 进度: {self.ti_li_count}/{self.ti_li_max}")
+        elif self.ti_li_all_done:
+            logger.info("🏁 体力任务全部完成")
+            self.ti_li_wait_start = None
+        else:
+            logger.warning(f"{status_icon} 执行失败")
+            self.ti_li_wait_start = time.time()
+
+    def _process_regular_task(self, task_name):
+        """处理常规任务"""
+        logger.info(f"\n▶️ 当前执行: {task_name.upper()} ".ljust(40, "─"))
+        task_start = time.time()
+        
+        try:
+            self.task_registry[task_name]()
+            open_zhan_dou()
+            self._record_task_duration(task_name, task_start)
+        except Exception as e:
+            logger.error(f"‼️ 任务异常: {str(e)}")
+        finally:
+            self.task_queue.pop(0)
+
+    def _record_task_duration(self, task_name, start_time):
+        """记录任务耗时"""
+        duration = time.time() - start_time
+        if task_name not in self.task_durations:
+            self.task_durations[task_name] = []
+        self.task_durations[task_name].append(duration)
+        logger.info(f"✅ 完成 {task_name} | 耗时 {self._format_duration(duration)}")
+
+    def _check_tili_retry(self):
+        """检查体力任务重试条件"""
+        if (not self.ti_li_all_done
+            and self.ti_li_wait_start 
+            and (time.time() - self.ti_li_wait_start) >= 310
+            and self.ti_li_count < self.ti_li_max
+            and 'ti_li' not in self.task_queue):
+            logger.info("⏰ 重新插入体力任务")
+            self.task_queue.insert(0, 'ti_li')
+            self.ti_li_wait_start = None
+
+    def _handle_remaining_tili(self):
+        """处理剩余体力任务"""
+        logger.info("\n🔍 检查后续体力任务".ljust(50, "─"))
+        while (not self.ti_li_all_done and self.ti_li_wait_start and self.ti_li_count < self.ti_li_max):
+            if (time.time() - self.ti_li_wait_start) >= 310:
+                self.ti_li_all_done, self.ti_li_single_done = self._single_ti_li()
+                if self.ti_li_single_done and not self.ti_li_all_done:
+                    self.ti_li_count += 1
+                    self.ti_li_wait_start = time.time()
+                else:
+                    logger.warning("执行失败，跳过")
+                    self.ti_li_wait_start = None
+                    break
+            else:
+                elapsed = time.time() - self.ti_li_wait_start
+                logger.info(f"等待第{self.ti_li_count+1}次领取 | 已等待 {self._format_duration(elapsed)}")
+                time.sleep(10)
+
+    def _generate_summary_report(self):
+        """生成总结报告"""
+        logger.info("\n📊 执行摘要".ljust(50, "─"))
+        total_duration = time.time() - self.total_start
+        
+        # 常规任务统计
+        if self.task_durations:
+            logger.info("📦 常规任务统计:")
+            for task, durations in self.task_durations.items():
+                total = sum(durations)
+                avg = total / len(durations)
+                logger.info(
+                    f"  ▪ {task.ljust(8)}: "
+                    f"执行{len(durations):>2}次 | "
+                    f"总耗时{self._format_duration(total):>8} | "
+                    f"平均{self._format_duration(avg):>8}"
+                )
+        
+        # 体力任务统计
+        if self.ti_li_count > 0:
+            logger.info("\n⚡ 体力任务统计:")
+            logger.info(f"  ▪ 成功执行: {self.ti_li_count}次")
+            if self.ti_li_count > 1:
+                logger.info(f"  ▪ 冷却等待: {self._format_duration(310*(self.ti_li_count-1))}")
+
+        # 最终汇总
+        logger.info("\n🏁 最终汇总".ljust(50, "─"))
+        logger.info(f"⏱️ 总运行时间: {self._format_duration(total_duration)}")
+        logger.info(f"📌 完成任务数: {sum(len(v) for v in self.task_durations.values()) + self.ti_li_count}")
+        logger.info("🎉 所有任务处理完成".ljust(50, "─"))
+
+# class CommonTask:
+#     def __init__(self):
+#         self.task_registry: Dict[str, Callable] = {
+#             'ti_li': self._single_ti_li,
+#             'jun_tuan': self.jun_tuan,
+#             'gybz': self.gybz,
+#             'shop': self.shop,
+#             'huo_dong': self.huo_dong,
+#             'sai_ji': self.sai_ji,
+#             'te_hui': self.te_hui,
+#             'hao_you': self.hao_you,
+#             'mail': self.mail,
+#             'jin_li': self.jin_li,
+#         }
+
+
+#     def run(self, tasks: str = 'all', exclude: str = None):
+#         """执行任务调度入口"""
+#         logger.info("🎮 初始化任务队列".ljust(50, "─"))
+#         final_tasks = self._parse_tasks(tasks)
+#         exclude_list = [t.strip() for t in (exclude.split(',') if exclude else [])]
+#         final_tasks = [t for t in final_tasks if t not in exclude_list]
+
+#         # hao_you，mail 最后执行
+#         if 'hao_you' in final_tasks:
+#             final_tasks.remove('hao_you')
+#             final_tasks.append('hao_you')
+#             logger.info(f"✉️ 调整好友任务到队列末尾")
+#         if 'mail' in final_tasks:
+#             final_tasks.remove('mail')
+#             final_tasks.append('mail')
+#             logger.info(f"📨 调整邮件任务到队列末尾")
+
+#         # 确保ti_li任务最先执行（如果存在）
+#         if 'ti_li' in final_tasks:
+#             final_tasks.remove('ti_li')
+#             final_tasks.insert(0, 'ti_li')
+#             logger.info(f"⚡ 调整体力任务到队列首位")
+
+#         logger.info(f"📋 最终任务队列: {', '.join(final_tasks)}")
+#         logger.info(f"🗑️ 排除任务列表: {', '.join(exclude_list) if exclude_list else '无'}")
+
+#         # 记录每个任务的开始时间
+#         task_durations = {}  # 存储任务耗时 {'任务名': [耗时1, 耗时2]}
+#         total_start_time = time.time()  # 总开始时间
+
+#         # 特殊处理 ti_li 任务
+#         ti_li_count = 0  # 已执行体力任务次数
+#         ti_li_max = 3    # 最大执行次数
+#         ti_li_wait_start_time = None  # 等待开始时间
+#         ti_li_all_done, ti_li_single_done = False, False  # 体力任务执行结果
+        
+#         try:
+#             logger.info("\n🚀 开始执行任务队列".ljust(50, "─"))
+#             while final_tasks and len(final_tasks) > 0:
+#                 current_task = final_tasks[0]  # 
+#                 task_start_time = time.time()  # 单个任务开始时间
+            
+#                 # 处理体力任务
+#                 if current_task == 'ti_li':
+#                     if ti_li_count >= ti_li_max or ti_li_all_done:
+#                         final_tasks.pop(0)  # 移除已完成的体力任务
+#                         ti_li_wait_start_time = None
+#                         logger.info(f"⏹️ 体力任务已达上限({ti_li_max}次)")
+#                         continue
+                    
+#                     # 执行单次体力任务
+#                     ti_li_all_done, ti_li_single_done = self._single_ti_li()
+#                     status_icon = "✅" if ti_li_single_done else "❌"
+#                     if ti_li_single_done and not ti_li_all_done:
+#                         ti_li_count += 1
+#                         ti_li_wait_start_time = time.time()
+#                         logger.info(f"{status_icon} 体力领取进度: {ti_li_count}/{ti_li_max}")
+#                     elif ti_li_all_done:
+#                         logger.info("🏁 体力任务已全部完成")
+#                         ti_li_wait_start_time = None
+#                     else:
+#                         logger.warning(f"{status_icon} 体力任务执行失败")
+#                         ti_li_wait_start_time = time.time()
+                    
+#                     final_tasks.pop(0)  # 执行失败也移除
+#                 # 处理其他任务
+#                 else:
+#                     logger.info(f"\n▶️ 当前执行: {current_task.upper()} ".ljust(40, "─"))
+#                     try:
+#                         self.task_registry[current_task]()
+#                         open_zhan_dou()
+                        
+#                         # 记录耗时
+#                         duration = time.time() - task_start_time
+#                         if current_task not in task_durations:
+#                             task_durations[current_task] = []
+#                         task_durations[current_task].append(duration)
+                        
+#                         logger.info(f"✅ 完成 {current_task} | 耗时 {self._format_duration(duration)}")
+#                     except Exception as e:
+#                         logger.error(f"‼️ 任务异常: {str(e)}")
+#                     finally:
+#                         final_tasks.pop(0)
+
+#                 # 检查是否需要重新插入体力任务
+#                 if (ti_li_wait_start_time and (time.time() - ti_li_wait_start_time) >= 310 
+#                     and ti_li_count < ti_li_max
+#                     and 'ti_li' not in final_tasks):
+#                     logger.info("⏰ 满足冷却条件，重新插入体力任务")
+#                     final_tasks.insert(0, 'ti_li')
+#                     ti_li_wait_start_time = None
+
+#             # 处理体力未执行完的情况
+#             logger.info("\n🔍 检查后续体力任务".ljust(50, "─"))
+#             while ti_li_wait_start_time and ti_li_count < ti_li_max:
+#                 if (time.time() - ti_li_wait_start_time) >= 310:
+#                     ti_li_all_done, ti_li_single_done = self._single_ti_li()
+#                     if ti_li_single_done and not ti_li_all_done:
+#                         ti_li_count += 1
+#                         ti_li_wait_start_time = time.time()
+#                     else:
+#                         logger.warning(f"执行体力任务失败，跳过")
+#                         ti_li_wait_start_time = None
+#                         break
+#                 else:
+#                     elapsed = time.time() - ti_li_wait_start_time
+#                     logger.info(f"等待第{ti_li_count+1}次领取体力 | 已等待 {self._format_duration(elapsed)}")
+#                     time.sleep(10)
+#         finally:
+#             # 统计报告
+#             logger.info("\n📊 执行摘要".ljust(50, "─"))
+#             total_duration = time.time() - total_start_time
+            
+#             # 任务耗时统计
+#             if task_durations:
+#                 logger.info("📦 常规任务统计:")
+#                 for task, durations in task_durations.items():
+#                     total = sum(durations)
+#                     avg = total / len(durations)
+#                     logger.info(
+#                         f"  ▪ {task.ljust(8)}: "
+#                         f"执行{len(durations):>2}次 | "
+#                         f"总耗时{self._format_duration(total):>8} | "
+#                         f"平均{self._format_duration(avg):>8}"
+#                     )
+            
+#             # 体力任务统计
+#             if ti_li_count > 0:
+#                 logger.info("\n⚡ 体力任务统计:")
+#                 logger.info(f"  ▪ 成功执行: {ti_li_count+1}次")
+#                 logger.info(f"  ▪ 冷却等待: {self._format_duration(310*(ti_li_count-1)) if ti_li_count>1 else '无'}")
+
+#             # 最终汇总
+#             logger.info("\n🏁 最终汇总".ljust(50, "─"))
+#             logger.info(f"⏱️ 总运行时间: {self._format_duration(total_duration)}")
+#             logger.info(f"📌 完成任务数: {sum(len(v) for v in task_durations.values()) + ti_li_count}")
+#             logger.info("🎉 所有任务处理完成".ljust(50, "─"))
+
     def _format_duration(self, seconds: float) -> str:
         """将秒数格式化为 mm'ss'' 形式"""
         mins, secs = divmod(int(seconds), 60)
@@ -512,7 +704,7 @@ class CommonTask:
                 time.sleep(1)
                 close_guang_gao()
             
-            close_x_2()
+            close_x()
 
         # 打开任务大厅
         if find_and_click('images/jun_tuan/task.png'):
