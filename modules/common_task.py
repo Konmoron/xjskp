@@ -203,7 +203,7 @@ class CommonTask:
         # 体力任务统计
         if self.ti_li_count > 0:
             logger.info("\n⚡ 体力任务统计:")
-            logger.info(f"  ▪ 成功执行: {self.ti_li_count}次")
+            logger.info(f"  ▪ 成功执行: {self.ti_li_count+1}次")
             if self.ti_li_count > 1:
                 logger.info(f"  ▪ 冷却等待: {self._format_duration(310*(self.ti_li_count-1))}")
 
