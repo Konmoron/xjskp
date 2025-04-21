@@ -714,15 +714,18 @@ class CommonTask:
             # 拖拽搜索辅助方法
             def drag_search(find_image, drag_config, direction, max_attempts=3):
                 """统一拖拽搜索逻辑"""
+                if find(find_image, confidence=0.9):
+                    logger.info(f"🎯 找到{find_image}")
+                    return True
+                
                 for i in range(max_attempts):
                     logger.info(f"🔄 第{i+1}次{direction}拖拽搜索")
                     time.sleep(1)
                     drag('images/header.png', drag_config)
-                    time.sleep(1)
+                    time.sleep(2)
                     if find(find_image, confidence=0.9):
                         logger.info(f"🎯 找到{find_image}")
                         return True
-                    time.sleep(1)
                 
                 logger.info(f"❌ 超过最大拖拽次数，未找到{find_image}")
                 return False
