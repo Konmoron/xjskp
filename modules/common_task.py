@@ -789,9 +789,7 @@ class CommonTask:
 
         # 打开商店
         time.sleep(1)
-        if not open_shop():
-            logger.info(f"打开【商店】失败")
-            return
+        open_shop()
 
         # 领取2次宝箱
         for i in range(2):
