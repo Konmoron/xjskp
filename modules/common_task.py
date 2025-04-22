@@ -821,6 +821,15 @@ class CommonTask:
         logger.info("执行【观影宝藏】任务...")
         open_zhan_dou()
 
+        # 找到特惠
+        if drag_search('images/header.png', 'images/guan_ying_bao_zang/open.png', 'zhan_dou_left_down', 3):
+            logger.info(f"向下拖拽找到【观影宝藏】")
+        elif drag_search('images/header.png', 'images/guan_ying_bao_zang/open.png', 'zhan_dou_left_up', 3):
+            logger.info(f"向上拖拽找到【观影宝藏】")
+        else:
+            logger.info(f"向上、向下拖拽未找到【观影宝藏】")
+            return False
+
         if find_and_click('images/guan_ying_bao_zang/open.png'):
             time.sleep(1)
             logger.info(f"打开【观影宝藏】")
