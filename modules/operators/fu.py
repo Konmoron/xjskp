@@ -103,7 +103,26 @@ def xuan_fu(image_path, confidence=0.8):
 
 def main():
     """
-    主函数
+    服务器切换工具主入口
+    
+    参数说明：
+    -i/--image     必需参数，指定目标服务器的图片路径（支持相对/绝对路径）
+    -c/--confidence 可选参数，设置图像识别置信度阈值（0.5~1.0，默认0.8）
+    
+    使用示例：
+    1. 基本用法：
+       python.exe -m modules.operators.fu -i "images/fu/server_123.png"
+       
+    2. 指定置信度：
+       python.exe -m modules.operators.fu -i "images\fu\server_456.png" -c 0.9
+       
+    3. 查看帮助：
+       python.exe -m modules.operators.fu -h
+       
+    注意事项：
+    • 图片路径需使用正斜杠（/）或双反斜杠（\）
+    • 置信度过低可能导致误匹配，建议不低于0.9
+    • 运行时需保持游戏窗口在前台可见
     """
     
     parser = argparse.ArgumentParser(description='服务器切换工具')
