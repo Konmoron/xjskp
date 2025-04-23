@@ -1,5 +1,7 @@
 # 简化后的主入口文件
 from modules.huan_qiu import HuanQiu
+import time
+from tqdm import tqdm
 from modules.common_task import CommonTask
 from utils.logger import get_logger
 import argparse
@@ -13,6 +15,10 @@ def main():
     # 新增服务器切换参数
     parser.add_argument('--fu', action='store_true', 
                       help='启用多服务器切换模式（需要配置FU_CONFIGS）')
+    parser.add_argument('--wait-time', type=int, default=60,
+                  help='通用等待时间（单位：分钟，默认10分钟）')
+    parser.add_argument('--wait', action='store_true', 
+                  help='等待多久开始游戏（默认60分钟）')
 
     group = parser.add_mutually_exclusive_group(required=False)  # 修改为不强制要求参数
     
@@ -31,15 +37,6 @@ def main():
 
     args = parser.parse_args()
 
-    # 打印参数
-    logger.info("📦 运行时参数配置")
-    logger.info(f"├─ 🌐 多服务器模式: {'' if args.fu else '不'}启用")
-    logger.info(f"├─ 🚀 寰球救援任务: {'✅ 启用' if args.huanqiu else '❌ 禁用'}")
-    logger.info(f"│  ├─ 执行次数: {args.number}次")
-    logger.info(f"│  └─ 技能系统: {'🔴 禁用' if args.disable_skill else '🟢 启用'}")
-    logger.info(f"└─ 🛠️ 通用任务: {'✅ 启用' if args.tasks is not None else '❌ 禁用'}")
-    logger.info(f"   └─ 排除项目: {args.exclude or '无'}")
-
     # 1. 都指定了，都执行
     # 2. 都没指定，默认执行寰球救援
     # 3. 只指定了一个，执行对应的任务
@@ -48,6 +45,34 @@ def main():
     if not args.huanqiu and args.tasks is None:
         logger.info("🔍 检测到未指定任务，默认执行寰球救援")
         args.huanqiu = True
+
+    # 打印参数
+    logger.info("📦 运行时参数配置")
+    logger.info(f"├─ ⏳ 等待逻辑: {'🟢 启用' if args.wait else '🔴 禁用'}")
+    logger.info(f"│  └─ 等待时长: {args.wait_time}分钟" if args.wait else "")
+    logger.info(f"├─ 🌐 多服务器模式: {'' if args.fu else '不'}启用")
+    logger.info(f"├─ 🚀 寰球救援任务: {'✅ 启用' if args.huanqiu else '❌ 禁用'}")
+    logger.info(f"│  ├─ 执行次数: {args.number}次")
+    logger.info(f"│  └─ 技能系统: {'🔴 禁用' if args.disable_skill else '🟢 启用'}")
+    logger.info(f"└─ 🛠️ 通用任务: {'✅ 启用' if args.tasks is not None else '❌ 禁用'}")
+    logger.info(f"   └─ 排除项目: {args.exclude or '无'}")
+
+    if args.wait:
+        try:
+            wait_minutes = args.wait_time
+            wait_seconds = wait_minutes * 60
+            start_time = time.time()
+
+            logger.info(f"⏳ 开始等待 {args.wait_time} 分钟...")
+            with tqdm(total=wait_seconds, desc="等待进度", unit="s") as pbar:
+                for _ in range(wait_seconds):
+                    time.sleep(1)
+                    pbar.update(1)
+        except KeyboardInterrupt:
+            used_time = time.time() - start_time
+            logger.warning(f"\n⚠️ 用户主动中断等待 (已等待 {used_time:.1f} 秒)")
+        finally:
+            logger.info("✅ 等待阶段完成\n")
 
     def run():
         """统一任务执行方法"""
