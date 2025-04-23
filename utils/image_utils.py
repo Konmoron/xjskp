@@ -132,7 +132,8 @@ def drag(
 def drag_search(base_image_path, serach_image_path, drag_config_name, 
                 max_attempts=1,
                 base_image_confidence=0.8,
-                search_image_confidence=0.8):
+                search_image_confidence=0.8,
+                search_before_drag=True):
     """
     拖拽搜索指定图片
     :param base_image_path: 基准图片路径
@@ -140,6 +141,8 @@ def drag_search(base_image_path, serach_image_path, drag_config_name,
     :param drag_config_name: 拖拽配置名称
     :param base_image_confidence: 基准图片匹配精度
     :param search_image_confidence: 搜索图片匹配精度
+    :param max_attempts: 最大尝试次数
+    :param search_before_drag: 是否在拖拽前搜索图片
     :return: 是否找到并点击成功
     """
 
@@ -148,7 +151,13 @@ def drag_search(base_image_path, serach_image_path, drag_config_name,
     logger.info(f"→ 基准图片: {base_image_path}, 精度: {base_image_confidence}")
     logger.info(f"→ 搜索图片: {serach_image_path}, 精度: {search_image_confidence}")
     logger.info(f"→ 拖拽配置: {drag_config_name}")
+    logger.info(f"→ 拖拽前搜索: {'是' if search_before_drag else '否'}")
     logger.info(f"🔄 开始执行拖拽搜索，最大尝试次数: {max_attempts}")
+
+    logger.info(f"🔍 开始查找搜索图片: {serach_image_path}")
+    if find(serach_image_path, confidence=search_image_confidence):
+        logger.info(f"✅ 搜索图片找到: {serach_image_path}")
+        return True
 
     for i in range(max_attempts):
         # 执行拖拽操作

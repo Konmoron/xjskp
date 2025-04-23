@@ -447,31 +447,13 @@ class CommonTask:
 
         open_zhan_dou()
 
-        # 找到活动
-        found = False
-        find_num = 0
-        while not found and find_num < 6:
-            if find('images/huo_dong/button.png'):
-                logger.info(f"找到【活动】")
-                found = True
-                break
-            
-            # 执行拖拽
-            # 向上拖拽3次，
-            # 向下拖拽3次，
-            if find_num < 3:
-                logger.info(f"找活动 - 向上拖拽 {find_num} 次")
-                drag('images/header.png', 'zhan_dou_left_down')
-            
-            if find_num >= 3:
-                logger.info(f"找活动 - 向下拖拽 {find_num} 次")
-                drag('images/header.png', 'zhan_dou_left_up')
-            
-            time.sleep(1)
-            find_num += 1
-        
-        if not found:
-            logger.info(f"未找到【活动】")
+        # 找到活动按钮
+        if drag_search('images/header.png', 'images/huo_dong/button.png', 'zhan_dou_left_down', 3):
+            logger.info(f"向下拖拽找到【活动】")
+        elif drag_search('images/header.png', 'images/huo_dong/button.png', 'zhan_dou_left_up', 3):
+            logger.info(f"向上拖拽找到【活动】")
+        else:
+            logger.info(f"向上、向下拖拽未找到【活动】")
             return False
 
         if find_and_click('images/huo_dong/button.png'):
@@ -572,44 +554,6 @@ class CommonTask:
             logger.info("🚪 关闭体力界面")
             return all_done, single_done
 
-    # def ti_li(self):
-    #     """领体力任务"""
-    #     logger.info("执行领体力任务...")
-    #     time.sleep(1)
-        
-    #     # 打开【体力】
-    #     if find_and_click('images/header.png', offset_name='open_ti_li'):
-    #         time.sleep(1)
-    #         logger.info(f"打开【体力】")
-    #     else:
-    #         logger.info(f"打开【体力】失败")
-    #         return False
-
-    #     # 领取3次
-    #     for i in range(3):
-    #         if find('images/ti_li/end.png', confidence=0.95):
-    #             logger.info(f"领取【体力】已经执行完毕 images/ti_li/end.png")
-    #             time.sleep(1)
-    #             break
-
-    #         if find_and_click('images/ti_li/start.png', confidence=0.8):
-    #             logger.info(f"第{i+1}次领取体力 - 打开【观看广告】...")
-    #             time.sleep(35)
-    #             close_guang_gao()
-    #             close_chou_jiang_1()
-    #             logger.info(f"第{i+1}次领取体力成功")
-    #             # 等待5分钟
-    #             if i < 2:
-    #                 if find('images/ti_li/end.png', confidence=0.9):
-    #                     logger.info(f"领取【体力】已经执行完毕 images/ti_li/end.png")
-    #                     time.sleep(1)
-    #                     break
-                    
-    #                 logger.info(f"等待5分钟")
-    #                 time.sleep(310)
-        
-    #     # 关闭
-    #     close_x()
 
     def te_hui(self):
         """执行【特惠】任务"""
@@ -712,9 +656,9 @@ class CommonTask:
             time.sleep(1)
 
             # 拖拽搜索辅助方法
-            def drag_search(find_image, drag_config, direction, max_attempts=3):
+            def drag_search(find_image, drag_config, direction, max_attempts=3, find_before_drag=True):
                 """统一拖拽搜索逻辑"""
-                if find(find_image, confidence=0.9):
+                if find_before_drag and find(find_image, confidence=0.9):
                     logger.info(f"🎯 找到{find_image}")
                     return True
                 
@@ -755,7 +699,7 @@ class CommonTask:
                         logger.info(f"🎯 定位到{task_name}任务")
                         # 补偿
                         for bu_chang_config, bu_chang_direction, bu_chang_attempts in bu_chang:
-                            if drag_search(task_image, bu_chang_config, bu_chang_direction, bu_chang_attempts):
+                            if drag_search(task_image, bu_chang_config, bu_chang_direction, bu_chang_attempts, find_before_drag=False):
                                 logger.info(f"🎯 补偿之后，定位到{task_name}任务")
                                 break
                         
