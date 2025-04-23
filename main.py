@@ -7,6 +7,16 @@ from utils.logger import get_logger
 import argparse
 from config import FU_CONFIGS
 from modules.operators.fu import xuan_fu
+from modules.operators.bottom import (
+    open_zhan_dou
+)
+from modules.operators.common_operations import (
+   close_x,
+   close_x_2,
+)
+from utils.image_utils import (
+    find
+)
 
 logger = get_logger()
 
@@ -73,6 +83,20 @@ def main():
             logger.warning(f"\n⚠️ 用户主动中断等待 (已等待 {used_time:.1f} 秒)")
         finally:
             logger.info("✅ 等待阶段完成\n")
+
+    # 增加 close_x
+    retry_count = 0
+    max_retries = 6
+    while not ( find('images/fu/start_game.png') or find('images/fu/start_game_1.png') ):
+        if retry_count >= max_retries:
+            logger.error(f"🛑 超过最大重试次数（{max_retries}次），启动失败")
+            return False
+
+        logger.warning(f"⚠️ 检测到弹窗 | 第{retry_count+1}次尝试关闭...")
+        close_x()
+        time.sleep(4)
+        open_zhan_dou()
+        retry_count += 1
 
     def run():
         """统一任务执行方法"""
