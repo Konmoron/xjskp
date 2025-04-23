@@ -92,7 +92,7 @@ def main():
             logger.error(f"🛑 超过最大重试次数（{max_retries}次），启动失败")
             return False
 
-        logger.warning(f"⚠️ 检测到弹窗 | 第{retry_count+1}次尝试关闭...")
+        logger.warning(f"⚠️ 未找到【开始游戏】按钮 | 第{retry_count+1}次尝试关闭弹窗...")
         close_x()
         time.sleep(4)
         open_zhan_dou()
