@@ -49,7 +49,7 @@ def main():
     # 打印参数
     logger.info("📦 运行时参数配置")
     logger.info(f"├─ ⏳ 等待逻辑: {'🟢 启用' if args.wait else '🔴 禁用'}")
-    logger.info(f"│  └─ 等待时长: {args.wait_time}分钟" if args.wait else "")
+    logger.info(f"│  └─ 等待时长: {args.wait_time}分钟")
     logger.info(f"├─ 🌐 多服务器模式: {'' if args.fu else '不'}启用")
     logger.info(f"├─ 🚀 寰球救援任务: {'✅ 启用' if args.huanqiu else '❌ 禁用'}")
     logger.info(f"│  ├─ 执行次数: {args.number}次")
