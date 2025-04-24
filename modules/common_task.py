@@ -35,6 +35,8 @@ class CommonTask:
             'hao_you': self.hao_you,
             'mail': self.mail,
             'jin_li': self.jin_li,
+            'ri_li': self.ri_li,
+            'tu_wei': self.tu_wei,
         }
         
         # 新增实例变量
@@ -223,6 +225,44 @@ class CommonTask:
         if tasks.lower() == 'all':
             return list(self.task_registry.keys())
         return [t.strip() for t in tasks.split(',') if t.strip()]
+
+    def ri_li(self):
+        """执行【战斗-日历】任务"""
+        logger.info("执行【战斗-日历】任务...")
+        open_zhan_dou()
+
+        if find_and_click('images/ri_li/button.png'):
+            logger.info(f"打开【战斗-日历】")
+        else:
+            logger.info(f"未找到【战斗-日历】")
+            return False
+
+        if find_and_click('images/ri_li/ling_qu.png'):
+            logger.info(f"打开【战斗-日历】-【领取奖励】")
+            close_chou_jiang_1()
+
+        close_x()
+
+    def tu_wei(self):
+        """执行【战斗-七日突围】任务"""
+        logger.info("执行【战斗-七日突围】任务...")
+        open_zhan_dou()
+
+        # 找到活动按钮
+        if drag_search('images/header.png', 'images/tu_wei/button.png', 'zhan_dou_left_down', 3):
+            logger.info(f"向下拖拽找到【战斗-七日突围】")
+        elif drag_search('images/header.png', 'images/tu_wei/button.png', 'zhan_dou_left_up', 3):
+            logger.info(f"向上拖拽找到【战斗-七日突围】")
+        else:
+            logger.info(f"向上、向下拖拽未找到【战斗-七日突围】")
+            return False
+
+        if find_and_click('images/tu_wei/button.png', after_sleep=2):
+            logger.info(f"打开【战斗-七日突围】")
+            close_chou_jiang_1()
+
+        time.sleep(1)
+        back()
 
     def mail(self):
         """执行【邮件】任务"""
