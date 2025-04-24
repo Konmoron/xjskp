@@ -109,6 +109,7 @@ def drag(
                 
                 logger.debug(f"⏲️ 开始拖拽操作...")
                 pyautogui.dragRel(drag_x, drag_y, duration=duration, button='left')
+                time.sleep(2)
                 
                 logger.info(f"✅ 第{current}次拖拽完成")
                 if current < times:
