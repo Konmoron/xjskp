@@ -184,7 +184,7 @@ class CommonTask:
 
     def _generate_summary_report(self):
         """生成总结报告"""
-        logger.info("\n📊 执行摘要".ljust(50, "─"))
+        logger.info("📊 执行摘要".ljust(50, "─"))
         total_duration = time.time() - self.total_start
         
         # 常规任务统计
@@ -208,7 +208,7 @@ class CommonTask:
                 logger.info(f"  ▪ 冷却等待: {self._format_duration(310*(self.ti_li_count-1))}")
 
         # 最终汇总
-        logger.info("\n🏁 最终汇总".ljust(50, "─"))
+        logger.info("🏁 最终汇总".ljust(50, "─"))
         logger.info(f"⏱️ 总运行时间: {self._format_duration(total_duration)}")
         logger.info(f"📌 完成任务数: {sum(len(v) for v in self.task_durations.values()) + self.ti_li_count}")
         logger.info("🎉 所有任务处理完成".ljust(50, "─"))
