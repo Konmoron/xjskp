@@ -3,6 +3,7 @@ from modules.huan_qiu import HuanQiu
 import time
 from tqdm import tqdm
 from modules.common_task import CommonTask
+from modules.bao_xiang import BaoXiang
 from utils.logger import get_logger
 import argparse
 from config import FU_CONFIGS
@@ -30,10 +31,10 @@ def main():
     parser.add_argument('--wait', action='store_true', 
                   help='等待多久开始游戏（默认60分钟）')
 
-    group = parser.add_mutually_exclusive_group(required=False)  # 修改为不强制要求参数
+    # group = parser.add_mutually_exclusive_group(required=False)  # 修改为不强制要求参数
     
     # 寰球救援参数组
-    group.add_argument('--huanqiu', action='store_true')
+    parser.add_argument('--huanqiu', action='store_true')
     # 新增帮助说明
     parser.add_argument('-n', '--number', type=int, default=40,
                       help='寰球救援执行次数（默认40次）')
@@ -41,9 +42,13 @@ def main():
                       help='寰球救援-禁用技能选择功能')
 
     # 通用任务参数组
-    group.add_argument('--tasks', type=str, nargs='?', const='all')
+    parser.add_argument('--tasks', type=str, nargs='?', const='all')
     parser.add_argument('--exclude', type=str, default=None, 
                       help='需要排除的任务列表，逗号分隔（如：ads,ti_li）')
+
+    parser.add_argument('--bao-xiang', action='store_true')
+    parser.add_argument('--bao-xiang-num', type=int, default=10,
+                      help='宝箱10连抽的次数（默认10次）')
 
     args = parser.parse_args()
 
@@ -52,7 +57,7 @@ def main():
     # 3. 只指定了一个，执行对应的任务
 
     # 新增无参数时的默认逻辑
-    if not args.huanqiu and args.tasks is None:
+    if not args.huanqiu and args.tasks is None and not args.bao_xiang:
         logger.info("🔍 检测到未指定任务，默认执行寰球救援")
         args.huanqiu = True
 
@@ -64,8 +69,10 @@ def main():
     logger.info(f"├─ 🚀 寰球救援任务: {'✅ 启用' if args.huanqiu else '❌ 禁用'}")
     logger.info(f"│  ├─ 执行次数: {args.number}次")
     logger.info(f"│  └─ 技能系统: {'🔴 禁用' if args.disable_skill else '🟢 启用'}")
-    logger.info(f"└─ 🛠️ 通用任务: {'✅ 启用' if args.tasks is not None else '❌ 禁用'}")
-    logger.info(f"   └─ 排除项目: {args.exclude or '无'}")
+    logger.info(f"├─ 🛠️ 通用任务: {'✅ 启用' if args.tasks is not None else '❌ 禁用'}")
+    logger.info(f"│  └─ 排除项目: {args.exclude or '无'}")
+    logger.info(f"├─ 宝箱任务: {'✅ 启用' if args.bao_xiang else '❌ 禁用'}")
+    logger.info(f"   └─ 10连抽次数: {args.bao_xiang_num}次")
 
     if args.wait:
         try:
@@ -85,6 +92,7 @@ def main():
             logger.info("✅ 等待阶段完成\n")
 
     # 增加 close_x
+    open_zhan_dou()
     retry_count = 0
     max_retries = 6
     while not ( find('images/fu/start_game.png') or find('images/fu/start_game_1.png') ):
@@ -100,6 +108,11 @@ def main():
 
     def run():
         """统一任务执行方法"""
+        if args.bao_xiang:
+            logger.info(f"🎁 开始执行 宝箱 任务 | 璀璨宝箱10连抽次数: {args.bao_xiang_num}")
+            BaoXiang(max_num=args.bao_xiang_num).run()
+            logger.info("✅ 宝箱任务执行完毕")
+
         # 执行常规任务
         if args.tasks is not None:
             logger.info(f"🛠️ 开始执行通用任务 | 任务列表: {args.tasks or 'all'} | 排除任务: {args.exclude or '无'}")
