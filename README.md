@@ -6,6 +6,14 @@
 
 **如果点击不生效，请使用管理员权限运行**
 
+## 生成依赖
+
+```
+# 方法一：使用pipreqs（推荐，仅生成项目实际用到的依赖）
+pip install pipreqs
+pipreqs . --force --encoding=utf-8
+```
+
 ## 安装依赖
 
 ```
