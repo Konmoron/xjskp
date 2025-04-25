@@ -94,8 +94,8 @@ def main():
     open_zhan_dou()
     close_all_x()
     if not ( find('images/fu/start_game.png') or find('images/fu/start_game_1.png') ):
-        logger.info("🛑 关闭所有弹窗之后，没有找到游戏开始按钮，退出游戏")
-        return
+        logger.warn("🛑 关闭所有弹窗之后，没有找到游戏开始按钮")
+        # return
     logger.info("✅ 关闭所有弹窗之后，找到游戏开始按钮，继续执行")
     open_zhan_dou()
 

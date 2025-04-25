@@ -180,7 +180,7 @@ def close_x():
         logger.info(f"关闭【X】")
         return True
     else:
-        logger.info(f"没有找到关闭【X】")
+        logger.info(f"没有找到【X】")
         return False
 
 def close_all_x(max_attempts=6):
@@ -194,14 +194,14 @@ def close_all_x(max_attempts=6):
     Args:
         max_attempts (int): 最大尝试次数，避免无限循环
     """
+    logger.info(f"关闭所有弹窗, 最大尝试次数: {max_attempts}")
     for i in range(max_attempts):
         logger.info(f"第 {i+1} 次尝试关闭【X】")
         if close_x():
-            logger.info(f"关闭【X】成功")
             time.sleep(2)
             continue
         else:
-            logger.info(f"关闭【X】失败")
+            logger.info("所有弹窗关闭完毕")
             time.sleep(2)
             return
 

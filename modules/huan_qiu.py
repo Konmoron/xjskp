@@ -18,6 +18,9 @@ from .operators.common_operations import (
     close_offline,
     close_all_x,
 )
+from .operators.bottom import (
+    open_zhan_dou,
+)
 
 # 初始化日志
 logger = get_logger()
@@ -51,9 +54,9 @@ class HuanQiu:
                 logger.info(f"第【{self.game_num}】局 - 已经执行了【{self.max_num}】次，退出")
                 break
 
-            close_all_x()
-
             close_yuan_zheng()
+            close_all_x()
+            open_zhan_dou()
 
             if open_chat():
                 if is_chat_open():
@@ -61,10 +64,9 @@ class HuanQiu:
                 else:
                     logger.info(f"第【{self.game_num}】局 - 进入聊天页面 - 失败")
                     time.sleep(1)
+                    continue
 
                 open_zhao_mu()
-
-                close_all_x()
 
                 # 点击抢寰球
                 self._qiang_huan_qiu()
@@ -90,10 +92,7 @@ class HuanQiu:
             attempt_count = attempt + 1
 
             # 使用表格样式日志头
-            logger.info(f"\n🔍 第 [{attempt_count:02d}/100] 次尝试".ljust(50, "─"))
-            logger.info(f"├─ 当前游戏局数: 第 {self.game_num} 局")
-            logger.info(f"├─ 累计尝试次数: {attempt_count} 次")
-            logger.info(f"└─ 已耗时: {time.time()-total_start:.1f}s")
+            
 
             # 抢到检测逻辑
             # 判断是否抢到，如果抢到，则退出当前循环
@@ -102,7 +101,7 @@ class HuanQiu:
                 logger.info("🎉 检测到游戏已开始，终止抢球流程")
                 break
             
-            if attempt!=0 and i%2==0 and close_yuan_zheng():
+            if attempt!=0 and attempt%2==0 and close_yuan_zheng():
                 logger.info(f"第【{self.game_num}】局 - 抢寰球 - 关闭远征并重新打开聊天")
                 open_chat()
                 open_zhao_mu()
@@ -128,7 +127,8 @@ class HuanQiu:
 
             if attempt!=0 and attempt%20==0:
                 # 每20次，关闭技能交易
-                close_all_x()
+                close_first_charge()
+                close_ji_neng_jiao_yi()
 
             # 抢 20 次，判断一次
             for _ in range(20):
@@ -137,19 +137,28 @@ class HuanQiu:
             
             # 单次循环耗时统计
             loop_time = time.time() - attempt_start
-            logger.info(f"⏳ 单次循环耗时: {loop_time:.2f}s")
+            total_elapsed = time.time() - total_start
+            total_mins, total_secs = divmod(int(total_elapsed), 60)
+            total_time_str = f"{total_mins:02d}分{total_secs:02d}秒"
+
+            logger.info(
+                f"⏳ 第 {self.game_num} 局 | 第 [{attempt_count:02d}/100] 次抢寰球 | "
+                f"总耗时: {total_time_str} | "
+                f"本次耗时: {loop_time:.2f}秒"
+            )
         
         # 最终统计报告
         total_time = time.time() - total_start
-        time_summary = f"{total_time//60:.0f}分{total_time%60:.1f}秒"
+        mins, secs = divmod(int(total_time), 60)  # 使用divmod分解
+        time_summary = f"{mins:02d}分{secs:02d}秒"  # 补零对齐
         status_icon = "✅" if success_flag else "❌"
         
-        logger.info("\n📊 抢寰球统计报告".ljust(50, "─"))
+        logger.info("📊 抢寰球统计报告")
         logger.info(f"├─ 最终状态: {status_icon} {'成功抢到' if success_flag else '抢球超时'}")
-        logger.info(f"├─ 总耗时: {time_summary} ({total_time:.1f}秒)")
+        logger.info(f"├─ 总耗时: {time_summary}")
         logger.info(f"├─ 游戏局数: 第 {self.game_num} 局")
         logger.info(f"└─ 有效尝试: {attempt_count} 次")
-        logger.info("".ljust(50, "─") + "\n")
+        logger.info(f"🎮 结束抢寰球流程")
 
     def _wait_for_game_end(self):
         """等待游戏结束"""
