@@ -79,16 +79,30 @@ class HuanQiu:
     
     def _qiang_huan_qiu(self):
         """抢寰球"""
-        logger.info("抢寰球")
+        """执行抢寰球操作（带时间统计和美化日志）"""
+        logger.info("🎮 开始抢寰球流程".ljust(50, "─"))
+        total_start = time.time()
+        attempt_count = 0
+        success_flag = False
         # 抢寰球
-        for i in range(100):
-            logger.info(f"第【{self.game_num}】局 - 第【{i+1}】次抢寰球救援")
+        for attempt  in range(100):
+            attempt_start = time.time()
+            attempt_count = attempt + 1
+
+            # 使用表格样式日志头
+            logger.info(f"\n🔍 第 [{attempt_count:02d}/100] 次尝试".ljust(50, "─"))
+            logger.info(f"├─ 当前游戏局数: 第 {self.game_num} 局")
+            logger.info(f"├─ 累计尝试次数: {attempt_count} 次")
+            logger.info(f"└─ 已耗时: {time.time()-total_start:.1f}s")
+
+            # 抢到检测逻辑
             # 判断是否抢到，如果抢到，则退出当前循环
-            if i!=0 and ( check_huan_qiu_start() or find('images/huan_qiu/play_select_skills.png') ):
-                logger.info(f"第【{self.game_num}】局 - 抢寰球 - 已经开始游戏")
+            if attempt!=0 and ( check_huan_qiu_start() or find('images/huan_qiu/play_select_skills.png') ):
+                success_flag = True
+                logger.info("🎉 检测到游戏已开始，终止抢球流程")
                 break
             
-            if i!=0 and i%2==0 and close_yuan_zheng():
+            if attempt!=0 and i%2==0 and close_yuan_zheng():
                 logger.info(f"第【{self.game_num}】局 - 抢寰球 - 关闭远征并重新打开聊天")
                 open_chat()
                 open_zhao_mu()
@@ -96,7 +110,7 @@ class HuanQiu:
             # 如果有 聊天框，点击聊天框
             # 1. 判断有没有招募，如果有招募，点击招募，继续抢
             # 2. 如果没有招募，说明可能已经抢到了，调到判断是否结束
-            if i!=0 and i%2==0 and not is_chat_open() and not is_chat_zhao_mu_open():
+            if attempt!=0 and attempt%2==0 and not is_chat_open() and not is_chat_zhao_mu_open():
                 logger.info(f"第【{self.game_num}】局 - 抢寰球 - 点击聊天")
                 open_chat()
                 if not open_zhao_mu():
@@ -107,12 +121,12 @@ class HuanQiu:
                         logger.info(f"第【{self.game_num}】局 - 抢寰球 - 打开招募失败")
                         continue
 
-            if i!=0 and i%5==0 and close_guan_qia_select():
+            if attempt!=0 and attempt%5==0 and close_guan_qia_select():
                 logger.info(f"第【{self.game_num}】局 - 当前执行 - 抢环球 - 关闭关卡选择")
                 open_chat()
                 open_zhao_mu()
 
-            if i!=0 and i%20==0:
+            if attempt!=0 and attempt%20==0:
                 # 每20次，关闭技能交易
                 close_all_x()
 
@@ -120,6 +134,22 @@ class HuanQiu:
             for _ in range(20):
                 find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_1.png', before_sleep=0.01, after_sleep=0.01)
                 find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_2.png', before_sleep=0.01, after_sleep=0.01)
+            
+            # 单次循环耗时统计
+            loop_time = time.time() - attempt_start
+            logger.info(f"⏳ 单次循环耗时: {loop_time:.2f}s")
+        
+        # 最终统计报告
+        total_time = time.time() - total_start
+        time_summary = f"{total_time//60:.0f}分{total_time%60:.1f}秒"
+        status_icon = "✅" if success_flag else "❌"
+        
+        logger.info("\n📊 抢寰球统计报告".ljust(50, "─"))
+        logger.info(f"├─ 最终状态: {status_icon} {'成功抢到' if success_flag else '抢球超时'}")
+        logger.info(f"├─ 总耗时: {time_summary} ({total_time:.1f}秒)")
+        logger.info(f"├─ 游戏局数: 第 {self.game_num} 局")
+        logger.info(f"└─ 有效尝试: {attempt_count} 次")
+        logger.info("".ljust(50, "─") + "\n")
 
     def _wait_for_game_end(self):
         """等待游戏结束"""
