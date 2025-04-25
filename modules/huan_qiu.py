@@ -16,6 +16,7 @@ from .operators.common_operations import (
     check_huan_qiu_start,
     select_ji_neng,
     close_offline,
+    close_all_x,
 )
 
 # 初始化日志
@@ -50,9 +51,7 @@ class HuanQiu:
                 logger.info(f"第【{self.game_num}】局 - 已经执行了【{self.max_num}】次，退出")
                 break
 
-            close_first_charge()
-
-            close_ji_neng_jiao_yi()
+            close_all_x()
 
             close_yuan_zheng()
 
@@ -65,7 +64,7 @@ class HuanQiu:
 
                 open_zhao_mu()
 
-                close_first_charge()
+                close_all_x()
 
                 # 点击抢寰球
                 self._qiang_huan_qiu()
@@ -115,13 +114,7 @@ class HuanQiu:
 
             if i!=0 and i%20==0:
                 # 每20次，关闭技能交易
-                close_ji_neng_jiao_yi()
-
-                # 关闭首充
-                current_hour = datetime.now().hour
-                # 只在早上执行
-                if 0 <= current_hour < 10:
-                    close_first_charge()
+                close_all_x()
 
             # 抢 20 次，判断一次
             for _ in range(20):
