@@ -12,8 +12,7 @@ from modules.operators.bottom import (
     open_zhan_dou
 )
 from modules.operators.common_operations import (
-   close_x,
-   close_x_2,
+    close_all_x,
 )
 from utils.image_utils import (
     find
@@ -93,18 +92,12 @@ def main():
 
     # 增加 close_x
     open_zhan_dou()
-    retry_count = 0
-    max_retries = 6
-    while not ( find('images/fu/start_game.png') or find('images/fu/start_game_1.png') ):
-        if retry_count >= max_retries:
-            logger.error(f"🛑 超过最大重试次数（{max_retries}次），启动失败")
-            return False
-
-        logger.warning(f"⚠️ 未找到【开始游戏】按钮 | 第{retry_count+1}次尝试关闭弹窗...")
-        close_x()
-        time.sleep(4)
-        open_zhan_dou()
-        retry_count += 1
+    close_all_x()
+    if not ( find('images/fu/start_game.png') or find('images/fu/start_game_1.png') ):
+        logger.info("🛑 关闭所有弹窗之后，没有找到游戏开始按钮，退出游戏")
+        return
+    logger.info("✅ 关闭所有弹窗之后，找到游戏开始按钮，继续执行")
+    open_zhan_dou()
 
     def run():
         """统一任务执行方法"""
