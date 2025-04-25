@@ -174,10 +174,36 @@ def close_x_2():
     find_and_click('images/close_x_2.png', confidence=0.9)
 
 def close_x():
-    logger.info(f"关闭【X】")
-    find_and_click('images/close_x.png')
-    find_and_click('images/close_x_2.png')
-    find_and_click('images/close_x_3.png')
+    if find_and_click('images/close_x.png') or \
+        find_and_click('images/close_x_2.png') or \
+        find_and_click('images/close_x_3.png'):
+        logger.info(f"关闭【X】")
+        return True
+    else:
+        logger.info(f"没有找到关闭【X】")
+        return False
+
+def close_all_x(max_attempts=6):
+    """
+    连续关闭所有可见的X控件
+    
+    适用于需要连续关闭多个同类弹窗的场景，例如：
+    - 游戏中的多层级弹窗
+    - 广告窗口连续出现
+    
+    Args:
+        max_attempts (int): 最大尝试次数，避免无限循环
+    """
+    for i in range(max_attempts):
+        logger.info(f"第 {i+1} 次尝试关闭【X】")
+        if close_x():
+            logger.info(f"关闭【X】成功")
+            time.sleep(2)
+            continue
+        else:
+            logger.info(f"关闭【X】失败")
+            time.sleep(2)
+            return
 
 def back():
     logger.info(f"返回")
