@@ -57,7 +57,7 @@ class CommonTask:
         self._init_runtime_state(tasks, exclude)
         
         try:
-            logger.info("\n🚀 开始执行任务队列".ljust(50, "─"))
+            logger.info("🚀 开始执行任务队列".ljust(50, "─"))
             self._process_main_queue()
             self._handle_remaining_tili()
         finally:
@@ -135,7 +135,7 @@ class CommonTask:
 
     def _process_regular_task(self, task_name):
         """处理常规任务"""
-        logger.info(f"\n▶️ 当前执行: {task_name.upper()} ".ljust(40, "─"))
+        logger.info(f"▶️ 当前执行: {task_name.upper()} ".ljust(40, "─"))
         task_start = time.time()
         
         try:
@@ -168,7 +168,7 @@ class CommonTask:
 
     def _handle_remaining_tili(self):
         """处理剩余体力任务"""
-        logger.info("\n🔍 检查后续体力任务".ljust(50, "─"))
+        logger.info("🔍 检查后续体力任务".ljust(50, "─"))
         while (not self.ti_li_all_done and self.ti_li_wait_start and self.ti_li_count < self.ti_li_max):
             if (time.time() - self.ti_li_wait_start) >= 310:
                 self.ti_li_all_done, self.ti_li_single_done = self._single_ti_li()
@@ -461,7 +461,7 @@ class CommonTask:
 
     def hao_you(self):
         """执行【好友】任务"""
-        logger.info("\n👥 好友任务开始".ljust(50, "─"))
+        logger.info("👥 好友任务开始".ljust(50, "─"))
         open_zhan_dou()
 
         try:
@@ -473,7 +473,7 @@ class CommonTask:
                 logger.warning("❌ 好友入口定位失败")
                 return False
             # ================= 领取体力流程 =================
-            logger.info("\n🎁 开始领取好友体力".ljust(45, "─"))
+            logger.info("🎁 开始领取好友体力".ljust(45, "─"))
             
             # 领取体力
             if find_and_click('images/hao_you/ling_qu.png'):
