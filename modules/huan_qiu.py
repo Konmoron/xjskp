@@ -69,7 +69,8 @@ class HuanQiu:
                 open_zhao_mu()
 
                 # 点击抢寰球
-                self._qiang_huan_qiu()
+                if not self._qiang_huan_qiu():
+                    continue
 
                 # 判断是否结束
                 self._wait_for_game_end()
@@ -159,6 +160,8 @@ class HuanQiu:
         logger.info(f"├─ 游戏局数: 第 {self.game_num} 局")
         logger.info(f"└─ 有效尝试: {attempt_count} 次")
         logger.info(f"🎮 结束抢寰球流程")
+
+        return success_flag
 
     def _wait_for_game_end(self):
         """等待游戏结束"""
