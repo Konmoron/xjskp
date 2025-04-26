@@ -215,3 +215,10 @@ def kan_guang_gao(guang_gao_time=35, wait_fu_li=2):
     close_guang_gao()
     time.sleep(wait_fu_li)
     close_chou_jiang_1()
+
+def check_login_other():
+    # 检查帐号在其他地方登录
+    if find('images/login_other.png'):
+        return True
+    else:
+        return False
