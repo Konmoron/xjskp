@@ -1,7 +1,7 @@
 from datetime import datetime
 import random
 import time
-
+import sys
 from utils.image_utils import find, find_and_click
 from utils.logger import get_logger
 from .operators.common_operations import (
@@ -17,6 +17,7 @@ from .operators.common_operations import (
     select_ji_neng,
     close_offline,
     close_all_x,
+    check_login_other,
 )
 from .operators.bottom import (
     open_zhan_dou,
@@ -130,6 +131,9 @@ class HuanQiu:
                 # 每20次，关闭技能交易
                 close_first_charge()
                 close_ji_neng_jiao_yi()
+                if check_login_other():
+                    logger.info(f"第【{self.game_num}】局 - 抢环球 - 检测到【其他地方登录】退出")
+                    sys.exit(0)
 
             # 抢 20 次，判断一次
             for _ in range(20):
@@ -176,6 +180,10 @@ class HuanQiu:
             # 系统维护操作（含耗时显示）
             if check_count % 10 == 0:
                 close_offline()
+
+                if check_login_other():
+                    logger.info(f"第【{self.game_num}】局 - 抢环球 - 检测到【其他地方登录】退出")
+                    sys.exit(0)
             
             # 游戏结束检测
             if find_and_click('images/huan_qiu/game_back.png'):
