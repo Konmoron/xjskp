@@ -35,8 +35,8 @@ def main():
     # 寰球救援参数组
     parser.add_argument('--huanqiu', action='store_true')
     # 新增帮助说明
-    parser.add_argument('-n', '--number', type=int, default=40,
-                      help='寰球救援执行次数（默认40次）')
+    parser.add_argument('-n', '--number', type=int, default=30,
+                      help='寰球救援执行次数（默认30次）')
     parser.add_argument('--disable-skill', action='store_true',
                       help='寰球救援-禁用技能选择功能')
 

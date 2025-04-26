@@ -34,7 +34,7 @@ class HuanQiu:
         max_num (int): 最大允许执行局数
         disable_skill (bool): 是否禁用技能选择功能
     """
-    def __init__(self, max_num=40, disable_skill=False):
+    def __init__(self, max_num=30, disable_skill=False):
         self.max_num = max_num
         self.disable_skill = disable_skill
         self.game_num = 1
