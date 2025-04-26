@@ -132,7 +132,7 @@ class HuanQiu:
 
             # 抢 20 次，判断一次
             for _ in range(20):
-                find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_1.png', before_sleep=0.04, after_sleep=0.02)
+                find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_1.png', before_sleep=0.02, after_sleep=0.02)
                 find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_2.png', before_sleep=0.02, after_sleep=0.02)
             
             # 单次循环耗时统计
