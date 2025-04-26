@@ -132,8 +132,8 @@ class HuanQiu:
 
             # 抢 20 次，判断一次
             for _ in range(20):
-                find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_1.png', before_sleep=0.01, after_sleep=0.01)
-                find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_2.png', before_sleep=0.01, after_sleep=0.01)
+                find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_1.png', before_sleep=0.04, after_sleep=0.02)
+                find_and_click('images/huan_qiu/chat_zhao_mu_huan_qiu_2.png', before_sleep=0.02, after_sleep=0.02)
             
             # 单次循环耗时统计
             loop_time = time.time() - attempt_start
@@ -142,9 +142,9 @@ class HuanQiu:
             total_time_str = f"{total_mins:02d}分{total_secs:02d}秒"
 
             logger.info(
-                f"⏳ 第 {self.game_num} 局 | 第 [{attempt_count:02d}/100] 次抢寰球 | "
-                f"总耗时: {total_time_str} | "
-                f"本次耗时: {loop_time:.2f}秒"
+                f"⏳ 第{self.game_num}/{self.max_num}局 | 第{attempt_count:02d}/100次抢寰球 | "
+                f"总耗时{total_time_str} | "
+                f"本次耗时{loop_time:.2f}秒"
             )
         
         # 最终统计报告
@@ -164,8 +164,10 @@ class HuanQiu:
         """等待游戏结束"""
         start_time = time.time()  # 记录开始时间
         logger.info("[⏱️第%d局游戏已经开始，等待游戏结束]", self.game_num)
+
+        max_wait_count = 200  # 最大等待次数
         
-        for check_count in range(1, 201):
+        for check_count in range(1, max_wait_count + 1):
             current_start_time = time.time()
 
             # 系统维护操作（含耗时显示）
@@ -175,8 +177,10 @@ class HuanQiu:
             # 游戏结束检测
             if find_and_click('images/huan_qiu/game_back.png'):
                 total_time = time.time() - start_time
-                logger.info("[✅第%d局游戏成功退出] | 总耗时 %.1f秒 | 第%d次检测",
-                            self.game_num, total_time, check_count)
+                mins, secs = divmod(int(total_time), 60)
+                time_str = f"{mins:02d}分{secs:02d}秒"
+                logger.info("[✅第%d/%s局成功退出] | 总耗时 %s | 第%03d/%s次检测",
+                            self.game_num, self.max_num, time_str, check_count, max_wait_count)
                 time.sleep(1)
                 return True
 
@@ -194,11 +198,9 @@ class HuanQiu:
             # 主状态监测（带动态等待时间）
             elapsed_time = time.time() - start_time
             mins, secs = divmod(int(elapsed_time), 60)
-            time_str = f"{mins:d}分{secs:d}秒"
-            # logger.info("[第%d局游戏] | 第%d次检测是否结束 | 本次检测耗时 %d 秒 | 已等待 %s",
-            #         self.game_num, check_count, current_elapsed_time, time_str)
-            logger.info("[第%d局游戏] | 第%d次检测是否结束 | 已等待 %s",
-                    self.game_num, check_count, time_str)
+            time_str = f"{mins:02d}分{secs:02d}秒"
+            logger.info("⏳ 第%d/%d局等待结束 | 已等待%s | 第%03d/%d次检测 | 本次耗时%d秒",
+                    self.game_num, self.max_num, time_str, check_count, max_wait_count, current_elapsed_time)
 
         total_time = time.time() - start_time
         logger.warning("[⚠️第%d局超时警报] | 总耗时 %.1f秒≈%d分%d秒 | 强制终止",
