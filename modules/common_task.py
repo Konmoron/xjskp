@@ -592,6 +592,27 @@ class CommonTask:
 
             close_x()
 
+        # 军团联赛-驻守
+        # 周二、周四、周六执行
+        if datetime.now().weekday() in {1, 3, 5}:
+            logger.info(f"⏸️ 当前为 {datetime.now().strftime('%A')}为军团联赛驻守日期")
+            if find_and_click('images/jun_tuan/wan_fa_da_ting/button.png'):
+                logger.info(f"打开【玩法大厅】")
+                if find_and_click('images/jun_tuan/wan_fa_da_ting/jin_ru.png'):
+                    logger.info(f"打开【军团联赛】")
+                    if find_and_click('images/jun_tuan/wan_fa_da_ting/jun_tuan_lian_sai.png', confidence=0.9):
+                        if find_and_click('images/jun_tuan/wan_fa_da_ting/1_hao_ta.png', confidence=0.9):
+                            logger.info(f"打开【1号塔】")
+                            if find_and_click('images/jun_tuan/wan_fa_da_ting/zhu_shou.png'):
+                                logger.info(f"驻守【1号塔】")
+                            else:
+                                logger.info(f"未找到【驻守】按钮，可能已经驻守")
+                            close_x()
+                    else:
+                        logger.info(f"未找到【军团联赛】")
+                    back()
+                back()
+
         logger.info("🏁 军团任务执行完毕")
         open_zhan_dou()
 
