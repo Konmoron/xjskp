@@ -182,7 +182,8 @@ class HuanQiu:
                 close_offline()
 
                 if check_login_other():
-                    logger.info(f"第【{self.game_num}】局 - 抢环球 - 检测到【其他地方登录】退出")
+                    logger.info("[✅第%d/%s局成功退出] | 第%03d/%s次检测",
+                            self.game_num, self.max_num, check_count, max_wait_count)
                     sys.exit(0)
             
             # 游戏结束检测
