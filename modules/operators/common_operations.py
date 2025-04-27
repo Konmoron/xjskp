@@ -121,21 +121,30 @@ def select_ji_neng():
     after_sleep = 0.01
     if find_and_click('images/ji_neng/ji_guang.png', before_sleep=before_sleep, after_sleep=after_sleep):
         logger.info(f"发现并选择【激光技能】")
+        return True
     elif find_and_click('images/ji_neng/she_xian.png', before_sleep=before_sleep, after_sleep=after_sleep):
         logger.info(f"发现并选择【射线技能】")
+        return True
     elif find_and_click('images/ji_neng/qiang_lian_fa.png', before_sleep=before_sleep, after_sleep=after_sleep):
         logger.info(f"发现并选择【枪-连发-技能】")
+        return True
     elif find_and_click('images/ji_neng/qiang_fen_lie_4.png', before_sleep=before_sleep, after_sleep=after_sleep):
         logger.info(f"发现并选择【枪-4分裂-技能】")
+        return True
     elif find_and_click('images/ji_neng/qiang_fen_lie.png', before_sleep=before_sleep, after_sleep=after_sleep):
         logger.info(f"发现并选择【枪-2分裂-技能】")
+        return True
     elif find_and_click('images/ji_neng/qiang_zeng_shang.png', before_sleep=before_sleep, after_sleep=after_sleep):
         logger.info(f"发现并选择【枪-增伤-技能】")
+        return True
     elif find_and_click('images/ji_neng/qiang_bao_zha.png', before_sleep=before_sleep, after_sleep=after_sleep):
         logger.info(f"发现并选择【枪-爆炸-技能】")
+        return True
     # elif find_and_click('images/ji_neng/wen_ya_dan_lian_fa.png'):
     #     logger.info(f"发现并选择【温压弹连发技能】images/ji_neng/wen_ya_dan_lian_fa.png")
     time.sleep(1)
+    return False
+
 def close_ji_neng_jiao_yi():
     if find_and_click('images/huan_qiu/ji_neng_jiao_yi.png', offset_name='close_ji_neng_jiao_yi'):
         logger.info(f"发现【技能交易】图片, 执行 - 关闭技能交易")
