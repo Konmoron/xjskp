@@ -174,6 +174,11 @@ def close_x_2():
     find_and_click('images/close_x_2.png', confidence=0.9)
 
 def close_x():
+    if find_and_click('images/xun_luo_che_ling_qu.png'):
+        logger.info(f"巡逻车满了，领取奖励")
+        close_chou_jiang_1()
+        close_guang_gao()
+
     if find_and_click('images/close_x.png') or \
         find_and_click('images/close_x_2.png') or \
         find_and_click('images/close_x_3.png'):
