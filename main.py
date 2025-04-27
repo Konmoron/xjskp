@@ -116,7 +116,7 @@ def parse_arguments() -> argparse.Namespace:
                             help='等待时长（单位：分钟）')
     common_group.add_argument('--exclude', type=str, default=None,
                             help='排除的任务列表（如：ads,ti_li）')
-    common_group.add_argument('-n', '--number', type=int, default=30,
+    common_group.add_argument('-n', '--number', type=int, default=20,
                             help='寰球救援执行次数（默认30次）')
     common_group.add_argument('--bao-xiang-num', type=int, default=10,
                       help='宝箱10连抽的次数（默认10次）')
