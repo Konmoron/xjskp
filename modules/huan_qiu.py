@@ -48,12 +48,12 @@ class HuanQiu:
 
     def _start_huan_qiu_jiu_yuan(self):
         while True:
-            logger.info(f"第【{self.game_num}】局 - 开始执行")
-            time.sleep(1)
-
             if self.game_num > self.max_num:
                 logger.info(f"第【{self.game_num}】局 - 已经执行了【{self.max_num}】次，退出")
                 break
+
+            logger.info(f"第【{self.game_num}】局 - 开始执行")
+            time.sleep(1)
 
             close_yuan_zheng()
             close_all_x()
