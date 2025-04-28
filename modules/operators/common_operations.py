@@ -1,4 +1,5 @@
 from datetime import datetime
+from tqdm import tqdm
 import time
 from utils import logger
 from utils.image_utils import find, find_and_click
@@ -236,3 +237,21 @@ def check_login_other():
         return True
     else:
         return False
+
+def force_login(wait_time=10):
+    # 强制登录
+    if find('images/login_other.png'):
+        wait_time_seconds = wait_time * 60
+        with tqdm(
+            total=wait_time_seconds, 
+            desc="等待进度", 
+            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}s [{elapsed}<{remaining}]"
+        ) as pbar:
+            for _ in range(wait_time_seconds):
+                time.sleep(1)
+                pbar.update(1)
+        
+        find_and_click('images/force_login/que_ding.png')
+        time.sleep(1)
+        find_and_click('images/force_login/start.png')
+        return True
