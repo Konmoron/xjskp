@@ -60,7 +60,7 @@ class TaskExecutor:
 def print_runtime_config(args: argparse.Namespace):
     """可视化输出运行时参数"""
     config_map = {
-        '⏳ 等待逻辑': (args.wait, f"{args.wait_time}分钟"),
+        '⏳ 等待逻辑': (args.wait is not None, f"{args.wait}分钟" if args.wait is not None else "未启用"),
         '🌐 多服务器': (args.fu, f"{len(FU_CONFIGS)}个" if args.fu else "未启用"),
         '🔒 强制登录': (args.force_login, f"等待{args.wait_force_login}分钟后强制登录"),
         '🚀 寰球救援': (args.huanqiu, f"次数:{args.number} 选择技能:{'禁用' if args.disable_skill else '启用'}"),
@@ -113,10 +113,8 @@ def parse_arguments() -> argparse.Namespace:
                           help='通用任务列表（多个用逗号分隔，"all"为全部任务）')
     
     common_group = parser.add_argument_group('通用设置')
-    common_group.add_argument('--wait', action='store_true', 
-                            help='启用启动等待（默认60分钟）')
-    common_group.add_argument('--wait-time', type=int, default=60,
-                            help='等待时长（单位：分钟）')
+    common_group.add_argument('--wait', type=int, default=None, nargs='?', const=60,
+                            help='启用启动等待（默认60分钟，可指定时长如--wait 30）')
     common_group.add_argument('--exclude', type=str, default=None,
                             help='排除的任务列表（如：ads,ti_li）')
     common_group.add_argument('-n', '--number', type=int, default=20,
@@ -134,7 +132,7 @@ def parse_arguments() -> argparse.Namespace:
 
 def validate_arguments(args: argparse.Namespace):
     """参数验证"""
-    if args.wait_time < 0:
+    if args.wait is not None and args.wait < 0:
         raise ValueError("等待时间不能为负数")
     if args.fu and not FU_CONFIGS:
         raise RuntimeError("多服务器模式需要配置FU_CONFIGS")
@@ -155,7 +153,18 @@ def handle_wait(wait_minutes: int):
         logger.warning("⚠️ 用户主动中断等待")
         raise
     finally:
-        logger.info("✅ 等待阶段完成\n")
+        logger.info("✅ 等待阶段完成")
+
+def init_game_environment():
+    """游戏环境初始化"""
+    open_zhan_dou()
+    close_all_x()
+    
+    if not (find('images/fu/start_game.png') or find('images/fu/start_game_1.png')):
+        logger.warning("🛑 未找到游戏开始按钮")
+    else:
+        logger.info("✅ 游戏环境初始化完成")
+    open_zhan_dou()
 
 def main():
     try:
@@ -170,8 +179,8 @@ def main():
         print_runtime_config(args)
         
         # 等待逻辑
-        if args.wait:
-            handle_wait(args.wait_time)
+        if args.wait is not None:
+            handle_wait(args.wait)
 
         if args.force_login and check_login_other():
             logger.info("⚠️ 检测到帐号在其他地方登录，等待10分钟后强制登录")
@@ -189,17 +198,6 @@ def main():
     except Exception as e:
         logger.error(f"‼️ 程序异常终止: {str(e)}")
         sys.exit(1)
-
-def init_game_environment():
-    """游戏环境初始化"""
-    open_zhan_dou()
-    close_all_x()
-    
-    if not (find('images/fu/start_game.png') or find('images/fu/start_game_1.png')):
-        logger.warning("🛑 未找到游戏开始按钮")
-    else:
-        logger.info("✅ 游戏环境初始化完成")
-    open_zhan_dou()
 
 if __name__ == "__main__":
     main()
