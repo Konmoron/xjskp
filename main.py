@@ -13,6 +13,8 @@ from modules.operators.bottom import (
 )
 from modules.operators.common_operations import (
     close_all_x,
+    check_login_other,
+    force_login,
 )
 from utils.image_utils import (
     find
@@ -60,6 +62,7 @@ def print_runtime_config(args: argparse.Namespace):
     config_map = {
         '⏳ 等待逻辑': (args.wait, f"{args.wait_time}分钟"),
         '🌐 多服务器': (args.fu, f"{len(FU_CONFIGS)}个" if args.fu else "未启用"),
+        '🔒 强制登录': (args.force_login, f"等待{args.wait_force_login}分钟后强制登录"),
         '🚀 寰球救援': (args.huanqiu, f"次数:{args.number} 选择技能:{'禁用' if args.disable_skill else '启用'}"),
         '🎁 宝箱任务': (args.bao_xiang, f"10连抽x{args.bao_xiang_num}次"),
         '🛠️ 通用任务': (args.tasks is not None, f"任务列表:{args.tasks or 'all'} 排除:{args.exclude or '无'}")
@@ -122,6 +125,10 @@ def parse_arguments() -> argparse.Namespace:
                       help='宝箱10连抽的次数（默认10次）')
     common_group.add_argument('--disable-skill', action='store_true',
                       help='寰球救援-禁用技能选择功能')
+    common_group.add_argument('--force-login', action='store_true',
+                      help='如帐号在其他地方登录，强制登录')
+    common_group.add_argument('--wait-force-login', type=int, default=10,
+                      help='如帐号在其他地方登录，强制登录前，等待时间（分钟），默认10分钟')
     
     return parser.parse_args()
 
@@ -165,6 +172,10 @@ def main():
         # 等待逻辑
         if args.wait:
             handle_wait(args.wait_time)
+
+        if args.force_login and check_login_other():
+            logger.info("⚠️ 检测到帐号在其他地方登录，等待10分钟后强制登录")
+            force_login(args.wait_force_login)
             
         # 初始化游戏环境
         init_game_environment()
