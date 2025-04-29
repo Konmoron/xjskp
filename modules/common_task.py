@@ -680,7 +680,7 @@ class CommonTask:
 
             logger.info(f"第{i+1}次执行【观影宝藏】")
 
-            if find_and_click('images/guan_ying_bao_zang/start.png'):
+            if find_and_click('images/guan_ying_bao_zang/start_1.png') or find_and_click('images/guan_ying_bao_zang/start.png'):
                 logger.info(f"第{i+1}次 打开【观看广告】...")
                 time.sleep(35)
 
