@@ -23,7 +23,7 @@ def find(image_path, confidence=0.8, timeout=3):
             break
     return False
 
-def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, timeout=1, confidence=0.8):
+def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, timeout=1, confidence=0.8, clicks = 1):
     """
     寻找并点击指定图片
     :param image_path: 图片路径
@@ -31,6 +31,7 @@ def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, 
     :param offset_name: 预设偏移量名称
     :param x_offset: x轴偏移量（正数向右，负数向左）
     :param y_offset: y轴偏移量（正数向下，负数向上）
+    :param clicks: 点击次数
     :return: 是否找到并点击成功
     """
     start_time = time.time()
@@ -44,7 +45,7 @@ def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, 
                 else:
                     x_offset, y_offset = 0, 0
                 
-                pyautogui.click(location.x + x_offset, location.y + y_offset)
+                pyautogui.click(location.x + x_offset, location.y + y_offset, clicks=clicks)
                 time.sleep(after_sleep)
                 return True
         except pyautogui.ImageNotFoundException as e:
