@@ -38,18 +38,22 @@ class HuanQiu:
         max_num (int): 最大允许执行局数
         disable_skill (bool): 是否禁用技能选择功能
     """
-    def __init__(self, max_num=20, disable_skill=False):
+    def __init__(self, max_num=20, disable_skill=False, force_login=False, force_login_wait=10, force_start=True):
         self.max_num = max_num
         self.disable_skill = disable_skill
         self.game_num = 1
-        self.force_start = True
-        self.force_login = False
-        self.force_login_wait = 10
+        self.force_start = force_start
+        self.force_login = force_login
+        self.force_login_wait = force_login_wait
     
     def start(self):
         """启动入口"""
         logger.info(f"最大执行次数：{self.max_num}")
         logger.info(f"技能选择功能状态：{'禁用' if self.disable_skill else '启用'}")
+        logger.info(f"强制启动游戏：{'是' if self.force_start else '否'}")
+        logger.info(f"强制登录：{'是' if self.force_login else '否'}")
+        if self.force_login:
+            logger.info(f"强制登录等待时间：{self.force_login_wait}秒")
         self._start_huan_qiu_jiu_yuan()
 
     def _start_huan_qiu_jiu_yuan(self):
