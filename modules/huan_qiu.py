@@ -18,6 +18,9 @@ from .operators.common_operations import (
     close_offline,
     close_all_x,
     check_login_other,
+    force_login,
+    is_game_started,
+    start_game,
 )
 from .operators.bottom import (
     open_zhan_dou,
@@ -39,6 +42,9 @@ class HuanQiu:
         self.max_num = max_num
         self.disable_skill = disable_skill
         self.game_num = 1
+        self.force_start = True
+        self.force_login = False
+        self.force_login_wait = 10
     
     def start(self):
         """启动入口"""
@@ -131,9 +137,8 @@ class HuanQiu:
                 # 每20次，关闭技能交易
                 close_first_charge()
                 close_ji_neng_jiao_yi()
-                if check_login_other():
-                    logger.info(f"第【{self.game_num}】局 - 抢环球 - 检测到【其他地方登录】退出")
-                    sys.exit(0)
+
+                self._handle_system_checks()
 
             # 抢 20 次，判断一次
             for _ in range(20):
@@ -181,10 +186,7 @@ class HuanQiu:
             if check_count % 10 == 0:
                 close_offline()
 
-                if check_login_other():
-                    logger.info("[⚠️第%d/%s局检测到在其他地方登录-退出] | 第%03d/%s次检测",
-                            self.game_num, self.max_num, check_count, max_wait_count)
-                    sys.exit(0)
+                self._handle_system_checks()
             
             # 游戏结束检测
             if find_and_click('images/huan_qiu/game_back.png'):
@@ -218,4 +220,26 @@ class HuanQiu:
         logger.warning("[⚠️第%d局超时警报] | 总耗时 %.1f秒≈%d分%d秒 | 强制终止",
                     self.game_num, total_time, total_time//60, int(total_time%60))
         return False
+    
+    def _handle_system_checks(self):
+        """处理系统级状态检查"""
+        # 登录状态检查
+        if check_login_other():
+            if self.force_login:
+                logger.info(f"第【{self.game_num}】局 - 系统检查 - 检测到【异地登录】执行强制登录")
+                force_login()
+            else:
+                logger.info(f"第【{self.game_num}】局 - 系统检查 - 检测到【异地登录】退出程序")
+                sys.exit(0)
+        
+        # 游戏启动状态检查
+        if not is_game_started():
+            if self.force_start:
+                logger.info(f"第【{self.game_num}】局 - 系统检查 - 检测到【游戏未启动】执行强制启动")
+                start_game()
+                time.sleep(1)
+            else:
+                logger.info(f"第【{self.game_num}】局 - 系统检查 - 检测到【游戏未启动】退出程序")
+                sys.exit(0)
+        
     
