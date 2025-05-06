@@ -71,7 +71,7 @@ def print_runtime_config(args: argparse.Namespace):
         '🚀 寰球救援': (args.huanqiu, f"次数:{args.number} 选择技能:{'禁用' if args.disable_skill else '启用'}"),
         '🎁 宝箱任务': (args.bao_xiang, f"10连抽x{args.bao_xiang_num}次"),
         '🛠️ 通用任务': (args.tasks is not None, f"任务列表:{args.tasks or 'all'} 排除:{args.exclude or '无'}"),
-        '⚡ 强制启动': (args.disable_force_start is not None, f"禁用" if args.disable_force_start is not None else "启用"),
+        '⚡ 强制启动': (args.disable_force_start is not None, f"启用" if args.disable_force_start is not None else "禁用"),
     }
     
     logger.info("📦 运行时参数配置".ljust(50, "─"))
