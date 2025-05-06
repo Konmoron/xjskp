@@ -1,29 +1,32 @@
 import pyautogui
 import time
-from config import CLICK_OFFSETS, GLOBAL_REGION, DRAG_CONFIGS
+from config import CLICK_OFFSETS, DRAG_CONFIGS, REGIONS
 from .logger import get_logger
 
 logger = get_logger()
 
-def find(image_path, confidence=0.8, timeout=3):
+def find(image_path, confidence=0.8, timeout=3, image_region_name='default'):
     """
     寻找并点击指定图片
     :param image_path: 图片路径
     :param confidence: 匹配精度（0.0到1.0）
     :param timeout: 超时时间（秒）
+    :param region_name: 区域名称
     :return: 是否找到并点击成功
     """
     start_time = time.time()
     while time.time() - start_time < timeout:
+        # 如果 region_name 不在 REGIONS 中，则使用 default
+        image_region = REGIONS.get(image_region_name, REGIONS['default'])
         try:
-            location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence, region=GLOBAL_REGION)
+            location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence, region=image_region)
             if location:
                 return True
         except pyautogui.ImageNotFoundException as e:
             break
     return False
 
-def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, timeout=1, confidence=0.8, clicks = 1):
+def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, timeout=1, confidence=0.8, clicks = 1, image_region_name='default'):
     """
     寻找并点击指定图片
     :param image_path: 图片路径
@@ -38,7 +41,8 @@ def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, 
     while time.time() - start_time < timeout:
         try:
             time.sleep(before_sleep)
-            location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence, region=GLOBAL_REGION)
+            image_region = REGIONS.get(image_region_name, REGIONS['default'])
+            location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence, region=image_region)
             if location:
                 if offset_name and offset_name in CLICK_OFFSETS:
                     x_offset, y_offset = CLICK_OFFSETS[offset_name]
@@ -56,7 +60,7 @@ def drag(
     image_path: str,
     drag_config_name: str,
     confidence: float = 0.8,
-    image_region: tuple = GLOBAL_REGION
+    image_region_name: str = 'default'
 ):
     """
     根据图像定位执行多次拖拽操作
@@ -82,6 +86,7 @@ def drag(
 
         # 定位基准图片
         logger.debug(f"🔍 正在定位基准图片: {image_path}")
+        image_region = REGIONS.get(image_region_name, REGIONS['default'])
         location = pyautogui.locateCenterOnScreen(
             image_path,
             confidence=confidence,
