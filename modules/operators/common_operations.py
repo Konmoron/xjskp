@@ -221,8 +221,26 @@ def close_all_x(max_attempts=6):
             return
 
 def back():
-    logger.info(f"返回")
-    find_and_click('images/back.png', confidence=0.9)
+    if find_and_click('images/back.png'):
+        return True
+
+    return False
+
+def close_all_x_and_back(max_attempts=6):
+    logger.info(f"关闭所有弹窗, 最大尝试次数: {max_attempts}")
+    for i in range(max_attempts):
+        logger.info(f"第 {i+1} 次尝试关闭【X】并返回")
+        if close_all_x():
+            time.sleep(2)
+            continue
+        elif back():
+            time.sleep(2)
+            continue
+        else:
+            logger.info("所有弹窗关闭且已经返回")
+            time.sleep(2)
+            return
+
 
 def kan_guang_gao(guang_gao_time=35, wait_fu_li=2):
     logger.info(f"看【广告】")

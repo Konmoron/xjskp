@@ -13,6 +13,7 @@ from modules.operators.bottom import (
 )
 from modules.operators.common_operations import (
     close_all_x,
+    close_all_x_and_back,
     check_login_other,
     force_login,
 )
@@ -85,6 +86,7 @@ def run_multi_server_mode(args: argparse.Namespace):
         try:
             if xuan_fu(config['image_path'], config.get('confidence', 0.8)):
                 logger.info(f"🔗 服务器连接成功 | {server_name}")
+                close_all_x_and_back()
                 TaskExecutor(args).execute()
             else:
                 logger.error(f"💥 服务器连接失败 | {server_name}")
@@ -156,7 +158,7 @@ def handle_wait(wait_minutes: int):
 def init_game_environment():
     """游戏环境初始化"""
     open_zhan_dou()
-    close_all_x()
+    close_all_x_and_back()
     
     if not (find('images/fu/start_game.png') or find('images/fu/start_game_1.png')):
         logger.warning("🛑 未找到游戏开始按钮")
