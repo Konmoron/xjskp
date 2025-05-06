@@ -33,7 +33,7 @@ def find_image(image_path: str, confidence: float = 0.8) -> tuple:  # 添加conf
         logger.error(f"‼️ 发生意外错误: {str(e)}")
         return None
 
-def click_with_offset(image_path: str, offset_name: str = '', confidence: float = 0.8) -> bool:  # 新增confidence参数
+def click_with_offset(image_path: str, offset_name: str = '', confidence: float = 0.8, clicks: int = 1 ) -> bool:  # 新增confidence参数
     """带偏移量的点击操作
     :param confidence: 匹配精度 (0-1)，默认0.8
     """
@@ -59,11 +59,12 @@ def click_with_offset(image_path: str, offset_name: str = '', confidence: float 
     target_x = x + x_offset
     target_y = y + y_offset
     logger.info(f"🎯 最终点击坐标: X={target_x} Y={target_y}")
+    logger.info(f"🎯 点击次数: {clicks}")
     
     try:
         logger.debug("执行点击前等待 0.5 秒...")
         time.sleep(0.5)
-        pyautogui.click(target_x, target_y)
+        pyautogui.click(target_x, target_y, clicks=clicks)
         logger.info("👆 点击操作成功完成")
         return True
     except Exception as e:
@@ -108,6 +109,8 @@ if __name__ == "__main__":
     click_parser.add_argument('-o', '--offset', default='', help='偏移量名称')
     click_parser.add_argument('-c', '--confidence', type=float, default=0.8,
                            help='匹配精度 (0-1，默认0.8)')
+    click_parser.add_argument('--clicks', type=int, default=1,
+                           help='匹配精度 (0-1，默认0.8)')
 
     # 新增偏移计算模式
     offset_parser = subparsers.add_parser('get-offset', help='计算偏移量')
@@ -121,6 +124,6 @@ if __name__ == "__main__":
     if args.command == 'find':
         find_image(args.image, args.confidence)
     elif args.command == 'click':
-        click_with_offset(args.image, args.offset, args.confidence)
+        click_with_offset(args.image, args.offset, args.confidence, clicks=args.clicks)
     elif args.command == 'get-offset':
         calculate_offset(args.image, args.confidence)
