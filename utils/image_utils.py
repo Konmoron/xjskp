@@ -54,13 +54,15 @@ def find_and_click(image_path, offset_name=None, before_sleep=1, after_sleep=1, 
 def drag(
     image_path: str,
     drag_config_name: str,
-    confidence: float = 0.8
+    confidence: float = 0.8,
+    image_region: tuple = GLOBAL_REGION
 ):
     """
     根据图像定位执行多次拖拽操作
     :param image_path: 基准图片路径
     :param drag_config_name: 拖拽配置名称
     :param confidence: 匹配精度
+    :param image_region: 图片区域
     """
     try:
         logger.info(f"🔄 初始化拖拽操作 | 配置: {drag_config_name} | 置信度: {confidence}")
@@ -82,7 +84,7 @@ def drag(
         location = pyautogui.locateCenterOnScreen(
             image_path,
             confidence=confidence,
-            region=GLOBAL_REGION
+            region=image_region
         )
         
         if not location:
