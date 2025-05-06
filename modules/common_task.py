@@ -697,20 +697,29 @@ class CommonTask:
         find_and_click('images/guan_ying_bao_zang/back.png')
 
     def sai_ji(self):
-        """执行【赛季】任务，领取战斗次数"""
-        logger.info("执行【赛季】任务，领取行动次数...")
-
-        # 或者使用具名常量
-        SAI_JI_DAYS = {4, 5, 6}
-        if datetime.now().weekday() not in SAI_JI_DAYS:
-            logger.info(f"⏸️ 当前为 {datetime.now().strftime('%A')}，非赛季任务日期")
-            return
-
+        """执行【赛季】任务"""
         open_sai_ji()
+        logger.info("执行【赛季】任务")
+
+        if find_and_click('images/sai_ji/ka_pi_ba_la.png'):
+            logger.info(f"打开【赛季-卡皮巴拉】")
+            time.sleep(2)
+            if find_and_click('images/sai_ji/an_pai.png'):
+                find_and_click('images/sai_ji/fan_ying.png')
+                find_and_click('images/sai_ji/fan_ying.png')
+                find_and_click('images/sai_ji/start.png')
+
+                close_x()
+
+            back()
 
         time.sleep(4)
 
-        if find_and_click('images/sai_ji/zheng_zhan.png'):
+        
+        # 或者使用具名常量
+        SAI_JI_DAYS = {4, 5, 6}
+
+        if datetime.now().weekday() in SAI_JI_DAYS and find_and_click('images/sai_ji/zheng_zhan.png'):
             logger.info(f"打开【赛季-征战】")
             time.sleep(2)
             if find_and_click('images/sai_ji/add_xing_dong_num.png'):
@@ -721,6 +730,10 @@ class CommonTask:
                 time.sleep(1)
                 close_x()
             back()
+        
+        
+
+
         
         open_zhan_dou()
             
