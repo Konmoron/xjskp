@@ -80,13 +80,14 @@ def run_multi_server_mode(args: argparse.Namespace):
     logger.info(f"🌐 进入多服务器模式 | 已配置服务器: {len(FU_CONFIGS)}个")
     
     for idx, config in enumerate(FU_CONFIGS, 1):
+        close_all_x_and_back()
+
         server_name = config.get('name', '未命名服务器')
         logger.info(f"🔄 [{idx}/{len(FU_CONFIGS)}] 正在连接: {server_name}")
         
         try:
             if xuan_fu(config['image_path'], config.get('confidence', 0.8)):
                 logger.info(f"🔗 服务器连接成功 | {server_name}")
-                close_all_x_and_back()
                 TaskExecutor(args).execute()
             else:
                 logger.error(f"💥 服务器连接失败 | {server_name}")

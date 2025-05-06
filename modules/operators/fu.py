@@ -94,8 +94,6 @@ def xuan_fu(image_path, confidence=0.8):
         logger.warning(f"⚠️ 检测到弹窗 | 第{retry_count+1}次尝试关闭...")
         close_x()
         time.sleep(4)
-        close_x_2()
-        time.sleep(4)
         retry_count += 1
 
     logger.info(f"🎉 服务器切换成功！总耗时：{time.time() - start_time:.1f}秒")
