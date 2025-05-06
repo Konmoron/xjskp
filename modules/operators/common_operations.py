@@ -2,7 +2,7 @@ from datetime import datetime
 from tqdm import tqdm
 import time
 from utils import logger
-from utils.image_utils import find, find_and_click
+from utils.image_utils import find, find_and_click, drag
 from utils.logger import get_logger
 
 logger = get_logger()
@@ -227,7 +227,6 @@ def back():
     return False
 
 def close_all_x_and_back(max_attempts=6):
-    logger.info(f"关闭所有弹窗, 最大尝试次数: {max_attempts}")
     for i in range(max_attempts):
         logger.info(f"第 {i+1} 次尝试关闭【X】并返回")
         if close_all_x():
@@ -237,7 +236,6 @@ def close_all_x_and_back(max_attempts=6):
             time.sleep(2)
             continue
         else:
-            logger.info("所有弹窗关闭且已经返回")
             time.sleep(2)
             return
 
@@ -273,3 +271,19 @@ def force_login(wait_time=10):
         time.sleep(1)
         find_and_click('images/force_login/start.png')
         return True
+
+def is_game_started():
+    if find('images/header.png'):
+        return True
+    else:
+        return False
+
+def start_game():
+    """启动游戏"""
+    find_and_click('images/start_game/icon.png', clicks=2)
+    time.sleep(15)
+    find_and_click('images/start_game/x.png')
+    time.sleep(2)
+    drag('images/header.png', 'move_game_to_default_region', image_region_name='game_start')
+    time.sleep(2)
+    close_all_x()
