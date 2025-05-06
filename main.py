@@ -12,10 +12,11 @@ from modules.operators.bottom import (
     open_zhan_dou
 )
 from modules.operators.common_operations import (
-    close_all_x,
     close_all_x_and_back,
     check_login_other,
     force_login,
+    is_game_started,
+    start_game,
 )
 from utils.image_utils import (
     find
@@ -48,7 +49,10 @@ class TaskExecutor:
         if not self.args.huanqiu: return
         HuanQiu(
             max_num=self.args.number, 
-            disable_skill=self.args.disable_skill
+            disable_skill=self.args.disable_skill,
+            force_login=self.args.force_login is not None,
+            force_login_wait=self.args.force_login or 10,
+            force_start=not self.args.disable_force_start,
         ).start()
         logger.info("🚀 寰球救援任务完成")
         
@@ -66,7 +70,8 @@ def print_runtime_config(args: argparse.Namespace):
         '🔒 强制登录': (args.force_login is not None, f"等待{args.force_login}分钟后强制登录" if args.force_login is not None else "未启动"),
         '🚀 寰球救援': (args.huanqiu, f"次数:{args.number} 选择技能:{'禁用' if args.disable_skill else '启用'}"),
         '🎁 宝箱任务': (args.bao_xiang, f"10连抽x{args.bao_xiang_num}次"),
-        '🛠️ 通用任务': (args.tasks is not None, f"任务列表:{args.tasks or 'all'} 排除:{args.exclude or '无'}")
+        '🛠️ 通用任务': (args.tasks is not None, f"任务列表:{args.tasks or 'all'} 排除:{args.exclude or '无'}"),
+        '⚡ 强制启动': (args.disable_force_start is not None, f"禁用" if args.disable_force_start is not None else "启用"),
     }
     
     logger.info("📦 运行时参数配置".ljust(50, "─"))
@@ -80,7 +85,9 @@ def run_multi_server_mode(args: argparse.Namespace):
     logger.info(f"🌐 进入多服务器模式 | 已配置服务器: {len(FU_CONFIGS)}个")
     
     for idx, config in enumerate(FU_CONFIGS, 1):
+        logger.info("关闭所有弹窗, 最大尝试次数: 6")
         close_all_x_and_back()
+        logger.info("所有弹窗关闭且已经返回")
 
         server_name = config.get('name', '未命名服务器')
         logger.info(f"🔄 [{idx}/{len(FU_CONFIGS)}] 正在连接: {server_name}")
@@ -128,6 +135,8 @@ def parse_arguments() -> argparse.Namespace:
                       help='寰球救援-禁用技能选择功能')
     common_group.add_argument('--force-login', type=int, default=None, nargs='?', const=10,
                       help='如帐号在其他地方登录，强制登录，默认10分钟后强制登录')
+    server_group.add_argument('--disable-force-start', action='store_true', 
+                            help='禁止强制启动游戏')
     
     return parser.parse_args()
 
@@ -159,7 +168,9 @@ def handle_wait(wait_minutes: int):
 def init_game_environment():
     """游戏环境初始化"""
     open_zhan_dou()
+    logger.info("关闭所有弹窗, 最大尝试次数: 6")
     close_all_x_and_back()
+    logger.info("所有弹窗关闭且已经返回")
     
     if not (find('images/fu/start_game.png') or find('images/fu/start_game_1.png')):
         logger.warning("🛑 未找到游戏开始按钮")
@@ -182,6 +193,13 @@ def main():
         # 等待逻辑
         if args.wait is not None:
             handle_wait(args.wait)
+
+        if is_game_started():
+            logger.info("✅ 游戏已启动")
+        else:
+            logger.info("⏳ 开始启动游戏...")
+            start_game()
+            logger.info("✅ 游戏启动成功")
 
         if args.force_login is not None and check_login_other():
             logger.info("⚠️ 检测到帐号在其他地方登录，等待10分钟后强制登录")
