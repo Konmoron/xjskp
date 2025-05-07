@@ -1,6 +1,11 @@
 # 游戏所在区域
 GLOBAL_REGION = (2100, 100, 890, 1700)
 
+REGIONS = {
+    'default': (2100, 100, 890, 1700),
+    'game_start': (744, 84, 437, 826),
+}
+
 # 偏移量配置
 CLICK_OFFSETS = {
     'open_chat': (349, 725),  # 打开聊天
@@ -34,6 +39,7 @@ DRAG_CONFIGS = {
     'jun_tuan_task_down_bu_chang': (-8, 820, 1, 141, 1, 1),
     'xuan_fu_down': (-6, 1026, 4, -235, 1.5, 1),
     'xuan_fu_up': (5, 644, -4, 202, 1.5, 1),
+    'move_game_to_default_region': (-3, 2, 755, -52, 3, 1),
 }
 
 FU_CONFIGS = [
