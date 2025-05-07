@@ -48,12 +48,14 @@ class HuanQiu:
     
     def start(self):
         """启动入口"""
-        logger.info(f"最大执行次数：{self.max_num}")
-        logger.info(f"技能选择功能状态：{'禁用' if self.disable_skill else '启用'}")
-        logger.info(f"强制启动游戏：{'是' if self.force_start else '否'}")
-        logger.info(f"强制登录：{'是' if self.force_login else '否'}")
-        if self.force_login:
-            logger.info(f"强制登录等待时间：{self.force_login_wait}秒")
+        logger.info("".ljust(50, "─"))
+        logger.info("🚀 寰球救援参数配置")
+        logger.info(f"├─ 🎯 最大执行次数: {self.max_num} 局")
+        logger.info(f"├─ 🛠️ 技能选择: {'🔴 禁用' if self.disable_skill else '🟢 启用'}")
+        logger.info(f"├─ ⚡ 强制启动: {'🟢 启用' if self.force_start else '🔴 禁用'}")
+        logger.info(f"├─ 🔒 强制登录: {'🟢 启用' if self.force_login else '🔴 禁用'}" + 
+                (f" | ⏳ 等待 {self.force_login_wait} 分钟" if self.force_login else ""))
+        logger.info("".ljust(50, "─"))
         self._start_huan_qiu_jiu_yuan()
 
     def _start_huan_qiu_jiu_yuan(self):
