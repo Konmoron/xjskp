@@ -50,8 +50,8 @@ class TaskExecutor:
         HuanQiu(
             max_num=self.args.number, 
             disable_skill=self.args.disable_skill,
-            force_login=self.args.force_login is not None,
-            force_login_wait=self.args.force_login or 10,
+            force_login=not self.args.disable_force_login,
+            force_login_wait=self.args.force_login_wait or 10,
             force_start=not self.args.disable_force_start,
         ).start()
         logger.info("🚀 寰球救援任务完成")
@@ -67,11 +67,11 @@ def print_runtime_config(args: argparse.Namespace):
     config_map = {
         '⏳ 等待逻辑': (args.wait is not None, f"{args.wait}分钟" if args.wait is not None else "未启用"),
         '🌐 多服务器': (args.fu, f"{len(FU_CONFIGS)}个" if args.fu else "未启用"),
-        '🔒 强制登录': (args.force_login is not None, f"等待{args.force_login}分钟后强制登录" if args.force_login is not None else "未启动"),
+        '🔒 强制登录': (not args.disable_force_login, f"等待{args.force_login_wait}分钟后强制登录" if not args.disable_force_login else "禁用"),
         '🚀 寰球救援': (args.huanqiu, f"次数:{args.number} 选择技能:{'禁用' if args.disable_skill else '启用'}"),
         '🎁 宝箱任务': (args.bao_xiang, f"10连抽x{args.bao_xiang_num}次"),
         '🛠️ 通用任务': (args.tasks is not None, f"任务列表:{args.tasks or 'all'} 排除:{args.exclude or '无'}"),
-        '⚡ 强制启动': (args.disable_force_start is not None, f"启用" if args.disable_force_start is not None else "禁用"),
+        '⚡ 强制启动': (not args.disable_force_start, f"启用" if not args.disable_force_start else "禁用"),
     }
     
     logger.info("📦 运行时参数配置".ljust(50, "─"))
@@ -133,9 +133,11 @@ def parse_arguments() -> argparse.Namespace:
                       help='宝箱10连抽的次数（默认10次）')
     common_group.add_argument('--disable-skill', action='store_true',
                       help='寰球救援-禁用技能选择功能')
-    common_group.add_argument('--force-login', type=int, default=None, nargs='?', const=10,
+    common_group.add_argument('--force-login-wait', type=int, default=10,
                       help='如帐号在其他地方登录，强制登录，默认10分钟后强制登录')
-    server_group.add_argument('--disable-force-start', action='store_true', 
+    common_group.add_argument('--disable-force-login', action='store_true', 
+                            help='禁止强制登录')
+    common_group.add_argument('--disable-force-start', action='store_true', 
                             help='禁止强制启动游戏')
     
     return parser.parse_args()
@@ -201,9 +203,9 @@ def main():
             start_game()
             logger.info("✅ 游戏启动成功")
 
-        if args.force_login is not None and check_login_other():
-            logger.info("⚠️ 检测到帐号在其他地方登录，等待10分钟后强制登录")
-            force_login(args.force_login)
+        if not args.disable_force_login and check_login_other():
+            logger.info(f"⚠️ 检测到帐号在其他地方登录，等待{args.force_login_wait}分钟后强制登录")
+            force_login(args.force_login_wait)
             
         # 初始化游戏环境
         init_game_environment()
