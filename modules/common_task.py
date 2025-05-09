@@ -709,7 +709,7 @@ class CommonTask:
                 find_and_click('images/sai_ji/fan_ying.png')
                 find_and_click('images/sai_ji/start.png')
 
-                close_x()
+                back()
 
             back()
 
