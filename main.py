@@ -17,6 +17,7 @@ from modules.operators.common_operations import (
     force_login,
     is_game_started,
     start_game,
+    exit_game,
 )
 from utils.image_utils import (
     find
@@ -28,6 +29,8 @@ class TaskExecutor:
     """任务执行器"""
     def __init__(self, args: argparse.Namespace):
         self.args = args
+        # 添加游戏启动时间记录（需要在main函数中传递）
+        self.game_start_time = time.time()
         
     def run_bao_xiang(self):
         """宝箱任务"""
@@ -61,6 +64,13 @@ class TaskExecutor:
         self.run_bao_xiang()
         self.run_common_tasks()
         self.run_huan_qiu()
+        
+        # 添加运行时间判断（30分钟 = 1800秒）
+        if time.time() - self.game_start_time >= 1800:
+            exit_game()
+            logger.info("✅ 程序退出")
+        else:
+            logger.info("⏳ 游戏运行时间未达30分钟，保持运行")
 
 def print_runtime_config(args: argparse.Namespace):
     """可视化输出运行时参数"""
@@ -85,6 +95,10 @@ def run_multi_server_mode(args: argparse.Namespace):
     logger.info(f"🌐 进入多服务器模式 | 已配置服务器: {len(FU_CONFIGS)}个")
     
     for idx, config in enumerate(FU_CONFIGS, 1):
+        if not is_game_started():
+            logger.info("游戏未启动，启动游戏")
+            start_game()
+
         logger.info("关闭所有弹窗, 最大尝试次数: 6")
         close_all_x_and_back()
         logger.info("所有弹窗关闭且已经返回")
@@ -215,10 +229,11 @@ def main():
             run_multi_server_mode(args)
         else:
             TaskExecutor(args).execute()
-            
     except Exception as e:
         logger.error(f"‼️ 程序异常终止: {str(e)}")
         sys.exit(1)
+    finally:
+        exit_game()
 
 if __name__ == "__main__":
     main()
