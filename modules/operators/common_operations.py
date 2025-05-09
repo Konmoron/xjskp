@@ -287,3 +287,6 @@ def start_game():
     drag('images/header.png', 'move_game_to_default_region', image_region_name='game_start')
     time.sleep(2)
     close_all_x()
+
+def exit_game():
+    find_and_click('images/exit_game.png')
