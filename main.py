@@ -11,6 +11,7 @@ from modules.operators.fu import xuan_fu
 from modules.operators.bottom import open_zhan_dou
 from modules.operators.common_operations import (
     close_all_x_and_back,
+    close_all_x,
     check_login_other,
     force_login,
     is_game_started,
@@ -225,15 +226,13 @@ def handle_wait(wait_minutes: int):
 
 def init_game_environment():
     """游戏环境初始化"""
-    open_zhan_dou()
     logger.info("关闭所有弹窗, 最大尝试次数: 6")
-    close_all_x_and_back()
+    close_all_x()
 
     if not (find("images/fu/start_game.png") or find("images/fu/start_game_1.png")):
         logger.warning("🛑 未找到游戏开始按钮")
     else:
         logger.info("✅ 游戏环境初始化完成")
-    open_zhan_dou()
 
 
 def main():
