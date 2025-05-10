@@ -78,7 +78,7 @@ def measure_drag_distance(image_path, confidence=0.8):
         logger.error(f"‼️ 发生未预期错误: {str(e)}", exc_info=True)
         return False
 
-def test_drag_config(img_path: str, config_name: str, confidence=0.8):
+def test_drag_config(img_path: str, config_name: str, confidence=0.8, region_name='default'):
     """测试单个拖拽配置"""
     logger.info(f"🔍 开始测试配置项：{config_name} | 图片路径: {img_path}")
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -99,7 +99,8 @@ def test_drag_config(img_path: str, config_name: str, confidence=0.8):
         result = drag(
             image_path=img_path, 
             drag_config_name=config_name,
-            confidence=confidence
+            confidence=confidence,
+            image_region_name=region_name
         )
         
         if result:
@@ -121,6 +122,7 @@ if __name__ == "__main__":
     
     # 必需参数
     parser.add_argument('-i', '--image', required=True, help='基准图片路径')
+    parser.add_argument('-r', '--region-name', default='default', help='图片区域名称')
     
     # 互斥操作模式
     group = parser.add_mutually_exclusive_group(required=True)
@@ -142,4 +144,4 @@ if __name__ == "__main__":
     if args.get:
         measure_drag_distance(args.image, args.confidence)
     elif args.test:
-        test_drag_config(args.image, args.drag, args.confidence)
+        test_drag_config(args.image, args.drag, args.confidence, args.region_name)
