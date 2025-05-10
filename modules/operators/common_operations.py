@@ -281,11 +281,19 @@ def is_game_started():
 def start_game():
     """启动游戏"""
     find_and_click('images/start_game/icon.png', clicks=2)
-    time.sleep(15)
+    time.sleep(10)
     find_and_click('images/start_game/x.png')
-    time.sleep(2)
-    drag('images/header.png', 'move_game_to_default_region', image_region_name='game_start')
-    time.sleep(2)
+    time.sleep(20)
+    find_and_click('images/header.png', image_region_name='game_start')
+
+    logger.info("移动游戏到默认区域")
+    for i in range(6):
+        if not find('images/header.png', image_region_name='game_start'):
+            break
+        logger.info(f"第 {i+1} 次尝试移动游戏到默认区域")
+        drag('images/header.png', 'move_game_to_default_region', image_region_name='game_start')
+        time.sleep(2)
+
     close_all_x()
 
 def exit_game():
