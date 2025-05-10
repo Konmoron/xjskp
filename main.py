@@ -252,12 +252,10 @@ def main():
         if args.wait is not None:
             handle_wait(args.wait)
 
-        if is_game_started():
-            logger.info("✅ 游戏已启动")
-        else:
-            logger.info("⏳ 开始启动游戏...")
-            start_game()
-            logger.info("✅ 游戏启动成功")
+        logger.info("⏳ 退出游戏...")
+        exit_game()
+        logger.info("⏳ 开始启动游戏...")
+        start_game()
 
         if not args.disable_force_login and check_login_other():
             logger.info(

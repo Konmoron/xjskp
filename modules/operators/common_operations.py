@@ -373,6 +373,8 @@ def start_game():
         )
         time.sleep(2)
 
+    logger.info("游戏启动完成")
+
 
 def exit_game():
     find_and_click("images/exit_game.png")
