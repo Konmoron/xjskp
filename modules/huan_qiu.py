@@ -287,6 +287,8 @@ class HuanQiu:
                     f"第【{self.game_num}】局 - 系统检查 - 检测到【异地登录】执行强制登录"
                 )
                 force_login()
+                time.sleep(10)
+                close_all_x()
             else:
                 logger.info(
                     f"第【{self.game_num}】局 - 系统检查 - 检测到【异地登录】退出程序"
