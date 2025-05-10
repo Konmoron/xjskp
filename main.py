@@ -274,6 +274,7 @@ def main():
         logger.error(f"‼️ 程序异常终止: {str(e)}")
         sys.exit(1)
     finally:
+        logger.info("⏳ 所有任务执行完毕，退出游戏...")
         exit_game()
 
 
