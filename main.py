@@ -254,7 +254,7 @@ def main():
 
         logger.info("⏳ 退出游戏...")
         exit_game()
-        logger.info("⏳ 开始启动游戏...")
+        logger.info("⏳ 重新启动游戏...")
         start_game()
 
         if not args.disable_force_login and check_login_other():
