@@ -244,6 +244,7 @@ class HuanQiu:
                 logger.info(f"第【{self.game_num}】局 - 系统检查 - 检测到【游戏未启动】执行强制启动")
                 start_game()
                 time.sleep(1)
+                close_all_x()
             else:
                 logger.info(f"第【{self.game_num}】局 - 系统检查 - 检测到【游戏未启动】退出程序")
                 sys.exit(0)

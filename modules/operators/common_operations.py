@@ -237,6 +237,7 @@ def close_all_x_and_back(max_attempts=6):
             continue
         else:
             time.sleep(2)
+            logger.info("所有弹窗关闭且已经返回")
             return
 
 
@@ -293,8 +294,6 @@ def start_game():
         logger.info(f"第 {i+1} 次尝试移动游戏到默认区域")
         drag('images/header.png', 'move_game_to_default_region', image_region_name='game_start')
         time.sleep(2)
-
-    close_all_x()
 
 def exit_game():
     find_and_click('images/exit_game.png')

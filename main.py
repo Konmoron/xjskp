@@ -101,7 +101,6 @@ def run_multi_server_mode(args: argparse.Namespace):
 
         logger.info("关闭所有弹窗, 最大尝试次数: 6")
         close_all_x_and_back()
-        logger.info("所有弹窗关闭且已经返回")
 
         server_name = config.get('name', '未命名服务器')
         logger.info(f"🔄 [{idx}/{len(FU_CONFIGS)}] 正在连接: {server_name}")
@@ -186,7 +185,6 @@ def init_game_environment():
     open_zhan_dou()
     logger.info("关闭所有弹窗, 最大尝试次数: 6")
     close_all_x_and_back()
-    logger.info("所有弹窗关闭且已经返回")
     
     if not (find('images/fu/start_game.png') or find('images/fu/start_game_1.png')):
         logger.warning("🛑 未找到游戏开始按钮")
