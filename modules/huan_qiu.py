@@ -223,7 +223,16 @@ class HuanQiu:
             if check_count % 10 == 0:
                 close_offline()
 
-                self._handle_system_checks()
+                if self._handle_system_checks():
+                    logger.info(
+                        "[⚠️第%d/%s局异常退出] | 总耗时 %s | 第%03d/%s次检测",
+                        self.game_num,
+                        self.max_num,
+                        time_str,
+                        check_count,
+                        max_wait_count,
+                    )
+                    break
 
             # 游戏结束检测
             if find_and_click("images/huan_qiu/game_back.png"):
@@ -293,6 +302,8 @@ class HuanQiu:
                 )
                 sys.exit(0)
 
+            return True
+
         # 游戏启动状态检查
         if not is_game_started():
             if self.force_start:
@@ -307,3 +318,7 @@ class HuanQiu:
                     f"第【{self.game_num}】局 - 系统检查 - 检测到【游戏未启动】退出程序"
                 )
                 sys.exit(0)
+
+            return True
+
+        return False
