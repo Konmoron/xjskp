@@ -109,7 +109,7 @@ class HuanQiu:
         """抢寰球"""
         """执行抢寰球操作（带时间统计和美化日志）"""
         logger.info("🎮 开始抢寰球流程".ljust(50, "─"))
-        total_start = time.time()
+        start_time = time.time()
         attempt_count = 0
         success_flag = False
         # 抢寰球
@@ -183,7 +183,7 @@ class HuanQiu:
 
             # 单次循环耗时统计
             loop_time = time.time() - attempt_start
-            total_elapsed = time.time() - total_start
+            total_elapsed = time.time() - start_time
             total_mins, total_secs = divmod(int(total_elapsed), 60)
             total_time_str = f"{total_mins:02d}分{total_secs:02d}秒"
 
@@ -194,7 +194,7 @@ class HuanQiu:
             )
 
         # 最终统计报告
-        total_time = time.time() - total_start
+        total_time = time.time() - start_time
         mins, secs = divmod(int(total_time), 60)  # 使用divmod分解
         time_summary = f"{mins:02d}分{secs:02d}秒"  # 补零对齐
         status_icon = "✅" if success_flag else "❌"
