@@ -21,6 +21,7 @@ from .operators.common_operations import (
     force_login,
     is_game_started,
     start_game,
+    exit_game,
 )
 from .operators.bottom import (
     open_zhan_dou,
@@ -218,6 +219,15 @@ class HuanQiu:
 
         for check_count in range(1, max_wait_count + 1):
             current_start_time = time.time()
+
+            # 如果超过20分钟，则退出游戏，重新登录
+            if current_start_time - start_time > 60 * 20:
+                logger.info("[⚠️第%d局游戏超过20分钟，退出游戏]", self.game_num)
+                exit_game()
+                logger.info("[⏳重新启动游戏...]")
+                start_game()
+                close_all_x()
+                break
 
             # 系统维护操作（含耗时显示）
             if check_count % 10 == 0:
