@@ -7,12 +7,10 @@ import argparse
 import time
 from modules.operators.bottom import open_jun_tuan, open_zhan_dou
 from modules.operators.common_operations import (
-    close_x,
-    close_x_2,
     close_all_x,
     close_all_x_and_back,
 )
-from utils.image_utils import find_and_click, find, drag
+from utils.image_utils import find_and_click, find, drag, retry_click
 from utils.logger import get_logger
 
 logger = get_logger()
@@ -39,39 +37,28 @@ def xuan_fu(image_path, confidence=0.8):
     elif open_jun_tuan():
         logger.info("✅ 军团已打开")
 
-    success = False
-    # 点击头像
-    time.sleep(2)
-    # 点击头像可能失败，需要增加重试逻辑，重试6次
-    for i in range(6):
-        if find("images/fu/xuan_fu.png"):
-            logger.info("👤 发现选服按钮，头像点击成功（偏移方案：header_tou_xiang）")
-            success = True
-            break
-        logger.info(f"🔄 第{i+1}次点击头像")
-        find_and_click("images/header.png", offset_name="header_tou_xiang")
-        time.sleep(2)
-    if not success:
+    if retry_click(
+        click_image="images/header.png",
+        success_image="images/fu/xuan_fu.png",
+        click_kwargs={"offset_name": "header_tou_xiang"},
+    ):
+        logger.info("👤 发现选服按钮，头像点击成功（偏移方案：header_tou_xiang）")
+    else:
         logger.error(
             "❌ 头像点击失败，可能原因：\n1. 头像被遮挡\n2. offset配置错误\n3. 图像路径不存在"
         )
+        close_all_x()
         return False
 
     # 点击选服按钮
     # 重试6次
-    success = False
-    for i in range(6):
-        if not find("images/fu/xuan_fu.png"):
-            logger.info("🚪 选服点击成功（图像：fu/xuan_fu.png）")
-            success = True
-            break
-        time.sleep(2)
-        logger.info(f"🔄 第{i+1}次点击选服按钮")
-        find_and_click("images/fu/xuan_fu.png")
-    if not success:
+    if retry_click(click_image="images/fu/xuan_fu.png"):
+        logger.info("🚪 选服点击成功（图像：fu/xuan_fu.png）")
+    else:
         logger.error(
             "❌ 选服按钮未找到，可能原因：\n1. 未在游戏主界面\n2. 图像分辨率不匹配"
         )
+        close_all_x()
         return False
 
     drag_num = 0
@@ -93,19 +80,18 @@ def xuan_fu(image_path, confidence=0.8):
         time.sleep(2)
 
     # 为了解决点击之后，没有响应，需要增加重试逻辑，重试6次
-    xuan_fu_success = False
-    for i in range(6):
-        if not find(image_path, confidence=confidence):
-            logger.info(f"✅ 成功选择服务器 | 坐标图像：{image_path}")
-            xuan_fu_success = True
-            break
-        time.sleep(2)
-        logger.info(f"🔄 第{i+1}次点击{image_path}")
-        find_and_click(image_path, confidence=confidence)
-    if not xuan_fu_success:
+    if retry_click(
+        click_image=image_path,
+        click_kwargs={"confidence": confidence},
+        find_kwargs={"confidence": confidence},
+    ):
+        logger.info(f"✅ 成功选择服务器 | 坐标图像：{image_path}")
+    else:
         logger.error(
             f"❌ 最终点击{image_path}失败，可能原因：\n1. 图像匹配精度不足（当前：{confidence}）\n2. 元素未正确加载"
         )
+        close_all_x()
+        return False
 
     # 等待加载完成
     logger.info("⏳ 等待服务器加载（预计10秒）...")
@@ -114,7 +100,7 @@ def xuan_fu(image_path, confidence=0.8):
     logger.info("关闭所有X")
     close_all_x()
 
-    logger.info(f"🎉 服务器切换成功！总耗时：{time.time() - start_time:.1f}秒")
+    logger.info(f"🎉 {image_path}服切换成功！总耗时：{time.time() - start_time:.1f}秒")
     return True
 
 
