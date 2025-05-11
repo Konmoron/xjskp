@@ -187,6 +187,14 @@ class HuanQiu:
             total_mins, total_secs = divmod(int(total_elapsed), 60)
             total_time_str = f"{total_mins:02d}分{total_secs:02d}秒"
 
+            if self._handle_timeout(start_time, timeout_minutes=20):
+                logger.info(
+                    f"⏳ 第{self.game_num}/{self.max_num}局 | 第{attempt_count:02d}/100次抢寰球 | 超时退出 "
+                    f"总耗时{total_time_str} | "
+                    f"本次耗时{loop_time:.2f}秒"
+                )
+                break
+
             logger.info(
                 f"⏳ 第{self.game_num}/{self.max_num}局 | 第{attempt_count:02d}/100次抢寰球 | "
                 f"总耗时{total_time_str} | "
@@ -219,15 +227,6 @@ class HuanQiu:
 
         for check_count in range(1, max_wait_count + 1):
             current_start_time = time.time()
-
-            # 如果超过20分钟，则退出游戏，重新登录
-            if current_start_time - start_time > 60 * 20:
-                logger.info("[⚠️第%d局游戏超过20分钟，退出游戏]", self.game_num)
-                exit_game()
-                logger.info("[⏳重新启动游戏...]")
-                start_game()
-                close_all_x()
-                break
 
             # 系统维护操作（含耗时显示）
             if check_count % 10 == 0:
@@ -275,6 +274,18 @@ class HuanQiu:
             elapsed_time = time.time() - start_time
             mins, secs = divmod(int(elapsed_time), 60)
             time_str = f"{mins:02d}分{secs:02d}秒"
+
+            if self._handle_timeout(start_time, timeout_minutes=20):
+                logger.info(
+                    "[⚠️第%d/%s局超时退出] | 总耗时 %s | 第%03d/%s次检测",
+                    self.game_num,
+                    self.max_num,
+                    time_str,
+                    check_count,
+                    max_wait_count,
+                )
+                break
+
             logger.info(
                 "⏳ 第%d/%d局等待结束 | 已等待%s | 第%03d/%d次检测 | 本次耗时%d秒",
                 self.game_num,
@@ -332,3 +343,25 @@ class HuanQiu:
             return True
 
         return False
+
+    def _handle_timeout(
+        self,
+        start_time: float,
+        timeout_minutes: int = 20,
+    ) -> bool:
+        """
+        处理超时重启（类内私有方法）
+
+        :param start_time: 流程开始时间戳
+        :param timeout_minutes: 超时阈值（分钟）
+        :return: 是否触发了超时处理
+        """
+        if time.time() - start_time < timeout_minutes * 60:
+            return False
+
+        logger.info(f"TIMEOUT: {timeout_minutes}分钟未完成，退出游戏重新登录")
+        exit_game()
+        start_game()
+        close_all_x()
+        time.sleep(1)
+        return True
