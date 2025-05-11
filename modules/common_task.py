@@ -1,7 +1,7 @@
 import argparse
 from datetime import datetime
 from typing import Dict, Callable
-from utils.image_utils import drag_search, find, find_and_click, drag
+from utils.image_utils import drag_search, find, find_and_click, drag, retry_click
 from utils.logger import get_logger
 import time
 from .operators.bottom import (
@@ -15,6 +15,8 @@ from .operators.common_operations import (
     close_chou_jiang_1,
     close_x,
     close_x_2,
+    close_all_x,
+    close_all_x_and_back,
     back,
     kan_guang_gao,
 )
@@ -458,39 +460,41 @@ class CommonTask:
         logger.info("执行【特惠】任务...")
         open_zhan_dou()
 
-        # 找到特惠
-        if drag_search(
-            "images/header.png", "images/te_hui/te_hui.png", "zhan_dou_left_down", 3
-        ):
-            logger.info(f"向下拖拽找到【特惠】")
-        elif drag_search(
-            "images/header.png", "images/te_hui/te_hui.png", "zhan_dou_left_up", 3
-        ):
-            logger.info(f"向上拖拽找到【特惠】")
-        else:
-            logger.info(f"向上、向下拖拽未找到【特惠】")
-            return False
+        try:
 
-        if find_and_click("images/te_hui/te_hui.png"):
-            logger.info(f"打开【特惠】")
-            time.sleep(1)
-        else:
-            logger.info(f"打开【特惠】失败")
-            return False
+            # 找到特惠
+            if drag_search(
+                "images/header.png", "images/te_hui/te_hui.png", "zhan_dou_left_down", 3
+            ):
+                logger.info(f"向下拖拽找到【特惠】")
+            elif drag_search(
+                "images/header.png", "images/te_hui/te_hui.png", "zhan_dou_left_up", 3
+            ):
+                logger.info(f"向上拖拽找到【特惠】")
+            else:
+                logger.info(f"向上、向下拖拽未找到【特惠】")
+                return False
 
-        if find_and_click("images/te_hui/mei_ri_te_hui.png"):
-            logger.info(f"打开【每日特惠】")
-            time.sleep(1)
-        else:
-            logger.info(f"打开【每日特惠】失败")
-            return False
+            if find_and_click("images/te_hui/te_hui.png"):
+                logger.info(f"打开【特惠】")
+                time.sleep(1)
+            else:
+                logger.info(f"打开【特惠】失败")
+                return False
 
-        if find_and_click("images/te_hui/start.png"):
-            logger.info(f"执行【每日特惠】-【领取奖励】")
-            kan_guang_gao()
+            if find_and_click("images/te_hui/mei_ri_te_hui.png"):
+                logger.info(f"打开【每日特惠】")
+                time.sleep(1)
+            else:
+                logger.info(f"打开【每日特惠】失败")
+                return False
 
-        # 关闭
-        back()
+            if find_and_click("images/te_hui/start.png"):
+                logger.info(f"执行【每日特惠】-【领取奖励】")
+                kan_guang_gao()
+        finally:
+            # 关闭
+            back()
 
     def hao_you(self):
         """执行【好友】任务"""
@@ -529,155 +533,176 @@ class CommonTask:
         logger.info("执行军团任务...")
         open_jun_tuan()
 
-        # 执行军团贡献
-        if find_and_click("images/jun_tuan/gong_xian.png"):
-            logger.info(f"打开【军团贡献】")
-            time.sleep(1)
-            if find_and_click("images/jun_tuan/gong_xian_start.png"):
-                logger.info(f"开始执行【军团贡献】")
-                kan_guang_gao()
-            logger.info(f"执行【军团贡献】完成")
-            close_x()
-
-        # 执行砍一刀
-        if find_and_click("images/jun_tuan/kan_yi_dao_start.png"):
-            logger.info(f"打开【砍一刀】")
-            time.sleep(1)
-            if find_and_click("images/jun_tuan/kan_yi_dao.png"):
-                logger.info(f"开始执行【砍一刀】")
+        try:
+            # 执行军团贡献
+            if find_and_click("images/jun_tuan/gong_xian.png"):
+                logger.info(f"打开【军团贡献】")
                 time.sleep(1)
-                close_guang_gao()
+                if find_and_click("images/jun_tuan/gong_xian_start.png"):
+                    logger.info(f"开始执行【军团贡献】")
+                    kan_guang_gao()
+                logger.info(f"执行【军团贡献】完成")
+                close_x()
 
-            close_x()
-
-        # 打开任务大厅
-        if find_and_click("images/jun_tuan/task.png"):
-            logger.info(f"打开【任务大厅】")
-            time.sleep(1)
-
-            # 拖拽搜索辅助方法
-            def drag_search(
-                find_image,
-                drag_config,
-                direction,
-                max_attempts=3,
-                find_before_drag=True,
-            ):
-                """统一拖拽搜索逻辑"""
-                if find_before_drag and find(find_image, confidence=0.9):
-                    logger.info(f"🎯 找到{find_image}")
-                    return True
-
-                for i in range(max_attempts):
-                    logger.info(f"🔄 第{i+1}次{direction}拖拽搜索")
+            # 执行砍一刀
+            if find_and_click("images/jun_tuan/kan_yi_dao_start.png"):
+                logger.info(f"打开【砍一刀】")
+                time.sleep(1)
+                if retry_click(click_image="images/jun_tuan/kan_yi_dao.png"):
+                    close_guang_gao()
+                    logger.info(f"执行【砍一刀】完成")
                     time.sleep(1)
-                    drag("images/header.png", drag_config)
-                    time.sleep(2)
-                    if find(find_image, confidence=0.9):
+
+                close_x()
+
+            # 打开任务大厅
+            if find_and_click("images/jun_tuan/task.png"):
+                logger.info(f"打开【任务大厅】")
+                time.sleep(1)
+
+                # 拖拽搜索辅助方法
+                def drag_search(
+                    find_image,
+                    drag_config,
+                    direction,
+                    max_attempts=3,
+                    find_before_drag=True,
+                ):
+                    """统一拖拽搜索逻辑"""
+                    if find_before_drag and find(find_image, confidence=0.9):
                         logger.info(f"🎯 找到{find_image}")
                         return True
 
-                logger.info(f"❌ 超过最大拖拽次数，未找到{find_image}")
-                return False
+                    for i in range(max_attempts):
+                        logger.info(f"🔄 第{i+1}次{direction}拖拽搜索")
+                        time.sleep(1)
+                        drag("images/header.png", drag_config)
+                        time.sleep(2)
+                        if find(find_image, confidence=0.9):
+                            logger.info(f"🎯 找到{find_image}")
+                            return True
 
-            # 任务处理核心逻辑
-            def handle_task(task_image, task_name, offset_name=None):
-                """统一处理各类任务"""
-                logger.info(f"🔍 开始查找{task_name}任务")
+                    logger.info(f"❌ 超过最大拖拽次数，未找到{find_image}")
+                    return False
 
-                # 组合拖拽策略
-                search_pattern = [
-                    ("jun_tuan_task_left_down", "向下", 2),
-                    ("jun_tuan_task_left_up", "向上", 2),
-                ]
+                # 任务处理核心逻辑
+                def handle_task(task_image, task_name, offset_name=None):
+                    """统一处理各类任务"""
+                    logger.info(f"🔍 开始查找{task_name}任务")
 
-                # 补偿策略
-                # 找到图片之后，广告按钮可能会被遮挡，
-                # 这里添加补偿策略，
-                # 先向上，如果还有发现图片，则停止补偿，如果没有，则向下拖拽，
-                bu_chang = [
-                    ("jun_tuan_task_up_bu_chang", "补偿向上", 1),
-                    ("jun_tuan_task_down_bu_chang", "补偿向下", 1),
-                ]
+                    # 组合拖拽策略
+                    search_pattern = [
+                        ("jun_tuan_task_left_down", "向下", 2),
+                        ("jun_tuan_task_left_up", "向上", 2),
+                    ]
 
-                for config, direction, attempts in search_pattern:
-                    if drag_search(task_image, config, direction, attempts):
-                        logger.info(f"🎯 定位到{task_name}任务")
-                        # 补偿
-                        for (
-                            bu_chang_config,
-                            bu_chang_direction,
-                            bu_chang_attempts,
-                        ) in bu_chang:
-                            if drag_search(
-                                task_image,
+                    # 补偿策略
+                    # 找到图片之后，广告按钮可能会被遮挡，
+                    # 这里添加补偿策略，
+                    # 先向上，如果还有发现图片，则停止补偿，如果没有，则向下拖拽，
+                    bu_chang = [
+                        ("jun_tuan_task_up_bu_chang", "补偿向上", 1),
+                        ("jun_tuan_task_down_bu_chang", "补偿向下", 1),
+                    ]
+
+                    for config, direction, attempts in search_pattern:
+                        if drag_search(task_image, config, direction, attempts):
+                            logger.info(f"🎯 定位到{task_name}任务")
+                            # 补偿
+                            for (
                                 bu_chang_config,
                                 bu_chang_direction,
                                 bu_chang_attempts,
-                                find_before_drag=False,
+                            ) in bu_chang:
+                                if drag_search(
+                                    task_image,
+                                    bu_chang_config,
+                                    bu_chang_direction,
+                                    bu_chang_attempts,
+                                    find_before_drag=False,
+                                ):
+                                    logger.info(f"🎯 补偿之后，定位到{task_name}任务")
+                                    break
+
+                            time.sleep(2)
+                            find_and_click(
+                                task_image, offset_name=offset_name, confidence=0.9
+                            )
+                            time.sleep(35)
+                            close_guang_gao()
+                            close_chou_jiang_1()
+                            return True
+                    return False
+
+                if find("images/jun_tuan/ren_wu_da_ting_start.png"):
+                    logger.info(f"找到【任务大厅】-【广告按钮】")
+
+                    # 优先处理100钻石任务（带重试机制）
+                    max_retries = 1  # 最大重试次数
+                    task_success = False
+
+                    for attempt in range(max_retries + 1):
+                        logger.info(f"💎 第{attempt+1}次尝试处理100钻石任务")
+                        if handle_task(
+                            "images/jun_tuan/task_100_zuan_shi.png",
+                            "100钻石",
+                            "jun_tuan_task_100_zuan_shi",
+                        ):
+                            task_success = True
+                            break
+                        time.sleep(2)  # 重试前等待
+
+                    if not task_success:
+                        logger.warning("💎 未找到钻石任务，尝试查找宝箱任务")
+                        for attempt in range(max_retries + 1):
+                            logger.info(f"💎 第{attempt+1}次尝试处理查找宝箱任务")
+                            if handle_task(
+                                "images/jun_tuan/task_2_bao_xiang.png",
+                                "双宝箱",
+                                "jun_tuan_task_2_bao_xiang",
                             ):
-                                logger.info(f"🎯 补偿之后，定位到{task_name}任务")
+                                task_success = True
                                 break
+                            time.sleep(2)  # 重试前等待
+                else:
+                    logger.warning("❌ 未找到【任务大厅】-【广告按钮】-不执行任务")
 
-                        find_and_click(
-                            task_image, offset_name=offset_name, confidence=0.9
-                        )
-                        time.sleep(35)
-                        close_guang_gao()
-                        close_chou_jiang_1()
-                        return True
-                return False
+                close_x()
 
-            if find("images/jun_tuan/ren_wu_da_ting_start.png"):
-                logger.info(f"找到【任务大厅】-【广告按钮】")
-                # 优先处理100钻石任务
-                if not handle_task(
-                    "images/jun_tuan/task_100_zuan_shi.png",
-                    "100钻石",
-                    "jun_tuan_task_100_zuan_shi",
-                ):
-                    logger.warning("💎 未找到钻石任务，尝试查找宝箱任务")
-                    handle_task(
-                        "images/jun_tuan/task_2_bao_xiang.png",
-                        "双宝箱",
-                        "jun_tuan_task_2_bao_xiang",
-                    )
-            else:
-                logger.warning("❌ 未找到【任务大厅】-【广告按钮】-不执行任务")
-
-            close_x()
-
-        # 军团联赛-驻守
-        # 周二、周四、周六执行
-        if datetime.now().weekday() in {1, 3, 5}:
-            logger.info(f"⏸️ 当前为 {datetime.now().strftime('%A')}为军团联赛驻守日期")
-            if find_and_click("images/jun_tuan/wan_fa_da_ting/button.png"):
-                logger.info(f"打开【玩法大厅】")
-                if find_and_click("images/jun_tuan/wan_fa_da_ting/jin_ru.png"):
-                    logger.info(f"打开【军团联赛】")
-                    if find_and_click(
-                        "images/jun_tuan/wan_fa_da_ting/jun_tuan_lian_sai.png",
-                        confidence=0.9,
-                    ):
+            # 军团联赛-驻守
+            # 周二、周四、周六执行
+            if datetime.now().weekday() in {1, 3, 5}:
+                logger.info(
+                    f"⏸️ 当前为 {datetime.now().strftime('%A')}为军团联赛驻守日期"
+                )
+                if find_and_click("images/jun_tuan/wan_fa_da_ting/button.png"):
+                    logger.info(f"打开【玩法大厅】")
+                    if find_and_click("images/jun_tuan/wan_fa_da_ting/jin_ru.png"):
+                        logger.info(f"打开【军团联赛】")
                         if find_and_click(
-                            "images/jun_tuan/wan_fa_da_ting/1_hao_ta.png",
+                            "images/jun_tuan/wan_fa_da_ting/jun_tuan_lian_sai.png",
                             confidence=0.9,
                         ):
-                            logger.info(f"打开【1号塔】")
                             if find_and_click(
-                                "images/jun_tuan/wan_fa_da_ting/zhu_shou.png"
+                                "images/jun_tuan/wan_fa_da_ting/1_hao_ta.png",
+                                confidence=0.9,
                             ):
-                                logger.info(f"驻守【1号塔】")
-                            else:
-                                logger.info(f"未找到【驻守】按钮，可能已经驻守")
-                            close_x()
-                    else:
-                        logger.info(f"未找到【军团联赛】")
+                                logger.info(f"打开【1号塔】")
+                                if find_and_click(
+                                    "images/jun_tuan/wan_fa_da_ting/zhu_shou.png"
+                                ):
+                                    logger.info(f"驻守【1号塔】")
+                                else:
+                                    logger.info(f"未找到【驻守】按钮，可能已经驻守")
+                                close_x()
+                        else:
+                            logger.info(f"未找到【军团联赛】")
+                        back()
                     back()
-                back()
-
-        logger.info("🏁 军团任务执行完毕")
-        open_zhan_dou()
+        finally:
+            logger.info("🏁 军团任务执行完毕")
+            close_all_x_and_back()
+            open_zhan_dou()
 
     def shop(self):
         """商店"""
@@ -778,11 +803,15 @@ class CommonTask:
 
         if find_and_click("images/sai_ji/ka_pi_ba_la.png"):
             logger.info(f"打开【赛季-卡皮巴拉】")
-            time.sleep(2)
+            time.sleep(4)
             if find_and_click("images/sai_ji/an_pai.png"):
-                find_and_click("images/sai_ji/fan_ying.png")
-                find_and_click("images/sai_ji/fan_ying.png")
-                find_and_click("images/sai_ji/start.png")
+                if find("images/sai_ji/start.png"):
+                    time.sleep(1)
+                    find_and_click("images/sai_ji/fan_ying.png")
+                    time.sleep(1)
+                    find_and_click("images/sai_ji/fan_ying.png")
+                    time.sleep(1)
+                    find_and_click("images/sai_ji/start.png")
 
                 back()
 
@@ -806,6 +835,8 @@ class CommonTask:
                 time.sleep(1)
                 close_x()
             back()
+
+        close_all_x_and_back()
 
         open_zhan_dou()
 
