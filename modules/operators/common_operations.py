@@ -377,4 +377,12 @@ def start_game():
 
 
 def exit_game():
+    logger.info("退出游戏")
     find_and_click("images/exit_game.png")
+
+
+def restart_game():
+    logger.info("重新启动游戏")
+    exit_game()
+    start_game()
+    close_all_x()
