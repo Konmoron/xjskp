@@ -22,6 +22,7 @@ from .operators.common_operations import (
     is_game_started,
     start_game,
     exit_game,
+    restart_game,
 )
 from .operators.bottom import (
     open_zhan_dou,
@@ -195,6 +196,16 @@ class HuanQiu:
                 )
                 break
 
+            if attempt_count == 100:
+                # 尝试次数达到100次，退出重新登录
+                logger.info(
+                    f"⏳ 第{self.game_num}/{self.max_num}局 | 第{attempt_count:02d}/100次抢寰球 | 没有抢到寰球 退出重新登录 "
+                    f"总耗时{total_time_str} | "
+                    f"本次耗时{loop_time:.2f}秒"
+                )
+                restart_game()
+                break
+
             logger.info(
                 f"⏳ 第{self.game_num}/{self.max_num}局 | 第{attempt_count:02d}/100次抢寰球 | "
                 f"总耗时{total_time_str} | "
@@ -360,8 +371,6 @@ class HuanQiu:
             return False
 
         logger.info(f"TIMEOUT: {timeout_minutes}分钟未完成，退出游戏重新登录")
-        exit_game()
-        start_game()
-        close_all_x()
+        restart_game()
         time.sleep(1)
         return True
