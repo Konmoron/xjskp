@@ -2,7 +2,7 @@ from datetime import datetime
 from tqdm import tqdm
 import time
 from utils import logger
-from utils.image_utils import find, find_and_click, drag
+from utils.image_utils import find, find_and_click, drag, retry_click
 from utils.logger import get_logger
 
 logger = get_logger()
@@ -329,7 +329,7 @@ def check_login_other():
 
 def force_login(wait_time=10):
     # 强制登录
-    if find("images/login_other.png"):
+    if find("images/login_other.png") or find("images/force_login/start.png"):
         wait_time_seconds = wait_time * 60
         with tqdm(
             total=wait_time_seconds,
@@ -340,9 +340,9 @@ def force_login(wait_time=10):
                 time.sleep(1)
                 pbar.update(1)
 
-        find_and_click("images/force_login/que_ding.png")
+        retry_click(click_image="images/force_login/que_ding.png")
         time.sleep(1)
-        find_and_click("images/force_login/start.png")
+        retry_click(click_image="images/force_login/start.png")
         return True
 
 
