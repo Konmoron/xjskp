@@ -56,6 +56,8 @@ class HuanQiu:
         self.force_start = force_start
         self.force_login = force_login
         self.force_login_wait = force_login_wait
+        self.open_chat_fail_count = 0  # 聊天界面打开失败计数器
+        self.max_open_chat_fail = 20  # 最大允许失败次数
 
     def start(self):
         """启动入口"""
@@ -85,6 +87,8 @@ class HuanQiu:
             open_zhan_dou()
 
             if open_chat():
+                self.open_chat_fail_count = 0
+
                 if is_chat_open():
                     logger.info(f"第【{self.game_num}】局 - 进入聊天页面")
                 else:
@@ -103,8 +107,19 @@ class HuanQiu:
 
                 self.game_num = self.game_num + 1
             else:
-                logger.info("寰球救援页面未找到")
-                time.sleep(1)
+                self.open_chat_fail_count += 1
+                logger.info(
+                    f"寰球救援页面未找到（连续失败 {self.open_chat_fail_count}/{self.max_open_chat_fail} 次）"
+                )
+
+                if self.open_chat_fail_count >= self.max_open_chat_fail:
+                    logger.warning("⚠️ 连续20次未打开聊天，执行游戏重启")
+                    restart_game()
+                    self.open_chat_fail_count = 0  # 重置计数器
+                    time.sleep(10)  # 增加重启后等待时间
+                    continue  # 重启后重新尝试
+                else:
+                    time.sleep(1)
 
     def _qiang_huan_qiu(self):
         """抢寰球"""
