@@ -170,9 +170,9 @@ def drag(
         # 计算起始坐标
         start_x = location.x + x_offset
         start_y = location.y + y_offset
-        logger.debug(
-            f"📐 计算起始坐标 | X:{location.x}+{x_offset}={start_x} Y:{location.y}+{y_offset}={start_y}"
-        )
+        # logger.debug(
+        #     f"📐 计算起始坐标 | X:{location.x}+{x_offset}={start_x} Y:{location.y}+{y_offset}={start_y}"
+        # )
 
         # 执行拖拽操作
         logger.info(f"🚀 开始执行拖拽操作，共{times}次循环")
@@ -183,16 +183,16 @@ def drag(
             )
 
             try:
-                logger.debug(f"🖱️ 移动鼠标到起始坐标: ({start_x}, {start_y})")
+                # logger.debug(f"🖱️ 移动鼠标到起始坐标: ({start_x}, {start_y})")
                 pyautogui.moveTo(start_x, start_y)
 
-                logger.debug(f"⏲️ 开始拖拽操作...")
+                # logger.debug(f"⏲️ 开始拖拽操作...")
                 pyautogui.dragRel(drag_x, drag_y, duration=duration, button="left")
                 time.sleep(2)
 
                 logger.info(f"✅ 第{current}次拖拽完成")
                 if current < times:
-                    logger.debug(f"⏳ 下一次拖拽前等待1秒...")
+                    # logger.debug(f"⏳ 下一次拖拽前等待1秒...")
                     time.sleep(1)
 
             except Exception as e:
