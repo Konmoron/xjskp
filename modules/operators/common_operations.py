@@ -357,7 +357,7 @@ def start_game():
     """启动游戏"""
     find_and_click("images/start_game/icon.png", clicks=2)
     time.sleep(20)
-    find_and_click("images/start_game/x.png")
+    find_and_click("images/start_game/x_0.png")
     time.sleep(10)
     find_and_click("images/header.png", image_region_name="game_start")
 
