@@ -686,6 +686,8 @@ class CommonTask:
                             if find_and_click(
                                 "images/jun_tuan/wan_fa_da_ting/1_hao_ta.png",
                                 confidence=0.9,
+                            ) or find_and_click(
+                                "images/jun_tuan/wan_fa_da_ting/1_hao_ta_0.png"
                             ):
                                 logger.info(f"打开【1号塔】")
                                 if find_and_click(
