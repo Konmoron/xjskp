@@ -17,6 +17,7 @@ from .operators.common_operations import (
     select_ji_neng,
     close_offline,
     close_all_x,
+    close_guang_gao,
     check_login_other,
     force_login,
     is_game_started,
@@ -85,6 +86,9 @@ class HuanQiu:
             close_yuan_zheng()
             close_all_x()
             open_zhan_dou()
+
+            # 领寰球券
+            self.ling_huan_qiu_quan()
 
             if open_chat():
                 self.open_chat_fail_count = 0
@@ -389,3 +393,11 @@ class HuanQiu:
         restart_game()
         time.sleep(1)
         return True
+
+    def ling_huan_qiu_quan(self):
+        """
+        领寰球券
+        """
+
+        if find_and_click("images/huan_qiu/huan_qiu_quan.png"):
+            close_guang_gao()
