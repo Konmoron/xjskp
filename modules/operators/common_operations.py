@@ -1,9 +1,11 @@
 from datetime import datetime
+import pygetwindow as gw
 from tqdm import tqdm
 import time
 from utils import logger
 from utils.image_utils import find, find_and_click, drag, retry_click
 from utils.logger import get_logger
+from config import RESIZE_WINDOW_SIZE
 
 logger = get_logger()
 
@@ -353,11 +355,29 @@ def is_game_started():
         return False
 
 
+def resize_window():
+    """
+    调整游戏窗口大小
+    """
+    logger.info("调整游戏窗口大小")
+    window = gw.getWindowsWithTitle("向僵尸开炮")[0]
+    if window:
+        logger.info(f"找到游戏窗口: {window}")
+        # 调整窗口大小
+        logger.info(f"调整窗口大小为: {RESIZE_WINDOW_SIZE}")
+        window.resizeTo(RESIZE_WINDOW_SIZE[0], RESIZE_WINDOW_SIZE[1])
+        logger.info("游戏窗口大小调整完成")
+    else:
+        logger.error("未找到游戏窗口，请确保游戏已启动")
+
+
 def start_game():
     """启动游戏"""
     find_and_click("images/start_game/icon.png", clicks=2)
     time.sleep(20)
     find_and_click("images/start_game/x_0.png")
+    time.sleep(2)
+    resize_window()
     time.sleep(10)
     find_and_click("images/header.png", image_region_name="game_start")
 
