@@ -373,8 +373,27 @@ def resize_window():
 
 def start_game():
     """启动游戏"""
+    logger.info("启动游戏")
     find_and_click("images/start_game/icon.png", clicks=2)
-    time.sleep(20)
+    time.sleep(10)
+    if find("images/start_game/update_wx.png"):
+        logger.warning("检测到更新微信")
+        retry_click(click_image="images/start_game/close_update_wx.png")
+        time.sleep(10)
+        logger.info("重新点击游戏图标")
+        find_and_click("images/start_game/icon.png", clicks=2)
+        time.sleep(20)
+        resize_window()
+
+    if find("images/start_game/clean_cache.png"):
+        logger.info("检测到清理缓存提示")
+        exit_game()
+        time.sleep(10)
+        logger.info("重新点击游戏图标")
+        find_and_click("images/start_game/icon.png", clicks=2)
+        time.sleep(10)
+
+    time.sleep(10)
     find_and_click("images/start_game/x_0.png")
     time.sleep(2)
     resize_window()
