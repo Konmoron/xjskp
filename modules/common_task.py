@@ -679,10 +679,7 @@ class CommonTask:
                     logger.info(f"打开【玩法大厅】")
                     if find_and_click("images/jun_tuan/wan_fa_da_ting/jin_ru.png"):
                         logger.info(f"打开【军团联赛】")
-                        if find_and_click(
-                            "images/jun_tuan/wan_fa_da_ting/jun_tuan_lian_sai.png",
-                            confidence=0.9,
-                        ):
+                        if find("images/jun_tuan/wan_fa_da_ting/jun_tuan_lian_sai.png"):
                             if find_and_click(
                                 "images/jun_tuan/wan_fa_da_ting/1_hao_ta.png",
                                 confidence=0.9,
