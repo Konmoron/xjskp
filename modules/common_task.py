@@ -40,6 +40,7 @@ class CommonTask:
             "jin_li": self.jin_li,
             "ri_li": self.ri_li,
             "tu_wei": self.tu_wei,
+            "jiu_guan": self.jiu_guan,
         }
 
         # 新增实例变量
@@ -702,6 +703,31 @@ class CommonTask:
             logger.info("🏁 军团任务执行完毕")
             close_all_x_and_back()
             open_zhan_dou()
+
+    def jiu_guan(self):
+        """酒馆"""
+        # 仅周日执行
+        if datetime.now().weekday() != 6:
+            logger.info("酒馆仅周日执行")
+            return
+
+        open_zhan_dou()
+
+        if find_and_click("images/ji_di.png"):
+            time.sleep(1)
+            if find_and_click("images/jiu_guan/jiu_guan.png"):
+                time.sleep(1)
+                if find_and_click("images/jiu_guan/zhao_mu.png"):
+                    while True:
+                        if find_and_click("images/jiu_guan/10.png"):
+                            time.sleep(1)
+                        else:
+                            find_and_click("images/jiu_guan/que_ren.png")
+                            break
+
+                back()
+
+        open_zhan_dou()
 
     def shop(self):
         """商店"""
