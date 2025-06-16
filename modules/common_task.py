@@ -738,7 +738,7 @@ class CommonTask:
         open_shop()
 
         # 领取2次宝箱
-        for i in range(2):
+        for i in range(4):
             if find_and_click("images/shop/bao_xiang.png"):
                 logger.info(f"第{i+1}次领取宝箱")
                 time.sleep(35)
@@ -819,7 +819,7 @@ class CommonTask:
 
         # 返回
         time.sleep(1)
-        find_and_click("images/guan_ying_bao_zang/back.png")
+        back()
 
     def sai_ji(self):
         """执行【赛季】任务"""
