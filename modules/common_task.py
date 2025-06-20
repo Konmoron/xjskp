@@ -154,6 +154,7 @@ class CommonTask:
             logger.error(f"‼️ 任务异常: {str(e)}")
         finally:
             self.task_queue.pop(0)
+            open_zhan_dou()
 
     def _record_task_duration(self, task_name, start_time):
         """记录任务耗时"""
@@ -737,13 +738,24 @@ class CommonTask:
         time.sleep(1)
         open_shop()
 
-        # 领取2次宝箱
-        for i in range(4):
+        i = 0
+        while True:
             if find_and_click("images/shop/bao_xiang.png"):
                 logger.info(f"第{i+1}次领取宝箱")
                 time.sleep(35)
                 close_guang_gao()
                 close_chou_jiang_1()
+            else:
+                logger.info(f"没有找到宝箱按钮，宝箱任务结束")
+                break
+
+        # 领取2次宝箱
+        # for i in range(4):
+        #     if find_and_click("images/shop/bao_xiang.png"):
+        #         logger.info(f"第{i+1}次领取宝箱")
+        #         time.sleep(35)
+        #         close_guang_gao()
+        #         close_chou_jiang_1()
 
         # 拖拽到最底部
         drag("images/header.png", "shop")
