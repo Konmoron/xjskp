@@ -1,4 +1,5 @@
 from datetime import datetime
+import sys
 import pygetwindow as gw
 from tqdm import tqdm
 import time
@@ -8,6 +9,11 @@ from utils.logger import get_logger
 from config import RESIZE_WINDOW_SIZE
 
 logger = get_logger()
+
+# 应用宝窗口
+app_window = {}
+# 游戏窗口
+game_window = {}
 
 
 def is_chat_open():
@@ -359,16 +365,40 @@ def resize_window():
     """
     调整游戏窗口大小
     """
-    logger.info("调整游戏窗口大小")
-    window = gw.getWindowsWithTitle("向僵尸开炮")[0]
-    if window:
-        logger.info(f"找到游戏窗口: {window}")
+    try:
+        logger.info(f"调整游戏窗口大小，游戏窗口: {game_window}")
         # 调整窗口大小
         logger.info(f"调整窗口大小为: {RESIZE_WINDOW_SIZE}")
-        window.resizeTo(RESIZE_WINDOW_SIZE[0], RESIZE_WINDOW_SIZE[1])
+        game_window.resizeTo(RESIZE_WINDOW_SIZE[0], RESIZE_WINDOW_SIZE[1])
         logger.info("游戏窗口大小调整完成")
-    else:
-        logger.error("未找到游戏窗口，请确保游戏已启动")
+    except Exception as e:
+        logger.error(f"未找到游戏窗口，请确保游戏已启动: {e}")
+
+
+def set_game_window():
+    """
+    设置游戏窗口和应用宝窗口
+    """
+    global app_window, game_window
+    time.sleep(30)
+    try:
+        app_window = gw.getWindowsWithTitle("腾讯应用宝")[0]
+        # 如果没有找到，退出
+        if not app_window:
+            logger.error("未找到应用宝窗口，请确保应用宝已启动")
+            sys.exit(1)
+
+        logger.info(f"找到应用宝窗口: {app_window}")
+
+        game_window = gw.getWindowsWithTitle("向僵尸开炮")[0]
+        if not game_window:
+            logger.error("未找到游戏窗口，请确保游戏已启动")
+            sys.exit(1)
+
+        logger.info(f"找到游戏窗口: {game_window}")
+    except IndexError as e:
+        logger.error(f"未找到应用宝或游戏窗口: {e}")
+        sys.exit(1)
 
 
 def start_game():
@@ -378,7 +408,9 @@ def start_game():
         "images/start_game/icon.png",
         clicks=2,
     )
-    time.sleep(10)
+
+    set_game_window()
+
     if find("images/start_game/update_wx.png", image_region_name="game_start"):
         logger.warning("检测到更新微信")
         retry_click(
@@ -392,7 +424,8 @@ def start_game():
             "images/start_game/icon.png",
             clicks=2,
         )
-        time.sleep(20)
+
+        set_game_window()
         resize_window()
 
     if find_and_click(
@@ -405,10 +438,11 @@ def start_game():
             "images/start_game/icon.png",
             clicks=2,
         )
-        time.sleep(10)
+        set_game_window()
 
     time.sleep(10)
-    find_and_click("images/start_game/x_0.png")
+    # find_and_click("images/start_game/x_0.png")
+    app_window.hide()
     time.sleep(2)
     resize_window()
     time.sleep(10)
@@ -431,8 +465,20 @@ def start_game():
 
 def exit_game():
     logger.info("退出游戏")
-    find_and_click("images/exit_game.png", image_region_name="game_start")
-    find_and_click("images/exit_game.png")
+    # find_and_click("images/exit_game.png", image_region_name="game_start")
+    # find_and_click("images/exit_game.png")
+
+    try:
+        if game_window:
+            logger.info("关闭游戏窗口")
+            game_window.close()
+            time.sleep(2)
+
+        if app_window:
+            logger.info("关闭应用宝窗口")
+            app_window.close()
+    except Exception as e:
+        logger.error(f"关闭游戏窗口失败: {e}")
 
 
 def restart_game():
