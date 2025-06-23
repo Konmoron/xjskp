@@ -1,4 +1,5 @@
 import pygetwindow as gw
+import time
 
 # 在导入部分添加
 import sys
@@ -47,6 +48,72 @@ def resize_window(title, width, height):
         logger.error(f"调整窗口大小失败: {e}")
 
 
+def close_window(title):
+    """
+    关闭指定标题的窗口
+    :param title: 窗口标题
+    """
+    try:
+        window = gw.getWindowsWithTitle(title)[0]
+        logger.info(f"找到窗口: {window}")
+        window.close()
+        logger.info(f"关闭窗口 '{title}'")
+    except IndexError:
+        logger.error(f"没有找到标题为 '{title}' 的窗口")
+    except Exception as e:
+        logger.error(f"关闭窗口失败: {e}")
+
+
+def show_window(title):
+    """
+    显示指定标题的窗口
+    :param title: 窗口标题
+    """
+    try:
+        window = gw.getWindowsWithTitle(title)[0]
+        logger.info(f"找到窗口: {window}")
+        window.activate()
+        window.show()
+        window.restore()
+        logger.info(f"激活窗口 '{title}'")
+    except IndexError:
+        logger.error(f"没有找到标题为 '{title}' 的窗口")
+    except Exception as e:
+        logger.error(f"激活窗口失败: {e}")
+
+
+def minimize_window(title):
+    """
+    隐藏指定标题的窗口
+    :param title: 窗口标题
+    """
+    try:
+        window = gw.getWindowsWithTitle(title)[0]
+        logger.info(f"找到窗口: {window}")
+        window.minimize()
+        time.sleep(1)
+        window.hide()
+        logger.info(f"隐藏窗口 '{title}'")
+        # window.restore()  # 恢复窗口状态
+        # logger.info(f"恢复窗口 '{title}'")
+        time.sleep(1)
+        window.close()
+        logger.info(f"关闭窗口 '{title}'")
+    except IndexError:
+        logger.error(f"没有找到标题为 '{title}' 的窗口")
+    except Exception as e:
+        logger.error(f"隐藏窗口失败: {e}")
+
+
 if __name__ == "__main__":
     get_window_by_title("向僵尸开炮")
-    resize_window("向僵尸开炮", 420, 770)
+    # resize_window("向僵尸开炮", 420, 770)
+    close_window("向僵尸开炮")
+
+    time.sleep(2)
+
+    get_window_by_title("腾讯应用宝")
+    minimize_window("腾讯应用宝")
+    time.sleep(2)
+    # show_window("腾讯应用宝")
+    # close_window("腾讯应用宝")
