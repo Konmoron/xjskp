@@ -125,6 +125,7 @@ class CommonTask:
         self.ti_li_all_done, self.ti_li_single_done = self._single_ti_li()
         self._update_tili_status()
         self.task_queue.pop(0)
+        close_all_x_and_back()
 
     def _update_tili_status(self):
         """更新体力任务状态"""
@@ -154,6 +155,7 @@ class CommonTask:
             logger.error(f"‼️ 任务异常: {str(e)}")
         finally:
             self.task_queue.pop(0)
+            close_all_x_and_back()
             open_zhan_dou()
 
     def _record_task_duration(self, task_name, start_time):
