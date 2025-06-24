@@ -442,7 +442,7 @@ def start_game():
 
     time.sleep(10)
     # find_and_click("images/start_game/x_0.png")
-    app_window.hide()
+    app_window.minimize()
     time.sleep(2)
     resize_window()
     time.sleep(10)
@@ -468,15 +468,20 @@ def exit_game():
     # find_and_click("images/exit_game.png", image_region_name="game_start")
     # find_and_click("images/exit_game.png")
 
+    global app_window, game_window  # 添加这行
+    logger.info("退出游戏")
+
     try:
         if game_window:
             logger.info("关闭游戏窗口")
             game_window.close()
+            game_window = {}
             time.sleep(2)
 
         if app_window:
             logger.info("关闭应用宝窗口")
             app_window.close()
+            app_window = {}
     except Exception as e:
         logger.error(f"关闭游戏窗口失败: {e}")
 
