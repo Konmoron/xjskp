@@ -9,6 +9,7 @@ from .operators.bottom import (
     open_jun_tuan,
     open_shop,
     open_sai_ji,
+    open_ji_di,
 )
 from .operators.common_operations import (
     close_guang_gao,
@@ -41,6 +42,7 @@ class CommonTask:
             "ri_li": self.ri_li,
             "tu_wei": self.tu_wei,
             "jiu_guan": self.jiu_guan,
+            "shi_lian_ta": self.shi_lian_ta,
         }
 
         # 新增实例变量
@@ -833,6 +835,44 @@ class CommonTask:
 
         # 返回
         time.sleep(1)
+        back()
+
+    def shi_lian_ta(self):
+        """执行【试炼塔】任务"""
+        logger.info("执行【试炼塔】任务...")
+
+        open_ji_di()
+
+        if not find_and_click("images/li_lian_da_ting.png"):
+            logger.info(f"未找到【历练大厅】入口")
+            return False
+
+        logger.info(f"打开【历练大厅】")
+        time.sleep(1)
+
+        drag("images/header.png", "shi_lian_ta")
+        time.sleep(4)
+
+        if find_and_click("images/shi_lian_ta/tiao_zhan.png"):
+            time.sleep(1)
+            # 点击底部header区域，避免被遮挡
+            find_and_click("images/header.png", offset_name="header_click_bottom")
+
+            logger.info(f"打开【元素试炼】")
+            time.sleep(1)
+            if find_and_click("images/shi_lian_ta/he_xin.png"):
+                logger.info(f"打开【核心试炼塔】")
+                time.sleep(1)
+                if find_and_click("images/shi_lian_ta/gua_ji.png"):
+                    logger.info(f"执行【核心试炼塔】-【挂机】")
+                    time.sleep(1)
+                    if find_and_click("images/shi_lian_ta/ling_qu.png"):
+                        logger.info(f"执行【核心试炼塔】-【领取奖励】")
+                        time.sleep(1)
+                        close_guang_gao()
+                    close_all_x()
+                back()
+            back()
         back()
 
     def sai_ji(self):

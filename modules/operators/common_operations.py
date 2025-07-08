@@ -301,6 +301,9 @@ def back():
     if find_and_click("images/back.png"):
         return True
 
+    if find_and_click("images/back_01.png"):
+        return True
+
     return False
 
 
