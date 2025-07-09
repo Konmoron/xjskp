@@ -49,6 +49,7 @@ class TaskExecutor:
         """寰球救援"""
         if not self.args.huanqiu:
             return
+        CommonTask().run("shi_lian_ta", "")
         HuanQiu(
             max_num=self.args.number,
             disable_skill=self.args.disable_skill,
@@ -56,6 +57,9 @@ class TaskExecutor:
             force_login_wait=self.args.force_login_wait or 10,
             force_start=not self.args.disable_force_start,
         ).start()
+
+        close_all_x_and_back()
+        CommonTask().run("shi_lian_ta", "")
         logger.info("🚀 寰球救援任务完成")
 
     def execute(self):

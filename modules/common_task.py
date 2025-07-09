@@ -860,7 +860,7 @@ class CommonTask:
 
             logger.info(f"打开【元素试炼】")
             time.sleep(1)
-            if find_and_click("images/shi_lian_ta/he_xin.png"):
+            if retry_click("images/shi_lian_ta/he_xin.png"):
                 logger.info(f"打开【核心试炼塔】")
                 time.sleep(1)
                 if find_and_click("images/shi_lian_ta/gua_ji.png"):
