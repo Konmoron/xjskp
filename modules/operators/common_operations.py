@@ -389,30 +389,55 @@ def set_game_window():
         # 如果没有找到，退出
         if not app_window:
             logger.error("未找到应用宝窗口，请确保应用宝已启动")
-            sys.exit(1)
+            # sys.exit(1)
+            return False
 
         logger.info(f"找到应用宝窗口: {app_window}")
 
         game_window = gw.getWindowsWithTitle("向僵尸开炮")[0]
         if not game_window:
             logger.error("未找到游戏窗口，请确保游戏已启动")
-            sys.exit(1)
+            # sys.exit(1)
+            return False
 
         logger.info(f"找到游戏窗口: {game_window}")
+
+        return True
     except IndexError as e:
         logger.error(f"未找到应用宝或游戏窗口: {e}")
-        sys.exit(1)
+        # sys.exit(1)
+        return False
 
 
-def start_game():
-    """启动游戏"""
-    logger.info("启动游戏")
+def _start_game():
+    logger.info("开始启动游戏")
     find_and_click(
         "images/start_game/icon.png",
         clicks=2,
     )
 
-    set_game_window()
+    attempt = 0
+    while True:
+        if set_game_window():
+            logger.info("启动游戏成功")
+            break
+
+        attempt += 1
+        if attempt > 5:
+            logger.error("无法启动游戏")
+            sys.exit(1)
+
+        logger.info(f"尝试启动游戏 {attempt} 次")
+        find_and_click(
+            "images/start_game/icon.png",
+            clicks=2,
+        )
+
+
+def start_game():
+    """启动游戏"""
+    logger.info("开始启动游戏")
+    _start_game()
 
     if find("images/start_game/update_wx.png", image_region_name="game_start"):
         logger.warning("检测到更新微信")
@@ -423,12 +448,7 @@ def start_game():
         )
         time.sleep(10)
         logger.info("重新点击游戏图标")
-        find_and_click(
-            "images/start_game/icon.png",
-            clicks=2,
-        )
-
-        set_game_window()
+        _start_game()
         resize_window()
 
     if find_and_click(
@@ -437,11 +457,7 @@ def start_game():
         logger.info("检测到清理缓存提示")
         time.sleep(2)
         logger.info("重新点击游戏图标")
-        find_and_click(
-            "images/start_game/icon.png",
-            clicks=2,
-        )
-        set_game_window()
+        _start_game()
 
     time.sleep(10)
     # find_and_click("images/start_game/x_0.png")
