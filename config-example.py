@@ -7,6 +7,7 @@ REGIONS = {
 }
 
 RESIZE_WINDOW_SIZE = (420, 770)
+MOVE_TO_WINDOW_SIZE = (0, 0)
 
 # 偏移量配置
 CLICK_OFFSETS = {
@@ -42,6 +43,7 @@ DRAG_CONFIGS = {
     "xuan_fu_down": (-6, 1026, 4, -235, 1.5, 1),
     "xuan_fu_up": (5, 644, -4, 202, 1.5, 1),
     "move_game_to_default_region": (-3, 2, 755, -52, 3, 1),
+    "shi_lian_ta": (15, 627, -10, -447, 3, 2),
 }
 
 FU_CONFIGS = [

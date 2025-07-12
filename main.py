@@ -105,6 +105,10 @@ def print_runtime_config(args: argparse.Namespace):
             not args.disable_force_start,
             f"启用" if not args.disable_force_start else "禁用",
         ),
+        "⚡ 结束退出": (
+            not args.disable_exit,
+            "是" if not args.disable_exit else "否",
+        ),
     }
 
     logger.info("📦 运行时参数配置".ljust(50, "─"))
@@ -197,6 +201,9 @@ def parse_arguments() -> argparse.Namespace:
     common_group.add_argument(
         "--disable-force-start", action="store_true", help="禁止强制启动游戏"
     )
+    common_group.add_argument(
+        "--disable-exit", action="store_true", help="任务结束之后不退出"
+    )
 
     return parser.parse_args()
 
@@ -278,8 +285,9 @@ def main():
         logger.error(f"‼️ 程序异常终止: {str(e)}")
         sys.exit(1)
     finally:
-        logger.info("⏳ 所有任务执行完毕，退出游戏...")
-        exit_game()
+        if not args.disable_exit:
+            logger.info("⏳ 所有任务执行完毕，退出游戏...")
+            exit_game()
 
 
 if __name__ == "__main__":

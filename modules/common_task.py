@@ -43,6 +43,7 @@ class CommonTask:
             "tu_wei": self.tu_wei,
             "jiu_guan": self.jiu_guan,
             "shi_lian_ta": self.shi_lian_ta,
+            "yuan_xian": self.yuan_xian,
         }
 
         # 新增实例变量
@@ -836,6 +837,100 @@ class CommonTask:
         # 返回
         time.sleep(1)
         back()
+
+    def yuan_xian(self):
+        """
+        执行【极速院线】任务
+        """
+
+        logger.info("执行【极速院线】任务...")
+        open_zhan_dou()
+
+        # 找到特惠
+        if drag_search(
+            "images/header.png",
+            "images/yuan_xian/open.png",
+            "zhan_dou_left_down",
+            3,
+        ):
+            logger.info(f"向下拖拽找到【极速院线】")
+        elif drag_search(
+            "images/header.png",
+            "images/yuan_xian/open.png",
+            "zhan_dou_left_up",
+            3,
+        ):
+            logger.info(f"向上拖拽找到【极速院线】")
+        else:
+            logger.info(f"向上、向下拖拽未找到【极速院线】")
+            return False
+
+        if find_and_click("images/yuan_xian/open.png"):
+            time.sleep(1)
+            logger.info(f"打开【极速院线】")
+        else:
+            logger.info(f"打开【极速院线】失败")
+            return False
+
+        # 签到
+        logger.info(f"执行【极速院线-观影签到】任务")
+        if not find("images/yuan_xian/ling_qu.png") and not find(
+            "images/yuan_xian/guang_gao.png"
+        ):
+            drag(
+                "images/yuan_xian/qian_dao.png", "zuo_zhan_ji_hua_down", confidence=0.8
+            )
+        if find_and_click("images/yuan_xian/ling_qu.png"):
+            time.sleep(2)
+            close_guang_gao()
+        time.sleep(2)
+        if find_and_click("images/yuan_xian/guang_gao.png"):
+            kan_guang_gao()
+
+        logger.info(f"执行【极速院线-观影宝藏】任务")
+        if find_and_click("images/yuan_xian/gybz.png"):
+            # 执行5次
+            for i in range(5):
+                if find("images/guan_ying_bao_zang/end.png", confidence=0.95):
+                    logger.info(
+                        f"【观影宝藏】已经执行完毕 images/guan_ying_bao_zang/end.png"
+                    )
+                    time.sleep(1)
+                    break
+
+                logger.info(f"第{i+1}次执行【观影宝藏】")
+
+                if find_and_click(
+                    "images/guan_ying_bao_zang/start_1.png"
+                ) or find_and_click("images/guan_ying_bao_zang/start.png"):
+                    logger.info(f"第{i+1}次 打开【观看广告】...")
+                    time.sleep(35)
+
+                    close_guang_gao()
+                    logger.info(f"第{i+1}次 等待抽奖")
+                    time.sleep(5)
+                    close_chou_jiang_1()
+
+                    time.sleep(1)
+                    logger.info(f"第{i+1}次【观影宝藏】执行完成")
+        else:
+            logger.info(f"没有找到【极速院线-观影宝藏】任务")
+
+        logger.info(f"执行【极速院线-观影便利店】任务")
+        i = 1
+        if find_and_click("images/yuan_xian/bian_li_dian.png"):
+            while True:
+                if not find("images/yuan_xian/guang_gao.png"):
+                    logger.info(f"【极速院线-观影便利店】执行完成")
+                    break
+                find_and_click("images/yuan_xian/guang_gao.png")
+                logger.info(f"第{i}次执行【极速院线-观影便利店】")
+                kan_guang_gao()
+                i = i + 1
+        else:
+            logger.info(f"未找到【极速院线-观影便利店】")
+
+        close_all_x_and_back()
 
     def shi_lian_ta(self):
         """执行【试炼塔】任务"""

@@ -6,7 +6,7 @@ import time
 from utils import logger
 from utils.image_utils import find, find_and_click, drag, retry_click
 from utils.logger import get_logger
-from config import RESIZE_WINDOW_SIZE
+from config import RESIZE_WINDOW_SIZE, MOVE_TO_WINDOW_SIZE
 
 logger = get_logger()
 
@@ -409,6 +409,20 @@ def set_game_window():
         return False
 
 
+def move_to_window():
+    """
+    移动游戏窗口
+    """
+    try:
+        logger.info(f"游戏窗口移动前信息: {game_window}")
+        # 调整窗口大小
+        logger.info(f"移动窗口到: {MOVE_TO_WINDOW_SIZE}")
+        game_window.moveTo(MOVE_TO_WINDOW_SIZE[0], MOVE_TO_WINDOW_SIZE[1])
+        logger.info(f"游戏窗口移动完成，游戏窗口移动后信息: {game_window}")
+    except Exception as e:
+        logger.error(f"未找到游戏窗口，请确保游戏已启动: {e}")
+
+
 def _start_game():
     logger.info("开始启动游戏")
     find_and_click(
@@ -468,18 +482,19 @@ def start_game():
     find_and_click("images/header.png", image_region_name="game_start")
 
     logger.info("移动游戏到默认区域")
-    for i in range(6):
-        if not find("images/header.png", image_region_name="game_start"):
-            break
-        logger.info(f"第 {i+1} 次尝试移动游戏到默认区域")
-        drag(
-            "images/header.png",
-            "move_game_to_default_region",
-            image_region_name="game_start",
-        )
-        time.sleep(2)
+    move_to_window()
+    # for i in range(6):
+    #     if not find("images/header.png", image_region_name="game_start"):
+    #         break
+    #     logger.info(f"第 {i+1} 次尝试移动游戏到默认区域")
+    #     drag(
+    #         "images/header.png",
+    #         "move_game_to_default_region",
+    #         image_region_name="game_start",
+    #     )
+    #     time.sleep(2)
 
-    logger.info("游戏启动完成")
+    logger.info(f"游戏启动完成{game_window}")
 
 
 def exit_game():
