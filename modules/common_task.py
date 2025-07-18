@@ -44,6 +44,7 @@ class CommonTask:
             "jiu_guan": self.jiu_guan,
             "shi_lian_ta": self.shi_lian_ta,
             "yuan_xian": self.yuan_xian,
+            "fu_li": self.fu_li,
         }
 
         # 新增实例变量
@@ -294,22 +295,46 @@ class CommonTask:
         time.sleep(1)
         back()
 
+    def fu_li(self):
+        """执行【战斗-福利】任务"""
+        logger.info("执行【战斗-福利】任务...")
+        open_zhan_dou()
+
+        if find_and_click("images/fu_li/button.png", after_sleep=2):
+            logger.info(f"打开【战斗-福利】")
+            close_chou_jiang_1()
+
+        time.sleep(1)
+        back()
+
     def mail(self):
         """执行【邮件】任务"""
         logger.info("执行【邮件】任务...")
         open_zhan_dou()
-
-        if find_and_click("images/mail/button.png"):
-            logger.info(f"打开【邮件】")
-        else:
-            logger.info(f"未找到【邮件】")
-            return False
         try:
+            # ================= 打开好友界面 =================
+            if retry_click(
+                "images/zhan_dou_right.png", success_image="images/hao_you/button.png"
+            ):
+                logger.info("✅ 打开战斗右侧折叠")
+            else:
+                logger.warning("❌ 战斗右侧折叠失败")
+                return False
+
+            if find_and_click("images/mail/button.png"):
+                logger.info(f"打开【邮件】")
+            else:
+                logger.info(f"未找到【邮件】")
+                return False
+
             if find_and_click("images/mail/ling_qu.png"):
                 logger.info(f"打开【邮件】-【领取奖励】")
                 close_chou_jiang_1()
         finally:
             close_x()
+            logger.info("关闭战斗右侧折叠")
+            if find("images/hao_you/button.png"):
+                find_and_click("images/zhan_dou_right.png")
 
     def jin_li(self):
         """执行【锦鲤】任务"""
@@ -510,6 +535,14 @@ class CommonTask:
 
         try:
             # ================= 打开好友界面 =================
+            if retry_click(
+                "images/zhan_dou_right.png", success_image="images/hao_you/button.png"
+            ):
+                logger.info("✅ 打开战斗右侧折叠")
+            else:
+                logger.warning("❌ 战斗右侧折叠失败")
+                return False
+
             logger.info("🔍 正在定位好友入口...")
             if find_and_click("images/hao_you/button.png"):
                 logger.info("✅ 成功进入好友界面")
@@ -534,6 +567,9 @@ class CommonTask:
                 return False
         finally:
             close_x()
+            logger.info("关闭战斗右侧折叠")
+            if find("images/hao_you/button.png"):
+                find_and_click("images/zhan_dou_right.png")
 
     def jun_tuan(self):
         """军团任务"""
