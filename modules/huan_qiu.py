@@ -92,13 +92,14 @@ class HuanQiu:
 
             if open_chat():
                 self.open_chat_fail_count = 0
+                logger.info(f"第【{self.game_num}】局 - 进入聊天页面")
 
-                if is_chat_open():
-                    logger.info(f"第【{self.game_num}】局 - 进入聊天页面")
-                else:
-                    logger.info(f"第【{self.game_num}】局 - 进入聊天页面 - 失败")
-                    time.sleep(1)
-                    continue
+                # if is_chat_open():
+                #     logger.info(f"第【{self.game_num}】局 - 进入聊天页面")
+                # else:
+                #     logger.info(f"第【{self.game_num}】局 - 进入聊天页面 - 失败")
+                #     time.sleep(1)
+                #     continue
 
                 open_zhao_mu()
 

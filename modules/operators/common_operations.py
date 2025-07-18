@@ -33,13 +33,36 @@ def is_chat_zhao_mu_open():
         return False
 
 
-def open_chat():
-    if find_and_click("images/header.png", offset_name="open_chat"):
+def _open_chat():
+    # 战斗打开聊天
+    if find_and_click("images/huan_qiu/zhan_dou_chat.png", confidence=0.85):
         logger.info(f"打开聊天")
-        return is_chat_open()
-    else:
-        logger.info(f"打开聊天失败")
+        return True
+
+    # 环球打开聊天
+    if find_and_click("images/huan_qiu/huan_qiu_chat.png", confidence=0.85):
+        logger.info(f"聊天已经打开")
+        return True
+
+    logger.info(
+        f"没有找到聊天按钮 images/huan_qiu/zhan_dou_chat.png images/huan_qiu/huan_qiu_chat.png"
+    )
+    return False
+    # if find_and_click("images/header.png", offset_name="open_chat"):
+    #     logger.info(f"打开聊天")
+    #     return is_chat_open()
+    # else:
+    #     logger.info(f"打开聊天失败")
+    #     return False
+
+
+def open_chat():
+    if not _open_chat():
         return False
+
+    time.sleep(1)
+
+    return is_chat_open()
 
 
 def close_chat():
