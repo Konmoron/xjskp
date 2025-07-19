@@ -45,6 +45,7 @@ class CommonTask:
             "shi_lian_ta": self.shi_lian_ta,
             "yuan_xian": self.yuan_xian,
             "fu_li": self.fu_li,
+            "tong_xing_zheng": self.tong_xing_zheng,
         }
 
         # 新增实例变量
@@ -439,6 +440,41 @@ class CommonTask:
                 logger.info(f"【活动】-【特惠礼包】-【领取体力】")
                 close_guang_gao()
                 close_chou_jiang_1()
+
+        back()
+
+    def tong_xing_zheng(self):
+        """执行【战斗-通行证】任务"""
+        logger.info("执行【战斗-通行证】任务...")
+
+        open_zhan_dou()
+
+        if find_and_click("images/tong_xing_zheng/button.png"):
+            logger.info(f"打开【通行证】")
+            time.sleep(1)
+        else:
+            logger.info(f"未找到【通行证】按钮")
+            return False
+
+        if find_and_click("images/huo_dong/zuo_zhan_ji_hua.png"):
+            logger.info(f"打开【活动】-【作战计划】")
+            time.sleep(1)
+            if not find("images/huo_dong/qian_dao.png"):
+                logger.info(f"未找到【签到】按钮，向下拖拽查找")
+                drag(
+                    "images/tong_xing_zheng/tong_xing_zheng.png",
+                    "zuo_zhan_ji_hua_down",
+                    confidence=0.85,
+                )
+
+            time.sleep(1)
+
+            if find_and_click("images/huo_dong/qian_dao.png"):
+                time.sleep(1)
+                logger.info(f"执行【通行证】-【作战计划】-【签到】")
+                close_chou_jiang_1()
+            else:
+                logger.info(f"未找到【通行证】-【作战计划】-【签到】")
 
         back()
 
