@@ -611,10 +611,11 @@ class CommonTask:
         """军团任务"""
         logger.info("执行军团任务...")
         open_jun_tuan()
+        time.sleep(2)
 
         try:
             # 执行军团贡献
-            if find_and_click("images/jun_tuan/gong_xian.png"):
+            if retry_click("images/jun_tuan/gong_xian.png"):
                 logger.info(f"打开【军团贡献】")
                 time.sleep(1)
                 if find_and_click("images/jun_tuan/gong_xian_start.png"):
