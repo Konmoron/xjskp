@@ -816,6 +816,9 @@ class CommonTask:
         time.sleep(1)
         open_shop()
 
+        # 拖拽到最底部
+        drag("images/header.png", "shop_bao_xiang")
+
         i = 0
         while True:
             if find_and_click("images/shop/bao_xiang.png"):
@@ -826,6 +829,8 @@ class CommonTask:
             else:
                 logger.info(f"没有找到宝箱按钮，宝箱任务结束")
                 break
+
+        time.sleep(4)
 
         # 领取2次宝箱
         # for i in range(4):
