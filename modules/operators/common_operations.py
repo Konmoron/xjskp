@@ -235,7 +235,7 @@ def close_ji_neng_jiao_yi():
 
 def close_yuan_zheng():
     # 只有 周五、周六、周日 才会出现 退出远征
-    if datetime.now().weekday() > 4:
+    if datetime.now().weekday() >= 4:
         if find_and_click(
             "images/huan_qiu/yuan_zheng_fang_an.png",
             offset_name="close_yuan_zheng_fang_an",

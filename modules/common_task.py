@@ -20,6 +20,7 @@ from .operators.common_operations import (
     close_all_x_and_back,
     back,
     kan_guang_gao,
+    close_yuan_zheng,
 )
 
 
@@ -29,6 +30,7 @@ logger = get_logger()
 class CommonTask:
     def __init__(self):
         self.task_registry: Dict[str, Callable] = {
+            "ling_yuan_zheng_piao": self.ling_yuan_zheng_piao,
             "ti_li": self._single_ti_li,
             "jun_tuan": self.jun_tuan,
             "gybz": self.gybz,
@@ -1009,6 +1011,46 @@ class CommonTask:
             logger.info(f"未找到【极速院线-观影便利店】")
 
         close_all_x_and_back()
+
+    def ling_yuan_zheng_piao(self):
+        """
+        周五/周六/周日 执行【领-远征-票】任务
+        """
+        if datetime.now().weekday() < 4:
+            logger.info("领-远征-票任务仅周五/周六/周日执行")
+            return False
+
+        logger.info("执行【领-远征-票】任务...")
+
+        open_ji_di()
+
+        if not find_and_click("images/li_lian_da_ting.png"):
+            logger.info(f"未找到【历练大厅】入口")
+            return False
+
+        logger.info(f"打开【历练大厅】")
+        time.sleep(1)
+
+        if find_and_click("images/yuan_zheng/button.png", confidence=0.9):
+            logger.info(f"打开【远征】")
+            time.sleep(1)
+
+            for i in range(3):
+                if (
+                    find_and_click("images/yuan_zheng/mian_fei_1.png")
+                    or find_and_click("images/yuan_zheng/mian_fei_2.png")
+                    or find_and_click("images/yuan_zheng/mian_fei_3.png")
+                ):
+                    logger.info(f"执行【远征】-【领取奖励】")
+                    time.sleep(1)
+                    close_guang_gao()
+                    break
+                else:
+                    time.sleep(1)
+
+            close_yuan_zheng()
+
+        back()
 
     def shi_lian_ta(self):
         """执行【试炼塔】任务"""
