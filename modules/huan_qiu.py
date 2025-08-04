@@ -1,5 +1,6 @@
 from datetime import datetime
 import random
+import threading
 import time
 import sys
 from utils.image_utils import find, find_and_click
@@ -92,6 +93,7 @@ class HuanQiu:
 
             if open_chat():
                 self.open_chat_fail_count = 0
+
                 logger.info(f"第【{self.game_num}】局 - 进入聊天页面")
 
                 # if is_chat_open():
@@ -103,8 +105,12 @@ class HuanQiu:
 
                 open_zhao_mu()
 
+                # # 点击抢寰球
+                # if not self._qiang_huan_qiu():
+                #     continue
+
                 # 点击抢寰球
-                if not self._qiang_huan_qiu():
+                if not self._qiang_huan_qiu_multi_thread():
                     continue
 
                 # 判断是否结束
@@ -118,13 +124,200 @@ class HuanQiu:
                 )
 
                 if self.open_chat_fail_count >= self.max_open_chat_fail:
-                    logger.warning("⚠️ 连续20次未打开聊天，执行游戏重启")
+                    logger.warning("⚠️ 连续20次未打开聊天，执行重启")
                     restart_game()
                     self.open_chat_fail_count = 0  # 重置计数器
                     time.sleep(10)  # 增加重启后等待时间
                     continue  # 重启后重新尝试
                 else:
                     time.sleep(1)
+
+    def _qiang_huan_qiu_multi_thread(self):
+        """多线程实现的抢寰球流程"""
+        logger.info("🎮 开始抢寰球流程".ljust(50, "─"))
+        start_time = time.time()
+
+        # 线程控制变量
+        stop_event = threading.Event()
+        success_flag = False
+        attempt_count = 0
+        check_num = 0
+
+        # 抢球线程函数
+        def click_thread_func():
+            nonlocal attempt_count
+
+            while not stop_event.is_set():
+                # 执行点击操作
+                for _ in range(40):
+                    if stop_event.is_set():
+                        return
+
+                    if find_and_click(
+                        "images/huan_qiu/chat_zhao_mu_huan_qiu_1.png",
+                        before_sleep=0.02,
+                        after_sleep=0.02,
+                    ):
+                        attempt_count = attempt_count + 1
+
+                    if find_and_click(
+                        "images/huan_qiu/chat_zhao_mu_huan_qiu_2.png",
+                        before_sleep=0.02,
+                        after_sleep=0.02,
+                    ):
+                        attempt_count = attempt_count + 1
+
+                # 日志记录
+                loop_time = time.time() - start_time
+                logger.info(
+                    f"⏳ 第{self.game_num}/{self.max_num}局 | 第{attempt_count:02d}次抢寰球 | "
+                    f"耗时{loop_time:.2f}秒"
+                )
+                time.sleep(random.uniform(0.5, 1.5))
+
+        # 检测线程函数
+        def check_thread_func():
+            nonlocal success_flag
+            nonlocal check_num
+
+            def _check_game_start():
+                """封装游戏开始检测逻辑"""
+                nonlocal success_flag  # 声明为 nonlocal 以修改外层变量
+                if check_huan_qiu_start() or find(
+                    "images/huan_qiu/play_select_skills.png"
+                ):
+                    success_flag = True
+                    logger.info(
+                        f"🎉 第{self.game_num}/{self.max_num}局 | 第{check_num}次检测 | "
+                        f"检测到已开始，终止抢寰球流程 | 耗时{loop_time:.2f}秒"
+                    )
+                    stop_event.set()
+                    return True
+                return False
+
+            while not stop_event.is_set():
+                check_num += 1
+                # 检测抢球成功
+                # 日志记录
+                loop_time = time.time() - start_time
+                if _check_game_start():
+                    return
+                else:
+                    if check_num % 4 == 0:  # 控制日志输出频率
+                        logger.info(
+                            f"⏳ 第{self.game_num}/{self.max_num}局 | 第{check_num}次检测 | 未检测到开始 | 耗时{loop_time:.2f}秒"
+                        )
+
+                if not is_chat_open():
+                    if _check_game_start():
+                        return
+
+                    if not is_chat_zhao_mu_open():
+                        if _check_game_start():
+                            return
+
+                        logger.info(
+                            f"第{self.game_num}/{self.max_num}局 | 抢寰球 | 聊天和招募都没有打开 | 打开聊天、招募"
+                        )
+
+                        open_chat()
+
+                        if not open_zhao_mu():
+                            close_all_x()
+                            if _check_game_start():
+                                return
+                elif not is_chat_zhao_mu_open():  # 聊天打开，招募没打开的情况
+                    logger.info(
+                        f"第{self.game_num}/{self.max_num}局 | 抢寰球 | 聊天打开，但是招募没有打开 | 打开招募"
+                    )
+                    if not open_zhao_mu():
+                        logger.info(
+                            f"第{self.game_num}/{self.max_num}局 | 抢寰球 | 聊天已经打开，但是打开招募失败 | 关闭聊天"
+                        )
+                        close_all_x()
+                        if _check_game_start():
+                            return
+                    else:  # 如果成功打开招募，则检查从新开始
+                        continue
+
+                # 关闭远征
+                if close_yuan_zheng():
+                    logger.info(f"第【{self.game_num}】局 - 抢寰球 - 关闭远征")
+                    open_chat()
+                    open_zhao_mu()
+
+                # 关闭关卡选择
+                if close_guan_qia_select():
+                    logger.info(f"第【{self.game_num}】局 - 关闭关卡选择")
+                    open_chat()
+                    open_zhao_mu()
+
+                # 系统检查
+                if check_num % 2 == 0:
+                    close_first_charge()
+                    # close_ji_neng_jiao_yi()
+                    self._handle_system_checks()
+
+                time.sleep(1)  # 减少检测频率
+
+        # 创建并启动线程
+        click_thread = threading.Thread(target=click_thread_func, daemon=True)
+        check_thread = threading.Thread(target=check_thread_func, daemon=True)
+
+        try:
+            click_thread.start()
+            check_thread.start()
+
+            timeout_minutes = 20
+            max_wait = 60 * timeout_minutes
+            start_wait = time.time()
+            while True:
+                if (
+                    click_thread.is_alive() or check_thread.is_alive()
+                ) and time.time() - start_wait < max_wait:
+                    time.sleep(1)
+                else:
+                    if time.time() - start_wait < max_wait:
+                        logger.info(
+                            f"🎉 第{self.game_num}/{self.max_num}局 - 抢到了 | 尝试次数: {attempt_count}"
+                        )
+                    else:
+                        logger.info(
+                            f"❌ 第{self.game_num}/{self.max_num}局 - 超过{timeout_minutes}分钟未抢到 | 尝试次数: {attempt_count}"
+                        )
+                    break
+        except KeyboardInterrupt:
+            logger.info("🛑 用户中断操作，强制退出")
+            stop_event.set()
+            sys.exit(0)
+
+        # 清理资源
+        stop_event.set()
+
+        # 生成统计报告
+        total_time = time.time() - start_time
+        mins, secs = divmod(int(total_time), 60)
+        time_summary = f"{mins:02d}分{secs:02d}秒"
+        status_icon = "✅" if success_flag else "❌"
+
+        logger.info("📊 抢寰球统计报告")
+        logger.info(
+            f"├─ 最终状态: {status_icon} {'成功抢到' if success_flag else '抢寰球超时'}"
+        )
+        logger.info(f"├─ 总耗时: {time_summary}")
+        logger.info(f"├─ 执行局数: 第 {self.game_num} 局")
+        logger.info(f"├─ 尝试次数: {attempt_count} 次")
+        logger.info(f"├─ 检查次数: {check_num} 次")
+        logger.info(f"└─ 线程模式: ✅ 多线程并行")
+        logger.info(f"🎮 结束抢寰球流程")
+
+        time.sleep(1)
+        # 超时检测
+        if self._handle_timeout(start_time, timeout_minutes=20):
+            logger.info("⏰ 抢球流程超时")
+            return success_flag
+
+        return success_flag
 
     def _qiang_huan_qiu(self):
         """抢寰球"""
@@ -146,7 +339,7 @@ class HuanQiu:
                 check_huan_qiu_start() or find("images/huan_qiu/play_select_skills.png")
             ):
                 success_flag = True
-                logger.info("🎉 检测到游戏已开始，终止抢球流程")
+                logger.info("🎉 检测到已开始，终止抢球流程")
                 break
 
             if attempt != 0 and attempt % 2 == 0 and close_yuan_zheng():
@@ -175,7 +368,7 @@ class HuanQiu:
                         logger.info(f"第【{self.game_num}】局 - 抢寰球 - 打开招募失败")
                         continue
 
-            if attempt != 0 and attempt % 5 == 0 and close_guan_qia_select():
+            if attempt != 0 and attempt % 2 == 0 and close_guan_qia_select():
                 logger.info(
                     f"第【{self.game_num}】局 - 当前执行 - 抢环球 - 关闭关卡选择"
                 )
@@ -243,7 +436,7 @@ class HuanQiu:
             f"├─ 最终状态: {status_icon} {'成功抢到' if success_flag else '抢球超时'}"
         )
         logger.info(f"├─ 总耗时: {time_summary}")
-        logger.info(f"├─ 游戏局数: 第 {self.game_num} 局")
+        logger.info(f"├─ 执行局数: 第 {self.game_num} 局")
         logger.info(f"└─ 有效尝试: {attempt_count} 次")
         logger.info(f"🎮 结束抢寰球流程")
 
@@ -252,7 +445,7 @@ class HuanQiu:
     def _wait_for_game_end(self):
         """等待游戏结束"""
         start_time = time.time()  # 记录开始时间
-        logger.info("[⏱️第%d局游戏已经开始，等待游戏结束]", self.game_num)
+        logger.info("[⏱️第%d局已经开始，等待结束]", self.game_num)
 
         max_wait_count = 200  # 最大等待次数
 
@@ -360,14 +553,14 @@ class HuanQiu:
         if not is_game_started():
             if self.force_start:
                 logger.info(
-                    f"第【{self.game_num}】局 - 系统检查 - 检测到【游戏未启动】执行强制启动"
+                    f"第【{self.game_num}】局 - 系统检查 - 检测到【未启动】执行强制启动"
                 )
                 start_game()
                 time.sleep(1)
                 close_all_x()
             else:
                 logger.info(
-                    f"第【{self.game_num}】局 - 系统检查 - 检测到【游戏未启动】退出程序"
+                    f"第【{self.game_num}】局 - 系统检查 - 检测到【未启动】退出程序"
                 )
                 sys.exit(0)
 
@@ -390,7 +583,7 @@ class HuanQiu:
         if time.time() - start_time < timeout_minutes * 60:
             return False
 
-        logger.info(f"TIMEOUT: {timeout_minutes}分钟未完成，退出游戏重新登录")
+        logger.info(f"TIMEOUT: {timeout_minutes}分钟未完成，退出、重新登录")
         restart_game()
         time.sleep(1)
         return True

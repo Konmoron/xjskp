@@ -18,7 +18,7 @@ game_window = {}
 
 def is_chat_open():
     if find("images/huan_qiu/is_open_chat.png"):
-        logger.info(f"聊天已经打开")
+        # logger.info(f"聊天已经打开")
         return True
     else:
         return False
@@ -26,7 +26,7 @@ def is_chat_open():
 
 def is_chat_zhao_mu_open():
     if find("images/huan_qiu/is_open_chat_zhao_mu.png"):
-        logger.info(f"招募已经打开")
+        # logger.info(f"招募已经打开")
         return True
     else:
         logger.info(f"没有找到招募图片 images/huan_qiu/is_open_chat_zhao_mu.png")
@@ -125,7 +125,7 @@ def check_huan_qiu_start():
         if find(img):
             logger.info(f"找到游戏开始图片: {img}")
             return True
-    logger.info(f"未找到游戏开始图片")
+    # logger.info(f"未找到游戏开始图片")
     return False
 
 
