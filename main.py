@@ -78,12 +78,27 @@ class TaskExecutor:
 
 def print_runtime_config(args: argparse.Namespace):
     """可视化输出运行时参数"""
+    # 修改服务器显示逻辑
+    fu_config = {
+        "name": "🌐 多服务器",
+        "status": args.fu is not None,
+        "detail": (
+            "未启用"
+            if args.fu is None
+            else (
+                f"指定服务器: {args.fu}"
+                if args.fu != "all"
+                else f"启用 | 共{len(FU_CONFIGS)}个服务器"
+            )
+        ),
+    }
+
     config_map = {
         "⏳ 等待逻辑": (
             args.wait is not None,
             f"{args.wait}分钟" if args.wait is not None else "未启用",
         ),
-        "🌐 多服务器": (args.fu, f"{len(FU_CONFIGS)}个" if args.fu else "未启用"),
+        "🌐 多服务器": (fu_config["status"], fu_config["detail"]),
         "🔒 强制登录": (
             not args.disable_force_login,
             (
@@ -120,9 +135,28 @@ def print_runtime_config(args: argparse.Namespace):
 
 def run_multi_server_mode(args: argparse.Namespace):
     """多服务器模式运行"""
-    logger.info(f"🌐 进入多服务器模式 | 已配置服务器: {len(FU_CONFIGS)}个")
+    # 解析服务器列表
+    if args.fu == "all" or args.fu is None:
+        target_servers = FU_CONFIGS
+    else:
+        # 解析指定的服务器列表
+        target_servers = []
+        requested_servers = args.fu.split(",")
 
-    for idx, config in enumerate(FU_CONFIGS, 1):
+        for config in FU_CONFIGS:
+            if config.get("name") in requested_servers:
+                target_servers.append(config)
+                requested_servers.remove(config.get("name"))
+
+        # 检查未找到的服务器
+        if requested_servers:
+            logger.warning(f"⚠️ 未找到以下服务器配置: {','.join(requested_servers)}")
+
+    logger.info(f"🌐 进入多服务器模式 | 即将连接服务器: {target_servers}")
+
+    # logger.info(f"🌐 进入多服务器模式 | 已配置服务器: {len(FU_CONFIGS)}个")
+
+    for idx, config in enumerate(target_servers, 1):
         if not is_game_started():
             logger.info("游戏未启动，启动游戏")
             start_game()
@@ -154,7 +188,11 @@ def parse_arguments() -> argparse.Namespace:
     # 参数分组
     server_group = parser.add_argument_group("服务器设置")
     server_group.add_argument(
-        "--fu", action="store_true", help="启用多服务器切换模式（需配置FU_CONFIGS）"
+        "--fu",
+        type=str,
+        nargs="?",
+        const="all",
+        help="启用多服务器切换模式（需配置FU_CONFIGS），可指定服务器列表（如：--fu server1,server2）",
     )
 
     task_group = parser.add_argument_group("任务设置")
