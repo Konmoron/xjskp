@@ -242,20 +242,29 @@ def close_yuan_zheng():
         ):
             logger.info(f"发现【远征方案】, 执行- 关闭远征-方案选择")
 
-        if find_and_click(
-            "images/huan_qiu/yuan_zheng.png", offset_name="close_yuan_zheng"
-        ):
-            logger.info(f"发现进入【远征】页面, 执行 - 关闭远征")
-            time.sleep(1)
+        close_num = 0
+        while True:
+            if close_num > 6:
+                break
 
-            if find_and_click(
-                "images/huan_qiu/close_yuan_zheng_que_ren.png",
-                offset_name="close_yuan_zheng_que_ren",
+            close_num += 1
+            logger.info(f"第{close_num}次尝试关闭【远征】")
+            if find("images/huan_qiu/yuan_zheng.png") or find(
+                "images/huan_qiu/yuan_zheng_2.png"
             ):
-                logger.info(f"发现【确认-退出远征】按钮, 执行- 退出远征")
-                time.sleep(1)
+                logger.info(f"发现进入【远征】页面, 执行 - 关闭远征")
+                back()
 
-            return True
+                time.sleep(2)
+
+                if find_and_click(
+                    "images/huan_qiu/close_yuan_zheng_que_ren.png",
+                    offset_name="close_yuan_zheng_que_ren",
+                ):
+                    logger.info(f"发现【确认-退出远征】按钮, 执行- 退出远征")
+                    time.sleep(2)
+            else:
+                return True
     return False
 
 
