@@ -818,7 +818,7 @@ class CommonTask:
         time.sleep(1)
         open_shop()
 
-        # 拖拽到最底部
+        # 拖拽到能看到两个宝箱
         drag("images/header.png", "shop_bao_xiang")
 
         i = 0
@@ -834,14 +834,6 @@ class CommonTask:
 
         time.sleep(4)
 
-        # 领取2次宝箱
-        # for i in range(4):
-        #     if find_and_click("images/shop/bao_xiang.png"):
-        #         logger.info(f"第{i+1}次领取宝箱")
-        #         time.sleep(35)
-        #         close_guang_gao()
-        #         close_chou_jiang_1()
-
         # 拖拽到最底部
         drag("images/header.png", "shop")
 
@@ -855,6 +847,21 @@ class CommonTask:
             time.sleep(35)
             close_guang_gao()
             close_chou_jiang_1()
+
+        # 执行 每日特惠
+        if find_and_click("images/shop/mei_ri_te_hui.png"):
+            logger.info(f"执行【每日特惠】")
+            if find_and_click("images/shop/mei_ri_te_hui_mian_fei.png"):
+                kan_guang_gao()
+
+        # 执行 特惠礼包
+        if find_and_click("images/shop/te_hui_li_bao.png"):
+            logger.info(f"执行【特惠礼包】")
+            if find_and_click("images/shop/te_hui_li_bao_mian_fei_1.png"):
+                kan_guang_gao()
+
+            if find_and_click("images/shop/te_hui_li_bao_mian_fei_2.png"):
+                close_chou_jiang_1()
 
         open_zhan_dou()
 
