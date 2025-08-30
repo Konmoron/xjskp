@@ -818,7 +818,19 @@ class CommonTask:
         time.sleep(1)
         open_shop()
 
-        # 拖拽到能看到两个宝箱
+        # 领取卡片
+        i = 0
+        while True:
+            if find_and_click("images/shop/bao_xiang.png"):
+                logger.info(f"第{i+1}次领取卡牌")
+                kan_guang_gao()
+                time.sleep(2)
+                back()
+            else:
+                logger.info(f"没有找到卡牌按钮，卡牌任务结束")
+                break
+
+        # 拖拽到能看到紫色宝箱
         drag("images/header.png", "shop_bao_xiang")
 
         i = 0
