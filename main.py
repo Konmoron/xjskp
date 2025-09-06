@@ -72,6 +72,7 @@ class TaskExecutor:
         if time.time() - self.game_start_time >= 1800:
             exit_game()
             logger.info("✅ 程序退出")
+            time.sleep(30)
         else:
             logger.info("⏳ 游戏运行时间未达30分钟，保持运行")
 
