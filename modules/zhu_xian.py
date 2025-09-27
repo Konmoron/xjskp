@@ -106,7 +106,7 @@ class ZhuXian:
 
         find_and_click("images/zhu_xian/ji_neng.png", offset_name="select_ji_neng")
 
-        logger.info(f"{self.game_num}退出当前游戏")
+        logger.info(f"第{self.game_num}局，退出当前游戏")
         find_and_click("images/header.png", offset_name="exit_current_game")
 
         # 再次判断选择技能
