@@ -243,6 +243,13 @@ def parse_arguments() -> argparse.Namespace:
     common_group.add_argument(
         "--disable-exit", action="store_true", help="任务结束之后不退出"
     )
+    common_group.add_argument(
+        "--platform",
+        type=str,
+        choices=["bao", "shou", "guan"],
+        default="bao",
+        help="指定游戏运行平台: bao(腾讯应用宝), shou(腾讯手游助手), guan(腾讯电脑管家)",
+    )
 
     return parser.parse_args()
 
@@ -301,12 +308,13 @@ def main():
         if args.wait is not None:
             handle_wait(args.wait)
 
-        logger.info("⏳ 退出游戏...")
-        exit_game()
-        logger.info("⏳ 重新启动游戏...")
-        start_game()
+        if args.disable_force_login:
+            logger.info("⏳ 退出游戏...")
+            exit_game()
+            logger.info("⏳ 重新启动游戏...")
+            start_game()
 
-        if not args.disable_force_login and check_login_other():
+        if check_login_other():
             logger.info(
                 f"⚠️ 检测到帐号在其他地方登录，等待{args.force_login_wait}分钟后强制登录"
             )
