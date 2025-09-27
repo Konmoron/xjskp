@@ -28,6 +28,8 @@ CLICK_OFFSETS = {
     "jun_tuan_task_100_zuan_shi": (283, 91),  # 任务-100钻石
     "jun_tuan_task_2_bao_xiang": (218, 92),  # 任务-2宝箱
     "header_tou_xiang": (-325, 142),
+    "exit_current_game": (-336, 96),  # 退出当前游戏
+    "select_ji_neng": (1, 346),  # 选择技能
 }
 
 DRAG_CONFIGS = {

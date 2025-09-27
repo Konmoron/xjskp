@@ -1,5 +1,6 @@
 import sys
 from modules.huan_qiu import HuanQiu
+from modules.zhu_xian import ZhuXian
 import time
 from tqdm import tqdm
 from modules.common_task import CommonTask
@@ -62,11 +63,24 @@ class TaskExecutor:
         CommonTask().run("ling_yuan_zheng_piao,shi_lian_ta", "")
         logger.info("🚀 寰球救援任务完成")
 
+    def run_zhu_xian(self):
+        """主线关卡任务"""
+        if self.args.zhu_xian is None:
+            return
+        ZhuXian(
+            max_num=self.args.zhu_xian,
+            force_login=not self.args.disable_force_login,
+            force_login_wait=self.args.force_login_wait or 10,
+            force_start=not self.args.disable_force_start,
+        ).start()
+        logger.info("🏆 主线任务执行完毕")
+
     def execute(self):
         """统一执行入口"""
         self.run_bao_xiang()
         self.run_common_tasks()
         self.run_huan_qiu()
+        self.run_zhu_xian()
 
         # 添加运行时间判断（30分钟 = 1800秒）
         if time.time() - self.game_start_time >= 1800:
@@ -112,6 +126,7 @@ def print_runtime_config(args: argparse.Namespace):
             args.huanqiu,
             f"次数:{args.number} 选择技能:{'禁用' if args.disable_skill else '启用'}",
         ),
+        "🏆 主线任务": (args.zhu_xian is not None, f"次数:{args.zhu_xian or 20}"),
         "🎁 宝箱任务": (args.bao_xiang, f"10连抽x{args.bao_xiang_num}次"),
         "🛠️ 通用任务": (
             args.tasks is not None,
@@ -206,6 +221,14 @@ def parse_arguments() -> argparse.Namespace:
         const="all",
         help='通用任务列表（多个用逗号分隔，"all"为全部任务）',
     )
+    task_group.add_argument(
+        "--zhu-xian",
+        type=int,
+        default=None,
+        nargs="?",
+        const=20,
+        help="启用主线任务，可指定执行次数（默认20次）",
+    )
 
     common_group = parser.add_argument_group("通用设置")
     common_group.add_argument(
@@ -298,7 +321,14 @@ def main():
         validate_arguments(args)
 
         # 无参数默认逻辑
-        if not any([args.huanqiu, args.bao_xiang, args.tasks is not None]):
+        if not any(
+            [
+                args.huanqiu,
+                args.bao_xiang,
+                args.tasks is not None,
+                args.zhu_xian is not None,
+            ]
+        ):
             logger.info("🔍 未指定任务参数，默认执行寰球救援")
             args.huanqiu = True
 
