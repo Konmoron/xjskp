@@ -12,7 +12,7 @@ from .operators.common_operations import (
     kan_guang_gao,
     close_yuan_zheng,
 )
-from utils.image_utils import find_and_click, retry_click
+from utils.image_utils import find_and_click, retry_click, find
 from utils.logger import get_logger
 import time
 import random
@@ -58,7 +58,13 @@ class ZhuXian:
 
             logger.info(f"第【{self.game_num}】局 - 开始执行第【{i + 1}】关")
 
+            time.sleep(2)
+
             retry_click("images/zhu_xian/start.png")
+            # 检测是否在战斗界面
+            if find("images/zhu_xian/zhan_dou.png"):
+                logger.info(f"检测到【战斗】界面，重新点击开始游戏")
+                retry_click("images/zhu_xian/start.png")
             # 头选宝石不算
             find_and_click("images/zhu_xian/ji_neng.png", offset_name="select_ji_neng")
 
