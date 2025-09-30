@@ -338,7 +338,7 @@ def main():
         if args.wait is not None:
             handle_wait(args.wait)
 
-        if args.disable_force_login:
+        if not args.disable_force_start:
             logger.info("⏳ 退出游戏...")
             exit_game()
             logger.info("⏳ 重新启动游戏...")

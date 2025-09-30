@@ -53,6 +53,9 @@ class ZhuXian:
 
     def _start(self):
         open_zhan_dou()
+
+        total_start_time = time.time()
+
         for i in range(self.max_num):
             start_time = time.time()  # 记录开始时间
 
@@ -74,7 +77,14 @@ class ZhuXian:
             elapsed = end_time - start_time
             time_str = f"{int(elapsed // 60)}分{int(round(elapsed % 60))}秒"
 
-            logger.info(f"第【{self.game_num}】局 - 耗时 {time_str}")
+            total_elapsed = time.time() - total_start_time
+            total_time_str = (
+                f"{int(total_elapsed // 60)}分{int(round(total_elapsed % 60))}秒"
+            )
+
+            logger.info(
+                f"第【{self.game_num}】局 - 耗时: {time_str} - 总耗时: {total_time_str}"
+            )
 
             self.game_num += 1
 
