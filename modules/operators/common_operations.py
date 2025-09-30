@@ -95,6 +95,8 @@ def close_guan_qia_select():
             offset_name="close_guan_qia_select",
         )
         logger.info(f"关闭-关卡-选择")
+        open_chat()
+        open_zhao_mu()
         return True
     else:
         return False
@@ -242,17 +244,23 @@ def close_yuan_zheng():
         ):
             logger.info(f"发现【远征方案】, 执行- 关闭远征-方案选择")
 
+        if not find("images/huan_qiu/yuan_zheng.png") and not find(
+            "images/huan_qiu/yuan_zheng_2.png"
+        ):
+            return True
+
         close_num = 0
         while True:
             if close_num > 6:
                 break
 
             close_num += 1
-            logger.info(f"第{close_num}次尝试关闭【远征】")
+
             if find("images/huan_qiu/yuan_zheng.png") or find(
                 "images/huan_qiu/yuan_zheng_2.png"
             ):
-                logger.info(f"发现进入【远征】页面, 执行 - 关闭远征")
+                # logger.info(f"发现进入【远征】页面, 执行 - 关闭远征")
+                logger.info(f"第{close_num}次尝试关闭【远征】")
                 back()
 
                 time.sleep(2)
@@ -264,8 +272,11 @@ def close_yuan_zheng():
                     logger.info(f"发现【确认-退出远征】按钮, 执行- 退出远征")
                     time.sleep(2)
             else:
+                open_chat()
+                open_zhao_mu()
                 return True
-    return False
+    else:
+        return True
 
 
 def close_guang_gao():

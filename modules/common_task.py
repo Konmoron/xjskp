@@ -48,6 +48,7 @@ class CommonTask:
             "yuan_xian": self.yuan_xian,
             "fu_li": self.fu_li,
             "tong_xing_zheng": self.tong_xing_zheng,
+            "xun_luo_che_sao_dang": self.xun_luo_che_sao_dang,
         }
 
         # 新增实例变量
@@ -1108,6 +1109,48 @@ class CommonTask:
                 back()
             back()
         back()
+
+    def xun_luo_che_sao_dang(self):
+        """执行【巡逻车-扫荡】任务"""
+        logger.info("执行【巡逻车-扫荡】任务...")
+
+        open_zhan_dou()
+
+        # 打开巡逻车
+
+        if find_and_click("images/sao_dang/xun_luo_che.png"):
+            logger.info(f"打开【巡逻车】")
+            time.sleep(1)
+
+            kuai_su_num = 0
+            while True:
+                if find_and_click("images/sao_dang/kuai_su.png"):
+                    time.sleep(2)
+                    logger.info(f"第{kuai_su_num+1}次执行【巡逻车-扫荡】-快速")
+                    close_chou_jiang_1()
+                    time.sleep(2)
+                    kuai_su_num += 1
+
+                if find("images/sao_dang/kan_guang_gao.png"):
+                    logger.info(f"【巡逻车-扫荡】-【快速扫荡】任务完成")
+                    time.sleep(2)
+                    break
+
+            kan_guang_gao_num = 0
+            while True:
+                if find_and_click("images/sao_dang/kan_guang_gao.png"):
+                    logger.info(f"第{kan_guang_gao_num+1}次执行【巡逻车-扫荡】-看广告")
+                    kan_guang_gao()
+                    time.sleep(1)
+                    kan_guang_gao_num += 1
+
+                if find("images/sao_dang/0.png", confidence=0.95):
+                    logger.info(f"【巡逻车-扫荡】任务完成")
+                    break
+
+                time.sleep(2)
+
+            close_x()
 
     def sai_ji(self):
         """执行【赛季】任务"""
