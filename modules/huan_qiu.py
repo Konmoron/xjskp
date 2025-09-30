@@ -241,16 +241,10 @@ class HuanQiu:
                         continue
 
                 # 关闭远征
-                if close_yuan_zheng():
-                    logger.info(f"第【{self.game_num}】局 - 抢寰球 - 关闭远征")
-                    open_chat()
-                    open_zhao_mu()
+                close_yuan_zheng()
 
                 # 关闭关卡选择
-                if close_guan_qia_select():
-                    logger.info(f"第【{self.game_num}】局 - 关闭关卡选择")
-                    open_chat()
-                    open_zhao_mu()
+                close_guan_qia_select()
 
                 # 系统检查
                 if check_num % 2 == 0:
