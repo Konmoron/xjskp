@@ -287,6 +287,7 @@ def close_guang_gao():
 def close_chou_jiang_1():
     logger.info(f"关闭【抽奖】")
     find_and_click("images/header.png", offset_name="close_chou_jiang_1")
+    time.sleep(1)
 
 
 def _close_x():
@@ -371,6 +372,7 @@ def kan_guang_gao(guang_gao_time=35, wait_fu_li=2):
     close_guang_gao()
     time.sleep(wait_fu_li)
     close_chou_jiang_1()
+    time.sleep(wait_fu_li)
 
 
 def check_login_other():

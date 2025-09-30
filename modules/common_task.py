@@ -618,7 +618,7 @@ class CommonTask:
 
         try:
             # 执行军团贡献
-            if retry_click("images/jun_tuan/gong_xian.png"):
+            if find_and_click("images/jun_tuan/gong_xian.png"):
                 logger.info(f"打开【军团贡献】")
                 time.sleep(1)
                 if find_and_click("images/jun_tuan/gong_xian_start.png"):
@@ -864,6 +864,7 @@ class CommonTask:
         # 执行 每日特惠
         if find_and_click("images/shop/mei_ri_te_hui.png"):
             logger.info(f"执行【每日特惠】")
+            time.sleep(2)
             if find_and_click("images/shop/mei_ri_te_hui_mian_fei.png"):
                 kan_guang_gao()
 
@@ -987,6 +988,7 @@ class CommonTask:
         if find_and_click("images/yuan_xian/guang_gao.png"):
             kan_guang_gao()
 
+        time.sleep(2)
         logger.info(f"执行【极速院线-观影宝藏】任务")
         if find_and_click("images/yuan_xian/gybz.png"):
             # 执行5次
@@ -1023,6 +1025,10 @@ class CommonTask:
                 if not find("images/yuan_xian/guang_gao.png"):
                     logger.info(f"【极速院线-观影便利店】执行完成")
                     break
+                if i > 20:
+                    logger.info(f"【极速院线-观影便利店】超过20次，停止执行")
+                    break
+
                 find_and_click("images/yuan_xian/guang_gao.png")
                 logger.info(f"第{i}次执行【极速院线-观影便利店】")
                 kan_guang_gao()
