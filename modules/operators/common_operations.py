@@ -423,14 +423,14 @@ def resize_window():
         logger.error(f"未找到游戏窗口，请确保游戏已启动: {e}")
 
 
-def set_game_window():
+def set_game_window(title="腾讯应用宝"):
     """
     设置游戏窗口和应用宝窗口
     """
     global app_window, game_window
     time.sleep(30)
     try:
-        app_window = gw.getWindowsWithTitle("腾讯应用宝")[0]
+        app_window = gw.getWindowsWithTitle(title)[0]
         # 如果没有找到，退出
         if not app_window:
             logger.error("未找到应用宝窗口，请确保应用宝已启动")
@@ -469,9 +469,12 @@ def move_to_window():
 
 
 def start_game_bao():
+    """
+    通过腾讯应用宝启动游戏
+    """
 
     def _start_game_bao():
-        logger.info("开始启动游戏")
+        logger.info("通过腾讯应用宝启动游戏")
         find_and_click(
             "images/start_game/icon.png",
             clicks=2,
@@ -479,7 +482,7 @@ def start_game_bao():
 
         attempt = 0
         while True:
-            if set_game_window():
+            if set_game_window("腾讯应用宝"):
                 logger.info("启动游戏成功")
                 break
 
@@ -541,13 +544,74 @@ def start_game_bao():
 
 
 def start_game_shou():
-    logger.info("开始启动游戏")
+    """
+    通过手游助手启动游戏
+    """
 
     def _start_game_shou():
+        """
+        通过手游助手启动游戏
+        """
+        logger.info("通过腾讯手游助手启动游戏")
+
+        app_name = "腾讯手游助手"
+
         find_and_click(
-            "images/start_game/icon.png",
+            "images/start_game/shou_you.png",
             clicks=2,
         )
+        find_and_click(
+            "images/start_game/shou_you_1.png",
+            clicks=2,
+        )
+        time.sleep(10)
+        find_and_click(
+            "images/start_game/shou_you/wo_de.png", image_region_name="game_start"
+        )
+        find_and_click(
+            "images/start_game/shou_you/xiao_you_xi.png", image_region_name="game_start"
+        )
+        find_and_click(
+            "images/start_game/shou_you/wo_de.png", image_region_name="game_start"
+        )
+        find_and_click(
+            "images/start_game/shou_you/icon.png", image_region_name="game_start"
+        )
+
+        attempt = 0
+        while True:
+            if set_game_window(app_name):
+                logger.info("启动游戏成功")
+                break
+
+            attempt += 1
+            if attempt > 5:
+                logger.error("无法启动游戏")
+                sys.exit(1)
+
+            logger.info(f"尝试启动游戏 {attempt} 次")
+            find_and_click(
+                "images/start_game/shou_you.png",
+                clicks=2,
+            )
+            find_and_click(
+                "images/start_game/shou_you_1.png",
+                clicks=2,
+            )
+            time.sleep(10)
+            find_and_click(
+                "images/start_game/shou_you/wo_de.png", image_region_name="game_start"
+            )
+            find_and_click(
+                "images/start_game/shou_you/xiao_you_xi.png",
+                image_region_name="game_start",
+            )
+            find_and_click(
+                "images/start_game/shou_you/wo_de.png", image_region_name="game_start"
+            )
+            find_and_click(
+                "images/start_game/shou_you/icon.png", image_region_name="game_start"
+            )
 
     _start_game_shou()
 
