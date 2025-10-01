@@ -51,12 +51,14 @@ class HuanQiu:
         force_login=False,
         force_login_wait=10,
         force_start=True,
+        platform="bao",
     ):
         self.max_num = max_num
         self.disable_skill = disable_skill
         self.game_num = 1
         self.force_start = force_start
         self.force_login = force_login
+        self.platform = platform
         self.force_login_wait = force_login_wait
         self.open_chat_fail_count = 0  # 聊天界面打开失败计数器
         self.max_open_chat_fail = 20  # 最大允许失败次数
@@ -125,7 +127,7 @@ class HuanQiu:
 
                 if self.open_chat_fail_count >= self.max_open_chat_fail:
                     logger.warning("⚠️ 连续20次未打开聊天，执行重启")
-                    restart_game()
+                    restart_game(platform=self.platform)
                     self.open_chat_fail_count = 0  # 重置计数器
                     time.sleep(10)  # 增加重启后等待时间
                     continue  # 重启后重新尝试
@@ -410,7 +412,7 @@ class HuanQiu:
                     f"总耗时{total_time_str} | "
                     f"本次耗时{loop_time:.2f}秒"
                 )
-                restart_game()
+                restart_game(platform=self.platform)
                 break
 
             logger.info(
@@ -549,7 +551,7 @@ class HuanQiu:
                 logger.info(
                     f"第【{self.game_num}】局 - 系统检查 - 检测到【未启动】执行强制启动"
                 )
-                start_game()
+                start_game(platform=self.platform)
                 time.sleep(1)
                 close_all_x()
             else:
@@ -578,7 +580,7 @@ class HuanQiu:
             return False
 
         logger.info(f"TIMEOUT: {timeout_minutes}分钟未完成，退出、重新登录")
-        restart_game()
+        restart_game(platform=self.platform)
         time.sleep(1)
         return True
 

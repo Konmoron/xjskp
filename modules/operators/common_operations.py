@@ -468,35 +468,33 @@ def move_to_window():
         logger.error(f"未找到游戏窗口，请确保游戏已启动: {e}")
 
 
-def _start_game():
-    logger.info("开始启动游戏")
-    find_and_click(
-        "images/start_game/icon.png",
-        clicks=2,
-    )
+def start_game_bao():
 
-    attempt = 0
-    while True:
-        if set_game_window():
-            logger.info("启动游戏成功")
-            break
-
-        attempt += 1
-        if attempt > 5:
-            logger.error("无法启动游戏")
-            sys.exit(1)
-
-        logger.info(f"尝试启动游戏 {attempt} 次")
+    def _start_game_bao():
+        logger.info("开始启动游戏")
         find_and_click(
             "images/start_game/icon.png",
             clicks=2,
         )
 
+        attempt = 0
+        while True:
+            if set_game_window():
+                logger.info("启动游戏成功")
+                break
 
-def start_game():
-    """启动游戏"""
-    logger.info("开始启动游戏")
-    _start_game()
+            attempt += 1
+            if attempt > 5:
+                logger.error("无法启动游戏")
+                sys.exit(1)
+
+            logger.info(f"尝试启动游戏 {attempt} 次")
+            find_and_click(
+                "images/start_game/icon.png",
+                clicks=2,
+            )
+
+    _start_game_bao()
 
     if find("images/start_game/update_wx.png", image_region_name="game_start"):
         logger.warning("检测到更新微信")
@@ -507,7 +505,7 @@ def start_game():
         )
         time.sleep(10)
         logger.info("重新点击游戏图标")
-        _start_game()
+        _start_game_bao()
         resize_window()
 
     if find_and_click(
@@ -516,7 +514,7 @@ def start_game():
         logger.info("检测到清理缓存提示")
         time.sleep(2)
         logger.info("重新点击游戏图标")
-        _start_game()
+        _start_game_bao()
 
     time.sleep(10)
     # find_and_click("images/start_game/x_0.png")
@@ -542,6 +540,84 @@ def start_game():
     logger.info(f"游戏启动完成{game_window}")
 
 
+def start_game_shou():
+    logger.info("开始启动游戏")
+
+    def _start_game_shou():
+        find_and_click(
+            "images/start_game/icon.png",
+            clicks=2,
+        )
+
+    _start_game_shou()
+
+    if find("images/start_game/update_wx.png", image_region_name="game_start"):
+        logger.warning("检测到更新微信")
+        retry_click(
+            click_image="images/start_game/close_update_wx.png",
+            find_kwargs={"image_region_name": "game_start"},
+            click_kwargs={"image_region_name": "game_start"},
+        )
+        time.sleep(10)
+        logger.info("重新点击游戏图标")
+        _start_game_shou()
+        resize_window()
+
+    if find_and_click(
+        "images/start_game/clean_cache.png", image_region_name="game_start"
+    ):
+        logger.info("检测到清理缓存提示")
+        time.sleep(2)
+        logger.info("重新点击游戏图标")
+        _start_game_shou()
+
+    time.sleep(10)
+    # find_and_click("images/start_game/x_0.png")
+    app_window.minimize()
+    time.sleep(2)
+    resize_window()
+    time.sleep(10)
+    find_and_click("images/header.png", image_region_name="game_start")
+
+    logger.info("移动游戏到默认区域")
+    move_to_window()
+    # for i in range(6):
+    #     if not find("images/header.png", image_region_name="game_start"):
+    #         break
+    #     logger.info(f"第 {i+1} 次尝试移动游戏到默认区域")
+    #     drag(
+    #         "images/header.png",
+    #         "move_game_to_default_region",
+    #         image_region_name="game_start",
+    #     )
+    #     time.sleep(2)
+
+    logger.info(f"游戏启动完成{game_window}")
+
+
+def start_game(platform: str = "bao"):
+    """
+    启动游戏
+
+    platform: str, optional
+        游戏平台，默认为 bao
+            bao -> 腾讯应用宝
+            shou -> 腾讯手游助手
+            dian -> 腾讯电脑管家
+    """
+    if platform == "bao":
+        logger.info(f"platform: bao, 通过腾讯应用宝启动")
+        start_game_bao()
+    elif platform == "shou":
+        logger.info(f"platform: shou, 通过腾讯手游助手启动")
+        start_game_shou()
+    elif platform == "dian":
+        # TODO: 待实现
+        logger.error("暂不支持腾讯电脑管家")
+    else:
+        raise ValueError(f"Unknown platform: {platform}")
+
+
 def exit_game():
     logger.info("退出游戏")
     # find_and_click("images/exit_game.png", image_region_name="game_start")
@@ -565,8 +641,8 @@ def exit_game():
         logger.error(f"关闭游戏窗口失败: {e}")
 
 
-def restart_game():
+def restart_game(platform: str = "bao"):
     logger.info("重新启动游戏")
     exit_game()
-    start_game()
+    start_game(platform=platform)
     close_all_x()

@@ -57,6 +57,7 @@ class TaskExecutor:
             force_login=not self.args.disable_force_login,
             force_login_wait=self.args.force_login_wait or 10,
             force_start=not self.args.disable_force_start,
+            platform=self.args.platform,
         ).start()
 
         close_all_x_and_back()
@@ -72,6 +73,7 @@ class TaskExecutor:
             force_login=not self.args.disable_force_login,
             force_login_wait=self.args.force_login_wait or 10,
             force_start=not self.args.disable_force_start,
+            platform=self.args.platform,
         ).start()
         logger.info("🏆 主线任务执行完毕")
 
@@ -175,7 +177,7 @@ def run_multi_server_mode(args: argparse.Namespace):
     for idx, config in enumerate(target_servers, 1):
         if not is_game_started():
             logger.info("游戏未启动，启动游戏")
-            start_game()
+            start_game(args.platform)
 
         logger.info("关闭所有弹窗, 最大尝试次数: 6")
         close_all_x_and_back()
@@ -342,7 +344,7 @@ def main():
             logger.info("⏳ 退出游戏...")
             exit_game()
             logger.info("⏳ 重新启动游戏...")
-            start_game()
+            start_game(args.platform)
 
         if check_login_other():
             logger.info(

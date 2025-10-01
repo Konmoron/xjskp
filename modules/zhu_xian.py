@@ -31,12 +31,14 @@ class ZhuXian:
         force_login=False,
         force_login_wait=10,
         force_start=True,
+        platform="bao",
     ):
         self.max_num = max_num
         self.game_num = 1
         self.force_start = force_start
         self.force_login = force_login
         self.force_login_wait = force_login_wait
+        self.platform = platform
 
     def start(self):
         """启动入口"""
@@ -64,10 +66,14 @@ class ZhuXian:
             time.sleep(2)
 
             retry_click("images/zhu_xian/start.png")
+            time.sleep(2)
+
             # 检测是否在战斗界面
             if find("images/zhu_xian/zhan_dou.png"):
                 logger.info(f"检测到【战斗】界面，重新点击开始游戏")
                 retry_click("images/zhu_xian/start.png")
+
+            time.sleep(4)
             # 头选宝石不算
             find_and_click("images/zhu_xian/ji_neng.png", offset_name="select_ji_neng")
 
@@ -87,6 +93,8 @@ class ZhuXian:
             )
 
             self.game_num += 1
+
+            time.sleep(4)
 
     def _wait_for_game_end(self):
         """等待游戏结束"""
