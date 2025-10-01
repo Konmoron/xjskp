@@ -1143,18 +1143,23 @@ class CommonTask:
                     break
 
             kan_guang_gao_num = 0
+            start_time = time.time()
             while True:
+                if find("images/sao_dang/0.png", confidence=0.9):
+                    logger.info(f"【巡逻车-扫荡】任务完成")
+                    break
+
                 if find_and_click("images/sao_dang/kan_guang_gao.png"):
                     logger.info(f"第{kan_guang_gao_num+1}次执行【巡逻车-扫荡】-看广告")
                     kan_guang_gao()
                     time.sleep(1)
                     kan_guang_gao_num += 1
 
-                if find("images/sao_dang/0.png", confidence=0.95):
-                    logger.info(f"【巡逻车-扫荡】任务完成")
-                    break
-
                 time.sleep(2)
+
+                if time.time() - start_time > 300:
+                    logger.info(f"等待超过300秒，退出【巡逻车-扫荡】任务")
+                    break
 
             close_x()
 
