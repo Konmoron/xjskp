@@ -1145,11 +1145,14 @@ class CommonTask:
             kan_guang_gao_num = 0
             start_time = time.time()
             while True:
-                if find("images/sao_dang/0.png", confidence=0.9):
+                find_and_click("images/sao_dang/kan_guang_gao.png")
+
+                time.sleep(4)
+
+                if find("images/sao_dang/kan_guang_gao.png"):
                     logger.info(f"【巡逻车-扫荡】任务完成")
                     break
-
-                if find_and_click("images/sao_dang/kan_guang_gao.png"):
+                else:
                     logger.info(f"第{kan_guang_gao_num+1}次执行【巡逻车-扫荡】-看广告")
                     kan_guang_gao()
                     time.sleep(1)
