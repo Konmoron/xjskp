@@ -414,6 +414,11 @@ def resize_window():
     调整游戏窗口大小
     """
     try:
+        game_window = gw.getWindowsWithTitle("向僵尸开炮")[0]
+        if not game_window:
+            logger.error("未找到游戏窗口，请确保游戏已启动")
+            sys.exit(1)
+
         logger.info(f"调整游戏窗口大小，游戏窗口: {game_window}")
         # 调整窗口大小
         logger.info(f"调整窗口大小为: {RESIZE_WINDOW_SIZE}")
