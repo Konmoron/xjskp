@@ -138,7 +138,7 @@ def drag(
     """
     try:
         logger.info(
-            f"🔄 初始化拖拽操作 | 配置: {drag_config_name} | 置信度: {confidence}"
+            f"🔄  配置: image_path: {image_path} | drag_config_name: {drag_config_name} | confidence: {confidence} | image_region_name: {image_region_name}"
         )
         drag_cfg = DRAG_CONFIGS.get(drag_config_name)
         if not drag_cfg:
@@ -148,13 +148,13 @@ def drag(
 
         # 解包并记录配置参数
         x_offset, y_offset, drag_x, drag_y, duration, times = drag_cfg
-        logger.info("📋 加载拖拽配置参数:")
-        logger.info(f"→ 基准偏移: X={x_offset} Y={y_offset}")
-        logger.info(f"→ 拖拽向量: ΔX={drag_x} ΔY={drag_y}")
-        logger.info(f"→ 持续时间: {duration}s | 重复次数: {times}次")
+        # logger.info("📋 加载拖拽配置参数:")
+        # logger.info(f"→ 基准偏移: X={x_offset} Y={y_offset}")
+        # logger.info(f"→ 拖拽向量: ΔX={drag_x} ΔY={drag_y}")
+        # logger.info(f"→ 持续时间: {duration}s | 重复次数: {times}次")
 
         # 定位基准图片
-        logger.debug(f"🔍 正在定位基准图片: {image_path}")
+        # logger.debug(f"🔍 正在定位基准图片: {image_path}")
         image_region = REGIONS.get(image_region_name, REGIONS["default"])
         location = pyautogui.locateCenterOnScreen(
             image_path, confidence=confidence, region=image_region
@@ -162,10 +162,10 @@ def drag(
 
         if not location:
             logger.error(f"❌ 基准图片定位失败: {image_path}")
-            logger.warning("可能原因: 图片未显示/路径错误/分辨率不匹配")
+            # logger.warning("可能原因: 图片未显示/路径错误/分辨率不匹配")
             return False
 
-        logger.info(f"✅ 基准图片定位成功 | 原始坐标: X={location.x} Y={location.y}")
+        # logger.info(f"✅ 基准图片定位成功 | 原始坐标: X={location.x} Y={location.y}")
 
         # 计算起始坐标
         start_x = location.x + x_offset
@@ -175,7 +175,7 @@ def drag(
         # )
 
         # 执行拖拽操作
-        logger.info(f"🚀 开始执行拖拽操作，共{times}次循环")
+        # logger.info(f"🚀 开始执行拖拽操作，共{times}次循环")
         for i in range(times):
             current = i + 1
             logger.info(
@@ -212,17 +212,18 @@ def drag(
 
 def drag_search(
     base_image_path,
-    serach_image_path,
+    search_image_path,
     drag_config_name,
     max_attempts=1,
     base_image_confidence=0.8,
     search_image_confidence=0.8,
     search_before_drag=True,
+    image_region_name="default",
 ):
     """
     拖拽搜索指定图片
     :param base_image_path: 基准图片路径
-    :param serach_image_path: 搜索图片路径
+    :param search_image_path: 搜索图片路径
     :param drag_config_name: 拖拽配置名称
     :param base_image_confidence: 基准图片匹配精度
     :param search_image_confidence: 搜索图片匹配精度
@@ -234,26 +235,39 @@ def drag_search(
     # 打印参数
     logger.info(f"🔍 开始拖拽搜索操作:")
     logger.info(f"→ 基准图片: {base_image_path}, 精度: {base_image_confidence}")
-    logger.info(f"→ 搜索图片: {serach_image_path}, 精度: {search_image_confidence}")
+    logger.info(f"→ 搜索图片: {search_image_path}, 精度: {search_image_confidence}")
     logger.info(f"→ 拖拽配置: {drag_config_name}")
     logger.info(f"→ 拖拽前搜索: {'是' if search_before_drag else '否'}")
     logger.info(f"🔄 开始执行拖拽搜索，最大尝试次数: {max_attempts}")
 
-    logger.info(f"🔍 开始查找搜索图片: {serach_image_path}")
-    if find(serach_image_path, confidence=search_image_confidence):
-        logger.info(f"✅ 搜索图片找到: {serach_image_path}")
+    # logger.info(f"🔍 开始查找搜索图片: {search_image_path}")
+    if find(
+        search_image_path,
+        confidence=search_image_confidence,
+        image_region_name=image_region_name,
+    ):
+        logger.info(f"✅ 搜索图片找到: {search_image_path}")
         return True
 
     for i in range(max_attempts):
         # 执行拖拽操作
         logger.info(f"🔄 第{i+1}/{max_attempts}次拖拽搜索")
-        drag(base_image_path, drag_config_name, base_image_confidence)
+        drag(
+            base_image_path,
+            drag_config_name,
+            base_image_confidence,
+            image_region_name=image_region_name,
+        )
         time.sleep(2)  # 等待拖拽完成
 
         # 查找搜索图片
-        logger.info(f"🔍 开始查找搜索图片: {serach_image_path}")
-        if find(serach_image_path, confidence=search_image_confidence):
-            logger.info(f"✅ 搜索图片找到: {serach_image_path}")
+        # logger.info(f"🔍 开始查找搜索图片: {search_image_path}")
+        if find(
+            search_image_path,
+            confidence=search_image_confidence,
+            image_region_name=image_region_name,
+        ):
+            logger.info(f"✅ 搜索图片找到: {search_image_path}")
             return True
 
     time.sleep(1)

@@ -3,26 +3,51 @@ import sys
 from pathlib import Path
 import time
 import argparse
+
 sys.path.append(str(Path(__file__).parent.parent))
-from config import (CLICK_OFFSETS, GLOBAL_REGION)
+from config import CLICK_OFFSETS, GLOBAL_REGION, REGIONS
 from utils.logger import get_logger
 
 logger = get_logger()
 
-def find_image(image_path: str, confidence: float = 0.8) -> tuple:  # 添加confidence参数
+
+def find_image(
+    image_path: str, region_name: str = "default", confidence: float = 0.8
+) -> tuple:
     """查找图片位置
+    :param region_name: 区域名称，从REGIONS中获取，默认使用全局区域
     :param confidence: 匹配精度 (0-1)，默认0.8
     """
-    logger.info(f"🔍 开始查找图片 [{image_path}], confidence={confidence}")
+    logger.info(
+        f"🔍 开始查找图片 [{image_path}], region={region_name}, confidence={confidence}"
+    )
+
+    # 获取区域配置
+    region = REGIONS.get(region_name, GLOBAL_REGION)
+
+    if region_name != "default" and region_name in REGIONS:
+        logger.info(f"📍 使用指定区域 [{region_name}]: {region}")
+    elif region_name != "default":
+        logger.warning(f"⚠️ 区域 [{region_name}] 未定义，使用全局区域")
+        region = GLOBAL_REGION
+
     try:
         start_time = time.time()
-        location = pyautogui.locateCenterOnScreen(image_path, region=GLOBAL_REGION, confidence=confidence)
+        location = pyautogui.locateCenterOnScreen(
+            image_path, region=region, confidence=confidence
+        )
         elapsed = round(time.time() - start_time, 2)
-        
-        logger.info(f"✅ 成功匹配 [{image_path}]")
-        logger.debug(f"匹配耗时: {elapsed}s | 屏幕坐标: X={location.x} Y={location.y}")
-        pyautogui.moveTo(location.x, location.y, duration=0.8)
-        return (location.x, location.y)
+
+        if location:
+            logger.info(f"✅ 成功匹配 [{image_path}]")
+            logger.debug(
+                f"匹配耗时: {elapsed}s | 屏幕坐标: X={location.x} Y={location.y}"
+            )
+            pyautogui.moveTo(location.x, location.y, duration=0.8)
+            return (location.x, location.y)
+        else:
+            logger.warning(f"❌ 图片匹配失败，区域: {region_name}")
+            return None
     except pyautogui.ImageNotFoundException:
         logger.warning(f"❌ 图片匹配失败，可能原因：")
         logger.warning("1. 图片被遮挡或未显示在屏幕上")
@@ -33,19 +58,29 @@ def find_image(image_path: str, confidence: float = 0.8) -> tuple:  # 添加conf
         logger.error(f"‼️ 发生意外错误: {str(e)}")
         return None
 
-def click_with_offset(image_path: str, offset_name: str = '', confidence: float = 0.8, clicks: int = 1 ) -> bool:  # 新增confidence参数
+
+def click_with_offset(
+    image_path: str,
+    offset_name: str = "",
+    region_name: str = "default",  # 新增参数
+    confidence: float = 0.8,
+    clicks: int = 1,
+) -> bool:
     """带偏移量的点击操作
+    :param region_name: 区域名称，从REGIONS中获取，默认使用全局区域
     :param confidence: 匹配精度 (0-1)，默认0.8
     """
-    pos = find_image(image_path, confidence)  # 传递confidence参数
-    logger.info(f"🛠️ 准备执行点击操作 [图片: {image_path}] [偏移: {offset_name or '无'}]")
+    pos = find_image(image_path, region_name, confidence)  # 传递region_name
+    logger.info(
+        f"🛠️ 准备执行点击操作 [图片: {image_path}] [区域: {region_name}] [偏移: {offset_name or '无'}]"
+    )
     if not pos:
         logger.error(f"❌ 无法执行点击操作: 未找到图片 [{image_path}]")
         return False
-    
+
     x, y = pos
     logger.debug(f"原始坐标获取: X={x} Y={y}")
-    
+
     # 处理偏移量
     if offset_name:
         if offset_name not in CLICK_OFFSETS:
@@ -58,9 +93,9 @@ def click_with_offset(image_path: str, offset_name: str = '', confidence: float 
 
     target_x = x + x_offset
     target_y = y + y_offset
-    logger.info(f"🎯 最终点击坐标: X={target_x} Y={target_y}")
+    logger.info(f"🎯 最终点击坐标: X={target_x} Y={target_y} [区域: {region_name}]")
     logger.info(f"🎯 点击次数: {clicks}")
-    
+
     try:
         logger.debug("执行点击前等待 0.5 秒...")
         time.sleep(0.5)
@@ -71,59 +106,91 @@ def click_with_offset(image_path: str, offset_name: str = '', confidence: float 
         logger.error(f"‼️ 点击执行失败: {str(e)}")
         return False
 
-def calculate_offset(image_path: str, confidence: float = 0.8) -> tuple:
-    """计算图片位置与点击位置的偏移量"""
-    logger.info(f"🛠️ 开始计算偏移量 [图片: {image_path}]")
-    
+
+def calculate_offset(
+    image_path: str, region_name: str = "default", confidence: float = 0.8
+) -> tuple:
+    """计算图片位置与点击位置的偏移量
+    :param region_name: 区域名称，从REGIONS中获取，默认使用全局区域
+    """
+    logger.info(f"🛠️ 开始计算偏移量 [图片: {image_path}, 区域: {region_name}]")
+
     # 查找基准图片
-    base_pos = find_image(image_path, confidence)
+    base_pos = find_image(image_path, region_name, confidence)
     if not base_pos:
         logger.error("无法计算偏移：未找到基准图片")
         return None
-        
+
     logger.info("🖱️ 请在10秒内将鼠标移动到目标位置...")
     time.sleep(10)
-    
+
     # 获取目标位置
     target_x, target_y = pyautogui.position()
     logger.info(f"📌 记录目标位置: X={target_x} Y={target_y}")
-    
+
     # 计算偏移量
     offset = (target_x - base_pos[0], target_y - base_pos[1])
     logger.info(f"⚖️ 计算偏移量完成: X={offset[0]} Y={offset[1]}")
     logger.info(f"✅ 偏移量配置: ({offset[0]}, {offset[1]})")
+    return offset
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='图像操作工具 v2.2', formatter_class=argparse.RawTextHelpFormatter)
-    subparsers = parser.add_subparsers(dest='command', required=True, help='操作模式')
-    
+    parser = argparse.ArgumentParser(
+        description="图像操作工具 v2.2", formatter_class=argparse.RawTextHelpFormatter
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True, help="操作模式")
+
     # 查找模式
-    find_parser = subparsers.add_parser('find', help='查找图片位置')
-    find_parser.add_argument('-i', '--image', required=True, help='图片路径')
-    find_parser.add_argument('-c', '--confidence', type=float, default=0.8,
-                           help='匹配精度 (0-1，默认0.8)')
+    find_parser = subparsers.add_parser("find", help="查找图片位置")
+    find_parser.add_argument("-i", "--image", required=True, help="图片路径")
+    find_parser.add_argument(
+        "-c", "--confidence", type=float, default=0.8, help="匹配精度 (0-1，默认0.8)"
+    )
+    find_parser.add_argument(
+        "-r",
+        "--region",
+        default="default",
+        help="区域名称（从REGIONS配置中获取，默认default）",
+    )
 
     # 点击模式
-    click_parser = subparsers.add_parser('click', help='执行点击操作')
-    click_parser.add_argument('-i', '--image', required=True, help='图片路径')
-    click_parser.add_argument('-o', '--offset', default='', help='偏移量名称')
-    click_parser.add_argument('-c', '--confidence', type=float, default=0.8,
-                           help='匹配精度 (0-1，默认0.8)')
-    click_parser.add_argument('--clicks', type=int, default=1,
-                           help='匹配精度 (0-1，默认0.8)')
+    click_parser = subparsers.add_parser("click", help="执行点击操作")
+    click_parser.add_argument("-i", "--image", required=True, help="图片路径")
+    click_parser.add_argument("-o", "--offset", default="", help="偏移量名称")
+    click_parser.add_argument(
+        "-c", "--confidence", type=float, default=0.8, help="匹配精度 (0-1，默认0.8)"
+    )
+    click_parser.add_argument(
+        "--clicks", type=int, default=1, help="匹配精度 (0-1，默认0.8)"
+    )
+    click_parser.add_argument(
+        "-r",
+        "--region",
+        default="default",
+        help="区域名称（从REGIONS配置中获取，默认default）",
+    )
 
     # 新增偏移计算模式
-    offset_parser = subparsers.add_parser('get-offset', help='计算偏移量')
-    offset_parser.add_argument('-i', '--image', required=True, 
-                             help='基准图片路径')
-    offset_parser.add_argument('-c', '--confidence', type=float, default=0.8,
-                             help='匹配精度 (0-1，默认0.8)')
+    offset_parser = subparsers.add_parser("get-offset", help="计算偏移量")
+    offset_parser.add_argument("-i", "--image", required=True, help="基准图片路径")
+    offset_parser.add_argument(
+        "-c", "--confidence", type=float, default=0.8, help="匹配精度 (0-1，默认0.8)"
+    )
+    offset_parser.add_argument(
+        "-r",
+        "--region",
+        default="default",
+        help="区域名称（从REGIONS配置中获取，默认default）",
+    )
 
     args = parser.parse_args()
 
-    if args.command == 'find':
-        find_image(args.image, args.confidence)
-    elif args.command == 'click':
-        click_with_offset(args.image, args.offset, args.confidence, clicks=args.clicks)
-    elif args.command == 'get-offset':
-        calculate_offset(args.image, args.confidence)
+    if args.command == "find":
+        find_image(args.image, args.region, args.confidence)
+    elif args.command == "click":
+        click_with_offset(
+            args.image, args.offset, args.region, args.confidence, clicks=args.clicks
+        )
+    elif args.command == "get-offset":
+        calculate_offset(args.image, args.region, args.confidence)

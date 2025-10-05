@@ -279,14 +279,22 @@ def close_yuan_zheng():
         return True
 
 
-def close_guang_gao():
+def close_guang_gao(image_region_name="default"):
     logger.info(f"关闭【广告】")
-    find_and_click("images/header.png", offset_name="close_guang_gao_1")
+    find_and_click(
+        "images/header.png",
+        offset_name="close_guang_gao_1",
+        image_region_name=image_region_name,
+    )
 
 
-def close_chou_jiang_1():
+def close_chou_jiang_1(image_region_name="default"):
     logger.info(f"关闭【抽奖】")
-    find_and_click("images/header.png", offset_name="close_chou_jiang_1")
+    find_and_click(
+        "images/header.png",
+        offset_name="close_chou_jiang_1",
+        image_region_name=image_region_name,
+    )
     time.sleep(1)
 
 
@@ -300,16 +308,18 @@ def close_x_2():
     find_and_click("images/close_x_2.png", confidence=0.9)
 
 
-def close_x():
-    if find_and_click("images/xun_luo_che_ling_qu.png"):
+def close_x(image_region_name="default"):
+    if find_and_click(
+        "images/xun_luo_che_ling_qu.png", image_region_name=image_region_name
+    ):
         logger.info(f"巡逻车满了，领取奖励")
-        close_chou_jiang_1()
-        close_guang_gao()
+        close_chou_jiang_1(image_region_name=image_region_name)
+        close_guang_gao(image_region_name=image_region_name)
 
     if (
-        find_and_click("images/close_x.png")
-        or find_and_click("images/close_x_2.png")
-        or find_and_click("images/close_x_3.png")
+        find_and_click("images/close_x.png", image_region_name=image_region_name)
+        or find_and_click("images/close_x_2.png", image_region_name=image_region_name)
+        or find_and_click("images/close_x_3.png", image_region_name=image_region_name)
     ):
         logger.info(f"关闭【X】")
         return True
@@ -375,7 +385,7 @@ def kan_guang_gao(guang_gao_time=35, wait_fu_li=2):
     time.sleep(wait_fu_li)
 
 
-def check_login_other():
+def check_login_other(region_name="default"):
     # 检查帐号在其他地方登录
     if find("images/login_other.png"):
         return True

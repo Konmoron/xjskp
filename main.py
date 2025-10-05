@@ -5,6 +5,7 @@ import time
 from tqdm import tqdm
 from modules.common_task import CommonTask
 from modules.bao_xiang import BaoXiang
+from modules.gua_huan_qiu import GuaHuanQiu
 from utils.logger import get_logger
 import argparse
 from config import FU_CONFIGS
@@ -77,20 +78,33 @@ class TaskExecutor:
         ).start()
         logger.info("🏆 主线任务执行完毕")
 
+    def run_gua_huan_qiu(self):
+        """挂环球任务"""
+        if self.args.gua_huan_qiu is None:
+            return
+
+        GuaHuanQiu(max_num=self.args.gua_huan_qiu).start()
+        logger.info("🌍 挂环球任务完成")
+
     def execute(self):
         """统一执行入口"""
         self.run_bao_xiang()
         self.run_common_tasks()
         self.run_huan_qiu()
         self.run_zhu_xian()
+        self.run_gua_huan_qiu()
 
         # 添加运行时间判断（30分钟 = 1800秒）
-        if time.time() - self.game_start_time >= 1800:
-            exit_game()
-            logger.info("✅ 程序退出")
-            time.sleep(30)
+        if self.args.disable_exit:
+            logger.info("✅ 运行完成")
+            return
         else:
-            logger.info("⏳ 游戏运行时间未达30分钟，保持运行")
+            if time.time() - self.game_start_time >= 1800:
+                exit_game()
+                logger.info("✅ 程序退出")
+                time.sleep(30)
+            else:
+                logger.info("⏳ 游戏运行时间未达30分钟，保持运行")
 
 
 def print_runtime_config(args: argparse.Namespace):
@@ -129,6 +143,7 @@ def print_runtime_config(args: argparse.Namespace):
             f"次数:{args.number} 选择技能:{'禁用' if args.disable_skill else '启用'}",
         ),
         "🏆 主线任务": (args.zhu_xian is not None, f"次数:{args.zhu_xian or 20}"),
+        "🌍 挂环球": (args.gua_huan_qiu is not None, f"次数:{args.gua_huan_qiu or 20}"),
         "🎁 宝箱任务": (args.bao_xiang, f"10连抽x{args.bao_xiang_num}次"),
         "🛠️ 通用任务": (
             args.tasks is not None,
@@ -231,6 +246,14 @@ def parse_arguments() -> argparse.Namespace:
         const=20,
         help="启用主线任务，可指定执行次数（默认20次）",
     )
+    task_group.add_argument(
+        "--gua-huan-qiu",
+        type=int,
+        default=None,
+        nargs="?",
+        const=20,
+        help="启用挂环球任务，可指定执行次数（默认20次）",
+    )
 
     common_group = parser.add_argument_group("通用设置")
     common_group.add_argument(
@@ -329,10 +352,22 @@ def main():
                 args.bao_xiang,
                 args.tasks is not None,
                 args.zhu_xian is not None,
+                args.gua_huan_qiu is not None,
             ]
         ):
             logger.info("🔍 未指定任务参数，默认执行寰球救援")
             args.huanqiu = True
+
+        # 如果开启了挂环球任务，自动设置相关参数
+        if args.gua_huan_qiu is not None:
+            logger.info("🌍 检测到挂环球任务，自动调整相关参数设置")
+            logger.info("🔒 自动禁用强制登录")
+            logger.info("⚡ 自动禁用强制启动")
+            logger.info("⚡ 自动禁用任务结束退出")
+
+            args.disable_force_login = True
+            args.disable_force_start = True
+            args.disable_exit = True
 
         print_runtime_config(args)
 
