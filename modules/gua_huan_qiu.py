@@ -118,7 +118,7 @@ class GuaHuanQiu:
         Returns:
             bool: True 表示邀请成功，False 表示需要重试当前局
         """
-        logger.info(f"第{self.game_num}/{self.max_num}局 - 左 - 开始邀请")
+        logger.info(f"第{self.game_num}/{self.max_num}局 - 左号 - 开始邀请")
 
         # 清理可能存在的邀请页面
         if find("images/gua_huan_qiu/yi_jian_yao_qing.png", image_region_name="zuo"):
@@ -131,7 +131,7 @@ class GuaHuanQiu:
             find_kwargs={"image_region_name": "zuo"},
         )
 
-        logger.info(f"第{self.game_num}/{self.max_num}局 - 左 - 点击邀请成功")
+        logger.info(f"第{self.game_num}/{self.max_num}局 - 左号 - 点击邀请成功")
 
         # 左 点击 好友
         click_hao_you_num = 0
@@ -147,14 +147,14 @@ class GuaHuanQiu:
 
             if click_hao_you_num > 10:
                 logger.warning(
-                    f"第{self.game_num}/{self.max_num}局 - 左号点击好友失败，重试"
+                    f"第{self.game_num}/{self.max_num}局 - 左号 - 点击好友失败 10 次 - 重新开始"
                 )
                 time.sleep(4)
                 return False
 
             click_hao_you_num += 1
             logger.warning(
-                f"第{self.game_num}/{self.max_num}局 - 左号 点击好友失败，重试"
+                f"第{self.game_num}/{self.max_num}局 - 左号 - 点击好友失败 - 重试"
             )
 
         # 左号 查找右号好友（支持拖拽）
@@ -164,7 +164,7 @@ class GuaHuanQiu:
             confidence=0.95,
         ):
             logger.warning(
-                f"第{self.game_num}/{self.max_num}局 - 左号 没有找到 右号，开始向下拖拽查找"
+                f"第{self.game_num}/{self.max_num}局 - 左号 没有找到 右号 好友 - 开始向下拖拽查找"
             )
 
             # 左号 向下拖拽找到 右号
@@ -178,7 +178,7 @@ class GuaHuanQiu:
             ):
                 close_x()
                 logger.warning(
-                    f"第{self.game_num}/{self.max_num}局 - 没有找到好友，重试"
+                    f"第{self.game_num}/{self.max_num}局 - 左号 没有找到 右号 好友 - 重试"
                 )
                 time.sleep(4)
                 return False  # 标记需要重试
@@ -191,7 +191,7 @@ class GuaHuanQiu:
             confidence=0.95,
         )
 
-        logger.info(f"第{self.game_num}/{self.max_num}局 - 右 - 接受邀请")
+        logger.info(f"第{self.game_num}/{self.max_num}局 - 右号 - 接受邀请")
 
         # 右号 检查是否收到邀请
         check_num = 0
@@ -210,7 +210,7 @@ class GuaHuanQiu:
 
             if check_num > 10:
                 logger.warning(
-                    f"第{self.game_num}/{self.max_num}局 - 右号没有收到邀请，重试"
+                    f"第{self.game_num}/{self.max_num}局 - 右号 - 没有收到邀请 - 重试"
                 )
                 time.sleep(4)
                 return False
@@ -230,7 +230,7 @@ class GuaHuanQiu:
                 "images/gua_huan_qiu/deng_dai_kai_shi.png",
                 image_region_name="default",
             ):
-                logger.info(f"第{self.game_num}/{self.max_num}局邀请成功，点击开始")
+                logger.info(f"第{self.game_num}/{self.max_num}局 - 邀请成功 - 点击开始")
                 # 点击开始
                 if retry_click(
                     click_image="images/gua_huan_qiu/kai_shi.png",
@@ -239,7 +239,7 @@ class GuaHuanQiu:
                 ):
                     time_str = self._format_time(time.time() - start_time)
                     logger.info(
-                        f"第{self.game_num}/{self.max_num}局 - 邀请开始游戏 - 耗时: {time_str}"
+                        f"第{self.game_num}/{self.max_num}局 - 邀请成功 - 开始游戏 - 耗时: {time_str}"
                     )
 
                     return True  # 邀请成功
