@@ -77,7 +77,9 @@ class GuaHuanQiu:
         total_start_time = time.time()
 
         while True:
-            logger.info("\n" + f"= 开始执行第{self.game_num}局 =".center(50, "="))
+            logger.info(
+                "\n" + f"= 开始执行第{self.game_num}/{self.max_num}局 =".center(50, "=")
+            )
 
             start_time = time.time()
 
