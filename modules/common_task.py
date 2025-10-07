@@ -36,13 +36,13 @@ class CommonTask:
             "gybz": self.gybz,
             "shop": self.shop,
             "huo_dong": self.huo_dong,
-            "sai_ji": self.sai_ji,
-            "te_hui": self.te_hui,
+            # "sai_ji": self.sai_ji,
+            # "te_hui": self.te_hui,
             "hao_you": self.hao_you,
             "mail": self.mail,
             "jin_li": self.jin_li,
             "ri_li": self.ri_li,
-            "tu_wei": self.tu_wei,
+            # "tu_wei": self.tu_wei,
             "jiu_guan": self.jiu_guan,
             "shi_lian_ta": self.shi_lian_ta,
             "yuan_xian": self.yuan_xian,
@@ -281,11 +281,11 @@ class CommonTask:
 
         # 找到活动按钮
         if drag_search(
-            "images/header.png", "images/tu_wei/button.png", "zhan_dou_left_down", 3
+            "images/header.png", "images/tu_wei/button.png", "zhan_dou_left_down", 2
         ):
             logger.info(f"向下拖拽找到【战斗-七日突围】")
         elif drag_search(
-            "images/header.png", "images/tu_wei/button.png", "zhan_dou_left_up", 3
+            "images/header.png", "images/tu_wei/button.png", "zhan_dou_left_up", 2
         ):
             logger.info(f"向上拖拽找到【战斗-七日突围】")
         else:
@@ -347,11 +347,11 @@ class CommonTask:
 
         # 找到活动按钮
         if drag_search(
-            "images/header.png", "images/jin_li/button.png", "zhan_dou_left_down", 3
+            "images/header.png", "images/jin_li/button.png", "zhan_dou_left_down", 2
         ):
             logger.info(f"向下拖拽找到【锦鲤】")
         elif drag_search(
-            "images/header.png", "images/jin_li/button.png", "zhan_dou_left_up", 3
+            "images/header.png", "images/jin_li/button.png", "zhan_dou_left_up", 2
         ):
             logger.info(f"向上拖拽找到【锦鲤】")
         else:
@@ -380,11 +380,11 @@ class CommonTask:
 
         # 找到活动按钮
         if drag_search(
-            "images/header.png", "images/huo_dong/button.png", "zhan_dou_left_down", 3
+            "images/header.png", "images/huo_dong/button.png", "zhan_dou_left_down", 2
         ):
             logger.info(f"向下拖拽找到【活动】")
         elif drag_search(
-            "images/header.png", "images/huo_dong/button.png", "zhan_dou_left_up", 3
+            "images/header.png", "images/huo_dong/button.png", "zhan_dou_left_up", 2
         ):
             logger.info(f"向上拖拽找到【活动】")
         else:
@@ -535,11 +535,11 @@ class CommonTask:
 
             # 找到特惠
             if drag_search(
-                "images/header.png", "images/te_hui/te_hui.png", "zhan_dou_left_down", 3
+                "images/header.png", "images/te_hui/te_hui.png", "zhan_dou_left_down", 2
             ):
                 logger.info(f"向下拖拽找到【特惠】")
             elif drag_search(
-                "images/header.png", "images/te_hui/te_hui.png", "zhan_dou_left_up", 3
+                "images/header.png", "images/te_hui/te_hui.png", "zhan_dou_left_up", 2
             ):
                 logger.info(f"向上拖拽找到【特惠】")
             else:
@@ -889,14 +889,14 @@ class CommonTask:
             "images/header.png",
             "images/guan_ying_bao_zang/open.png",
             "zhan_dou_left_down",
-            3,
+            2,
         ):
             logger.info(f"向下拖拽找到【观影宝藏】")
         elif drag_search(
             "images/header.png",
             "images/guan_ying_bao_zang/open.png",
             "zhan_dou_left_up",
-            3,
+            2,
         ):
             logger.info(f"向上拖拽找到【观影宝藏】")
         else:
@@ -952,14 +952,14 @@ class CommonTask:
             "images/header.png",
             "images/yuan_xian/open.png",
             "zhan_dou_left_down",
-            3,
+            2,
         ):
             logger.info(f"向下拖拽找到【极速院线】")
         elif drag_search(
             "images/header.png",
             "images/yuan_xian/open.png",
             "zhan_dou_left_up",
-            3,
+            2,
         ):
             logger.info(f"向上拖拽找到【极速院线】")
         else:
@@ -1145,11 +1145,14 @@ class CommonTask:
             kan_guang_gao_num = 0
             start_time = time.time()
             while True:
-                if find("images/sao_dang/0.png", confidence=0.9):
+                find_and_click("images/sao_dang/kan_guang_gao.png")
+
+                time.sleep(4)
+
+                if find("images/sao_dang/kan_guang_gao.png"):
                     logger.info(f"【巡逻车-扫荡】任务完成")
                     break
-
-                if find_and_click("images/sao_dang/kan_guang_gao.png"):
+                else:
                     logger.info(f"第{kan_guang_gao_num+1}次执行【巡逻车-扫荡】-看广告")
                     kan_guang_gao()
                     time.sleep(1)
