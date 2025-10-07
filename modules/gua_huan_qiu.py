@@ -291,16 +291,18 @@ class GuaHuanQiu:
         while True:
             # 检测返回按钮
             if find("images/gua_huan_qiu/fan_hui.png", image_region_name="default"):
-                # 双区域点击返回
-                find_and_click(
-                    "images/gua_huan_qiu/fan_hui.png",
-                    image_region_name="zuo",
+                # 点击返回
+                retry_click(
+                    click_image="images/gua_huan_qiu/fan_hui.png",
+                    find_kwargs={"image_region_name": "zuo"},
+                    click_kwargs={"image_region_name": "zuo"},
                 )
-                find_and_click(
-                    "images/gua_huan_qiu/fan_hui.png",
-                    image_region_name="default",
+                retry_click(
+                    click_image="images/gua_huan_qiu/fan_hui.png",
+                    find_kwargs={"image_region_name": "default"},
+                    click_kwargs={"image_region_name": "default"},
                 )
-                time.sleep(2)
+
                 return True  # 正常结束
 
             wait_num += 1

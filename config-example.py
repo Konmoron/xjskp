@@ -30,6 +30,8 @@ CLICK_OFFSETS = {
     "header_tou_xiang": (-325, 142),
     "exit_current_game": (-336, 96),  # 退出当前游戏
     "select_ji_neng": (1, 346),  # 选择技能
+    "gua_huan_qiu_zuo_yao_qing": (218, 13),  # 挂环球-左邀请右
+    "gua_huan_qiu_you_jie_shou": (219, 13),  # 挂环球-右接受邀请
 }
 
 DRAG_CONFIGS = {
@@ -46,6 +48,7 @@ DRAG_CONFIGS = {
     "xuan_fu_up": (5, 644, -4, 202, 1.5, 1),
     "move_game_to_default_region": (-3, 2, 755, -52, 3, 1),
     "shi_lian_ta": (15, 627, -10, -447, 3, 2),
+    "gua_huan_qiu_zhao_hao_you": (-6, 1026, 4, -500, 3, 1),
 }
 
 FU_CONFIGS = [
