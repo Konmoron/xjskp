@@ -13,6 +13,7 @@ from .operators.common_operations import (
     close_yuan_zheng,
 )
 from utils.image_utils import find_and_click, retry_click, find
+from utils.time_utils import format_duration
 from utils.logger import get_logger
 import time
 import random
@@ -32,6 +33,7 @@ class ZhuXian:
         force_login_wait=10,
         force_start=True,
         platform="bao",
+        select_ji_neng_max_num=4,
     ):
         self.max_num = max_num
         self.game_num = 1
@@ -39,6 +41,7 @@ class ZhuXian:
         self.force_login = force_login
         self.force_login_wait = force_login_wait
         self.platform = platform
+        self.select_ji_neng_max_num = select_ji_neng_max_num
 
     def start(self):
         """启动入口"""
@@ -61,21 +64,23 @@ class ZhuXian:
         for i in range(self.max_num):
             start_time = time.time()  # 记录开始时间
 
-            logger.info(f"第【{self.game_num}】局 - 开始执行第【{i + 1}】关")
+            close_all_x()
 
-            time.sleep(2)
+            logger.info(
+                f"第【{self.game_num}/{self.max_num}】局 - 开始执行第【{i + 1}】关"
+            )
+
+            # time.sleep(2)
 
             retry_click("images/zhu_xian/start.png")
-            time.sleep(2)
+            # time.sleep(1)
 
             # 检测是否在战斗界面
-            if find("images/zhu_xian/zhan_dou.png"):
+            if find(
+                "images/zhu_xian/zhan_dou.png",
+            ):
                 logger.info(f"检测到【战斗】界面，重新点击开始游戏")
                 retry_click("images/zhu_xian/start.png")
-
-            time.sleep(4)
-            # 头选宝石不算
-            find_and_click("images/zhu_xian/ji_neng.png", offset_name="select_ji_neng")
 
             self._wait_for_game_end()
 
@@ -89,37 +94,45 @@ class ZhuXian:
             )
 
             logger.info(
-                f"第【{self.game_num}】局 - 耗时: {time_str} - 总耗时: {total_time_str}"
+                f"第【{self.game_num}/{self.max_num}】局 - 耗时: {time_str} - 总耗时: {total_time_str}"
             )
 
             self.game_num += 1
 
-            time.sleep(4)
+            # time.sleep(4)
 
     def _wait_for_game_end(self):
         """等待游戏结束"""
-        num = 0
+        num = 1
+        start_time = time.time()
         while True:
             if find_and_click(
-                "images/zhu_xian/ji_neng.png", offset_name="select_ji_neng"
+                "images/zhu_xian/ji_neng.png",
+                before_sleep=0.2,
+                offset_name="select_ji_neng",
+                after_sleep=0.2,
             ):
-                logger.info(f"第{self.game_num}局，已选择技能{num+1}次")
-                num += 1
+                spend_time = format_duration(time.time() - start_time)
+                logger.info(
+                    f"第{self.game_num}/{self.max_num}局, 已选择技能{num}/{self.select_ji_neng_max_num}次, 耗时: {spend_time}"
+                )
 
-                if num >= 4:
+                if num >= self.select_ji_neng_max_num:
                     logger.info(
-                        f"第{self.game_num}局，已经选择{num}次技能, 退出当前游戏"
+                        f"第{self.game_num}/{self.max_num}局，已经选择{num}/{self.select_ji_neng_max_num}次技能, 退出当前游戏"
                     )
                     self._exit_current_game()
                     break
                 else:
+                    num += 1
                     continue
 
-            if find_and_click("images/zhu_xian/fan_hui.png"):
-                logger.info(f"第{self.game_num}局，失败退出")
+            if find_and_click(
+                "images/zhu_xian/fan_hui.png", before_sleep=0.2, after_sleep=0.2
+            ):
+                logger.info(f"第{self.game_num}/{self.max_num}局，失败退出")
                 time.sleep(2)
                 break
-                # self._exit_current_game()
 
             time.sleep(0.5)
 
@@ -128,24 +141,55 @@ class ZhuXian:
         # 人类操作间隔通常集中在2-3秒
         time.sleep(random.triangular(1, 5, 2.5))
 
-        find_and_click("images/zhu_xian/ji_neng.png", offset_name="select_ji_neng")
+        find_and_click(
+            "images/zhu_xian/ji_neng.png",
+            offset_name="select_ji_neng",
+            before_sleep=0.2,
+        )
 
-        logger.info(f"第{self.game_num}局，退出当前游戏")
-        find_and_click("images/header.png", offset_name="exit_current_game")
+        logger.info(f"第{self.game_num}/{self.max_num}局，退出当前游戏")
 
-        # 再次判断选择技能
-        find_and_click("images/zhu_xian/ji_neng.png", offset_name="select_ji_neng")
+        exit_num = 1
+        while True:
+            find_and_click(
+                "images/header.png",
+                before_sleep=0.2,
+                offset_name="exit_current_game",
+            )
 
-        # logger.info("退出")
-        find_and_click("images/zhu_xian/exit.png")
+            if find_and_click(
+                "images/zhu_xian/exit.png",
+                # before_sleep=0.2,
+            ):
+                logger.info(f"第{self.game_num}/{self.max_num}局，点击退出")
+                break
 
-        # 等待
-        # time.sleep(2)
-        if find_and_click("images/zhu_xian/shuang_bei.png"):
-            logger.info("领取双倍奖励")
-            kan_guang_gao()
+            find_and_click(
+                "images/zhu_xian/ji_neng.png",
+                before_sleep=0.2,
+                offset_name="select_ji_neng",
+            )
+
+            if exit_num >= 10:
+                logger.info(f"第{self.game_num}/{self.max_num}局，退出失败")
+                break
+
+            exit_num += 1
+
+            time.sleep(0.5)
 
         # logger.info("返回")
-        find_and_click("images/zhu_xian/fan_hui.png")
+        num = 1
+        while True:
+            if find_and_click(
+                "images/zhu_xian/fan_hui.png",
+                before_sleep=0.2,
+            ):
+                break
 
-        find_and_click("images/zhu_xian/dian_ji_ping_mu.png")
+            if num >= 10:
+                logger.info(f"第{self.game_num}/{self.max_num}局，返回失败")
+                break
+
+            num += 1
+            time.sleep(0.5)

@@ -75,6 +75,7 @@ class TaskExecutor:
             force_login_wait=self.args.force_login_wait or 10,
             force_start=not self.args.disable_force_start,
             platform=self.args.platform,
+            select_ji_neng_max_num=self.args.select_ji_neng_max_num,
         ).start()
         logger.info("🏆 主线任务执行完毕")
 
@@ -143,7 +144,10 @@ def print_runtime_config(args: argparse.Namespace):
             f"次数:{args.number} 选择技能:{'禁用' if args.disable_skill else '启用'}",
         ),
         "🏆 主线任务": (args.zhu_xian is not None, f"次数:{args.zhu_xian or 20}"),
-        "🌍 挂环球": (args.gua_huan_qiu is not None, f"次数:{args.gua_huan_qiu or 20}"),
+        "🌍 挂机环球": (
+            args.gua_huan_qiu is not None,
+            f"次数:{args.gua_huan_qiu or 20}",
+        ),
         "🎁 宝箱任务": (args.bao_xiang, f"10连抽x{args.bao_xiang_num}次"),
         "🛠️ 通用任务": (
             args.tasks is not None,
@@ -297,6 +301,12 @@ def parse_arguments() -> argparse.Namespace:
         choices=["bao", "shou", "guan"],
         default="bao",
         help="指定游戏运行平台: bao(腾讯应用宝), shou(腾讯手游助手), guan(腾讯电脑管家)",
+    )
+    common_group.add_argument(
+        "--select-ji-neng-max-num",
+        type=int,
+        default=4,  # 5级退出，默认选择4个技能退出，如果有头选，则选择5个技能退出
+        help="控制主线关卡中技能选择的最大次数，达到阈值后退出当前游戏。默认值4（无头选），头选情况下自动调整为5次。",
     )
 
     return parser.parse_args()
