@@ -70,17 +70,27 @@ class ZhuXian:
                 f"第【{self.game_num}/{self.max_num}】局 - 开始执行第【{i + 1}】关"
             )
 
-            # time.sleep(2)
+            num = 0
+            while True:
+                find_and_click("images/zhu_xian/start.png")
 
-            retry_click("images/zhu_xian/start.png")
-            # time.sleep(1)
+                # time.sleep(2)
 
-            # 检测是否在战斗界面
-            if find(
-                "images/zhu_xian/zhan_dou.png",
-            ):
-                logger.info(f"检测到【战斗】界面，重新点击开始游戏")
-                retry_click("images/zhu_xian/start.png")
+                if not find(
+                    "images/zhu_xian/zhan_dou.png",
+                ):
+                    logger.info(
+                        f"第【{self.game_num}/{self.max_num}】局 - 未检测到【战斗】界面 - 已经开始"
+                    )
+                    break
+
+                if num >= 10:
+                    logger.info(
+                        f"第【{self.game_num}/{self.max_num}】局，点击开始游戏失败"
+                    )
+                    break
+
+                num += 1
 
             self._wait_for_game_end()
 
@@ -98,8 +108,6 @@ class ZhuXian:
             )
 
             self.game_num += 1
-
-            # time.sleep(4)
 
     def _wait_for_game_end(self):
         """等待游戏结束"""
@@ -125,6 +133,7 @@ class ZhuXian:
                     break
                 else:
                     num += 1
+                    time.sleep(2)
                     continue
 
             if find_and_click(
